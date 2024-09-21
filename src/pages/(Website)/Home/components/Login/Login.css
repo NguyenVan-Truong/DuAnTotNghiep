@@ -1,0 +1,79 @@
+.login-container {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    width: 600px; /* Kích thước mới */
+    margin: auto;
+    align-items: center;
+  }
+.app-container {   
+    display: flex;
+    justify-content: center; /* Căn giữa theo chiều ngang */
+    align-items: center; /* Căn giữa theo chiều dọc */
+    height: 100vh; /* Chiều cao đầy đủ của viewport */
+    background-color: #b2a7a7; /* Màu nền để dễ nhìn thấy */
+    }
+  
+  .login-form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .login-title {
+    font-weight: bold;
+    font-size: 24px; /* Kích thước chữ lớn hơn */
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  .form-group {
+    margin-bottom: 15px;
+  }
+  
+  .form-group label {
+    margin-bottom: 5px;
+    font-weight: bold;
+  }
+  
+  input[type="email"],
+  input[type="password"] {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .form-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    margin-left: 5px;
+  }
+  
+  .forgot-password {
+    color: #70a9e7;
+    text-decoration: none;
+  }
+  
+  .forgot-password:hover {
+    color: #20b13f; /* Thay đổi màu khi hover */
+  }
+  
+  .login-button {
+    padding: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 15px;
+  }
+  
+  .login-button:hover {
+    background-color: #0056b3;
+  }
+  

@@ -1,0 +1,45 @@
+.app-container {
+    display: flex;
+    justify-content: center; /* Căn giữa theo chiều ngang */
+    align-items: center; /* Căn giữa theo chiều dọc */
+    height: 100vh; /* Chiều cao đầy đủ của viewport */
+    background-color: #f0f0f0; /* Màu nền */
+  }
+  
+  .forgot-password-container {
+    width: 400px; /* Chiều rộng của form */
+    padding: 20px;
+    background-color: white; /* Màu nền cho form */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Đổ bóng */
+    border-radius: 8px; /* Bo góc cho form */
+  }
+  
+  .form-title {
+    font-weight: bold;
+    font-size: 20px; /* Kích thước chữ lớn hơn */
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  .form-group {
+    margin-bottom: 15px; /* Khoảng cách giữa các trường */
+  }
+  
+  .submit-button {
+    width: 100%; /* Đặt chiều rộng nút 100% */
+    padding: 10px;
+    background-color: #007bff; /* Màu nền nút */
+    color: white; /* Màu chữ */
+    border: none; /* Không có viền */
+    border-radius: 5px; /* Bo góc */
+    cursor: pointer; /* Con trỏ tay khi hover */
+  }
+  
+  .submit-button:hover {
+    background-color: #0056b3; /* Màu khi hover */
+  }
+  .p{
+    font-size: 14px;
+    margin: 20px;
+  }
+  
