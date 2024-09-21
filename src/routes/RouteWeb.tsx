@@ -10,8 +10,8 @@ const RouteWeb = () => {
             <Routes>
                 <Route path="/" element={<LayoutWeb />}>
                     <Route index element={<Home />} />
-                    <Route path="products" element={<ProductCategory />} />
-                    <Route path="checkout" element={<CheckoutPage />} />
+                    <Route path="cua-hang" element={<ProductCategory />} />
+                    <Route path="thanh-toan" element={<CheckoutPage />} />
                 </Route>
             </Routes>
         </>
