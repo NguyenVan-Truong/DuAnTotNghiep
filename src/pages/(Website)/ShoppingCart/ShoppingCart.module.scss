@@ -1,0 +1,96 @@
+.Title {
+    margin-top: 50px;
+    padding: 0 15px;
+    font-size: 24px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    .Total_count {
+        width: 24px;
+        height: 24px;
+        font-size: 12px;
+        background-color: #bc5b64;
+        display: inline-block;
+        border-radius: 100%;
+        justify-content: center;
+        align-items: center;
+        color: #fff;
+        margin-left: 8px;
+        padding: 3px 9px;
+    }
+}
+.Main {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 15px 0;
+    .Left {
+        margin-top: 10px;
+        .Content {
+            display: flex;
+            flex-direction: column;
+            .Content_Title {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                width: 400px;
+                h1 {
+                    font-size: 20px;
+                }
+                .Content_Title_Close {
+                    font-size: 20px;
+                }
+            }
+            .material {
+                font-weight: 400px;
+                font-size: 14px;
+            }
+            .Content_Price {
+                font-size: 16px;
+                font-weight: 600;
+                color: #bc5b64;
+            }
+            .Content_Button {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+
+                .Content_Button_Favorite {
+                    display: flex;
+                    align-items: center;
+                    font-size: 16px;
+                    font-weight: 600px;
+                    text-transform: none;
+                }
+                .Content_Button_Quantity {
+                    display: flex;
+                    align-items: center;
+                    justify-content: end;
+                    .Button {
+                        width: 30px;
+                        height: 30px;
+                        background-color: #f3f6f7;
+                        border: 1px solid #f3f6f7;
+                        font-size: 18px;
+                        cursor: pointer;
+                    }
+                    .quantity {
+                        max-width: 2.5em;
+                        width: 2.5em;
+                        text-align: center;
+                        border-radius: 0 !important;
+                        font-size: 14px;
+                        appearance: textfield;
+                        font-size: 14px;
+                        border: none;
+                        box-shadow: none;
+                        line-height: 13px;
+                        &::-webkit-inner-spin-button,
+                        &::-webkit-outer-spin-button {
+                            -webkit-appearance: none;
+                            margin: 0;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
