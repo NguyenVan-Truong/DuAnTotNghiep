@@ -37,7 +37,7 @@ const CheckoutPage = (props: Props) => {
                             )}
                         >
                             <Flex
-                                direction="row" 
+                                direction="row"
                                 className={styles.checkoutMain}
                             >
                                 <div className={styles.leftCheckout}>
@@ -276,61 +276,70 @@ const CheckoutPage = (props: Props) => {
                                         <p>23,630,000đ</p>
                                     </div>
                                     <div className="mt-[5px]">
-                                        <div className="border-b-[1px] pb-[10px]">
+                                        <div className=" pb-[10px]">
                                             <h2 className="text-[16px] text-[#000] font-medium">
                                                 Sản phẩm
                                             </h2>
                                         </div>
-                                        <div
-                                            className={`${styles.productDetails} flex flex-row justify-between gap-3 items-center my-[9px]`}
-                                        >
-                                            <div className="p-[2px] hover:border-[1px]">
-                                                <img
-                                                    src={ban_an_6_cho2}
-                                                    alt="Product"
-                                                    className="max-w-[100px]"
-                                                />
-                                            </div>
-                                            <div>
-                                                <p>
-                                                    Armchair Hùng King + Gối
-                                                    VACT3231 <span>× 1</span>
+                                        <div>
+                                            <div
+                                                className={`${styles.productDetails} flex flex-row justify-between gap-3 items-center my-[9px]`}
+                                            >
+                                                <div
+                                                    className={`${styles.imgwp} `}
+                                                >
+                                                    <img
+                                                        src={ban_an_6_cho2}
+                                                        alt="Product"
+                                                        className="max-w-[70px] "
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <p>
+                                                        Armchair Hùng King + Gối
+                                                        VACT3231{" "}
+                                                        <span>× 1</span>
+                                                    </p>
+                                                </div>
+                                                <p
+                                                    className={
+                                                        styles.productPrice
+                                                    }
+                                                >
+                                                    11,815,000₫
                                                 </p>
                                             </div>
-                                            <p className={styles.productPrice}>
-                                                11,815,000₫
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <div className="mt-[5px]">
-                                        <div className="border-b-[1px] pb-[10px]">
-                                            <h2 className="text-[16px] text-[#000] font-medium">
-                                                Sản phẩm
-                                            </h2>
-                                        </div>
-                                        <div
-                                            className={`${styles.productDetails} flex flex-row justify-between gap-3 items-center my-[9px]`}
-                                        >
-                                            <div className="p-[2px] hover:border-[1px]">
-                                                <img
-                                                    src={ban_an_6_cho2}
-                                                    alt="Product"
-                                                    className="max-w-[100px]"
-                                                />
-                                            </div>
-                                            <div>
-                                                <p>
-                                                    Armchair Hùng King + Gối
-                                                    VACT3231 <span>× 1</span>
+                                            <div
+                                                className={`${styles.productDetails} flex flex-row justify-between gap-3 items-center my-[9px]`}
+                                            >
+                                                <div
+                                                    className={`${styles.imgwp} `}
+                                                >
+                                                    <img
+                                                        src={ban_an_6_cho2}
+                                                        alt="Product"
+                                                        className="max-w-[70px] "
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <p>
+                                                        Armchair Hùng King + Gối
+                                                        VACT3231{" "}
+                                                        <span>× 1</span>
+                                                    </p>
+                                                </div>
+                                                <p
+                                                    className={
+                                                        styles.productPrice
+                                                    }
+                                                >
+                                                    11,815,000₫
                                                 </p>
                                             </div>
-                                            <p className={styles.productPrice}>
-                                                11,815,000₫
-                                            </p>
                                         </div>
                                     </div>
 
-                                    <div className="my-[5px]">
+                                    <div className="my-[7px] py-3">
                                         <ScrollArea h={200} type="always">
                                             Lorem Ipsum is simply dummy text of
                                             the printing and typesetting
@@ -349,7 +358,24 @@ const CheckoutPage = (props: Props) => {
                                             more recently with desktop
                                             publishing software like Aldus
                                             PageMaker including versions of
-                                            Lorem Ipsum.
+                                            Lorem Ipsum. Lorem Ipsum is simply
+                                            dummy text of the printing and
+                                            typesetting industry. Lorem Ipsum
+                                            has been the industry's standard
+                                            dummy text ever since the 1500s,
+                                            when an unknown printer took a
+                                            galley of type and scrambled it to
+                                            make a type specimen book. It has
+                                            survived not only five centuries,
+                                            but also the leap into electronic
+                                            typesetting, remaining essentially
+                                            unchanged. It was popularised in the
+                                            1960s with the release of Letraset
+                                            sheets containing Lorem Ipsum
+                                            passages, and more recently with
+                                            desktop publishing software like
+                                            Aldus PageMaker including versions
+                                            of Lorem Ipsum.
                                         </ScrollArea>
                                     </div>
                                     <div className="mt-[20px]">
@@ -360,7 +386,7 @@ const CheckoutPage = (props: Props) => {
                                             className={styles.terms}
                                         />
                                         <div
-                                            className={`${styles.submitButton} w-[100%]`}
+                                            className={`${styles.submitButton} w-[100%] mt-2`}
                                         >
                                             <Button
                                                 variant="filled"
