@@ -1,11 +1,11 @@
-import TitleNew from './components/Title/TitleNew'
-import ProductsHomeNew from './components/ProductsHomeNew/ProductsHomeNew'
-import TitleProducts from './components/Title/TitleProducts'
-import ProductsHome from './components/ProductsHome/ProductsHome'
-import BannerFooter from './components/Banner/BannerFooter'
-import TitleInspiration from './components/Title/TitleInspiration'
-import FormSupport from './components/FormFooter/FormSupport'
-import Banner from './components/Banner/Banner'
+import TitleNew from "./components/Title/TitleNew";
+import ProductsHomeNew from "./components/ProductsHomeNew/ProductsHomeNew";
+import TitleProducts from "./components/Title/TitleProducts";
+import ProductsHome from "./components/ProductsHome/ProductsHome";
+import BannerFooter from "./components/Banner/BannerFooter";
+import TitleInspiration from "./components/Title/TitleInspiration";
+import FormSupport from "./components/FormFooter/FormSupport";
+import Banner from "./components/Banner/Banner";
 
 const Home = () => {
     return (
@@ -27,7 +27,7 @@ const Home = () => {
             {/* Form */}
             <FormSupport />
         </>
-    )
-}
+    );
+};
 
-export default Home
+export default Home;

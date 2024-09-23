@@ -1,21 +1,18 @@
-import React from 'react';
-import Slider from 'react-slick';
-import { Button, Flex } from '@mantine/core';
-import { CiHeart } from 'react-icons/ci';
-import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
-import { ban_an_6_cho1, ban_an_6_cho2, bg_bage } from '@/assets/img';
-import 'slick-carousel/slick/slick.css';
-import 'slick-carousel/slick/slick-theme.css';
-import './ProductsHome.scss';
+import React from "react";
+import Slider from "react-slick";
+import { Button, Flex } from "@mantine/core";
+import { CiHeart } from "react-icons/ci";
+import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
+import { ban_an_6_cho1, ban_an_6_cho2, bg_bage } from "@/assets/img";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import "./ProductsHome.scss";
 
 // Custom next arrow using FiChevronRight
 const NextArrow = (props: any) => {
     const { className, onClick } = props;
     return (
-        <div
-            className={className}
-            onClick={onClick}
-        >
+        <div className={className} onClick={onClick}>
             <FiChevronRight className="arrow-icon" />
         </div>
     );
@@ -25,10 +22,7 @@ const NextArrow = (props: any) => {
 const PrevArrow = (props: any) => {
     const { className, onClick } = props;
     return (
-        <div
-            className={className}
-            onClick={onClick}
-        >
+        <div className={className} onClick={onClick}>
             <FiChevronLeft className="arrow-icon" />
         </div>
     );
@@ -76,7 +70,6 @@ const ProductsHome = () => {
                 {[...Array(4).keys()].map((_, index) => (
                     <div key={index} className="list-products__item-main">
                         <div className="list-products__item">
-
                             <div className="list-products__image-container">
                                 <img
                                     src={ban_an_6_cho1}
@@ -89,13 +82,13 @@ const ProductsHome = () => {
                                     className="list-products__image list-products__image--secondary w-full h-auto absolute top-0 left-0 opacity-0"
                                 />
                                 <div
-                                    className='discountTag'
+                                    className="discountTag"
                                     style={{
                                         backgroundImage: `url(${bg_bage})`,
                                         backgroundRepeat: "no-repeat",
                                     }}
                                 >
-                                    <div className='discountText'>
+                                    <div className="discountText">
                                         <span>-15%</span>
                                     </div>
                                 </div>
@@ -109,7 +102,10 @@ const ProductsHome = () => {
                                 </h2>
                                 <CiHeart className="list-products__favorite-icon text-[24px]" />
                             </Flex>
-                            <Flex direction="column" className="list-products__pricing">
+                            <Flex
+                                direction="column"
+                                className="list-products__pricing"
+                            >
                                 <p className="list-products__price-current text-red-600">
                                     24,225,000đ
                                 </p>
@@ -121,13 +117,16 @@ const ProductsHome = () => {
                                 direction="row"
                                 className="list-products__actions items-center justify-between mt-[20px]"
                             >
-                                <Button variant="default" className="list-products__button">
+                                <Button
+                                    variant="default"
+                                    className="list-products__button !w-[110px] md:!w-[150px] "
+                                >
                                     THÊM VÀO GIỎ
                                 </Button>
                                 <Button
                                     variant="filled"
                                     color="rgba(0, 0, 0, 1)"
-                                    className="list-products__button"
+                                    className="list-products__button !w-[70px] md:!w-[110px]  "
                                 >
                                     XEM THÊM
                                 </Button>

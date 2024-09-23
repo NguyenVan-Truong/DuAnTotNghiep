@@ -23,7 +23,8 @@
         }
 
         @media screen and (max-width: 768px) {
-            padding: 30px 10px;
+            padding: 30px 9px;
+            width: 100%;
         }
 
         .hotline {
@@ -38,7 +39,6 @@
             background-color: #a5886f;
             text-transform: uppercase;
             padding: 6px 15px;
-
         }
 
         .title {
@@ -87,8 +87,11 @@
                 @media screen and (max-width: 768px) {
                     width: 100%;
                 }
+                @media screen and (max-width: 450px) {
+                    width: 375px;
+                }
             }
-            .inputEmail{
+            .inputEmail {
                 width: 520px;
                 margin-bottom: 10px;
 
@@ -99,6 +102,9 @@
                 @media screen and (max-width: 768px) {
                     width: 437px;
                 }
+                @media screen and (max-width: 450px) {
+                    width: 375px;
+                }
             }
             .textarea {
                 width: 515px;
@@ -107,8 +113,10 @@
                 @media screen and (max-width: 768px) {
                     width: 437px;
                 }
+                @media screen and (max-width: 450px) {
+                    width: 375px;
+                }
             }
-
         }
     }
 
