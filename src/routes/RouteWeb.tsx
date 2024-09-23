@@ -1,10 +1,10 @@
 import CheckoutPage from "@/pages/(Website)/Checkout/page";
-import ForgotPassword from "@/pages/(Website)/Home/components/Login/Forgot";
-import Login from "@/pages/(Website)/Home/components/Login/Login";
-import Register from "@/pages/(Website)/Home/components/Login/Register";
+import ForgotPassword from "@/pages/(Website)/ForgotPassword/Forgot";
 import Home from "@/pages/(Website)/Home/Home";
 import LayoutWeb from "@/pages/(Website)/LayoutWeb";
+import Login from "@/pages/(Website)/Login/Login";
 import ProductCategory from "@/pages/(Website)/Product/Category/page";
+import Register from "@/pages/(Website)/Register/Register";
 import { Route, Routes } from "react-router-dom";
 
 const RouteWeb = () => {

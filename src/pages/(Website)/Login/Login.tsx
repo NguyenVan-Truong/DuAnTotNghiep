@@ -38,6 +38,7 @@ const Login = () => {
             />
             </div>
             <div className="form-options">
+            
             <a href="register" className="forgot-password">Sign up</a>
             <a href="forgotpassword" className="forgot-password">Forgot password?</a>
             </div>
