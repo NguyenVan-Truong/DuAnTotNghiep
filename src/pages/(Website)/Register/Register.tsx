@@ -1,76 +1,93 @@
-// src/components/RegisterForm.js
 import React, { useState } from 'react';
-import './Register.css';
+import Style from './Register.module.scss';
+import { footer } from '@/assets/img';
 
 const Register = () => {
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (password !== confirmPassword) {
-      alert("Passwords do not match!");
-      return;
-    }
-    console.log('Username:', username);
-    console.log('Email:', email);
-    console.log('Password:', password);
-    // Xử lý đăng ký
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [agreed, setAgreed] = useState(false); // Trạng thái cho checkbox
+  
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      console.log('First Name:', firstName);
+      console.log('Last Name:', lastName);
+      console.log('Email:', email);
+      console.log('Password:', password);
+      console.log('Agreed to Terms:', agreed);
   };
 
   return (
-    <div className="app-container">
-    <div className="register-container">
-      <form className="register-form" onSubmit={handleSubmit}>
-        <h2 className="register-title">Create Your Account</h2>
-        <div className="form-group">
-          <label>Username</label>
-          <input
-            type="text"
-            value={username}
-            placeholder='Username'
-            onChange={(e) => setUsername(e.target.value)}
-            required
-          />
+    <div className={Style.container}>
+      <div className={Style.logo}>
+        <img src="your-logo-url-here" alt="Logo" />
+      </div>
+
+      <div className={Style.leftSide}>
+        <img src={footer} alt="Register illustration" />
+      </div>
+
+      <div className={Style.rightSide}>
+        <div className={Style.registerContainer}>
+          <h2 className={Style.registerTitle}>Create New Account</h2>
+          <p className={Style.registerSubtitle}>Please enter details</p> {/* Dòng chữ mới */}
+          <form className={Style.registerForm} onSubmit={handleSubmit}>
+          <div className={Style.formGroup}>
+              <label>First Name</label>
+              <input
+                type="text"
+                value={firstName}
+                placeholder='First Name'
+                onChange={(e) => setFirstName(e.target.value)}
+                required
+              />
+            </div>
+            <div className={Style.formGroup}>
+              <label>Last Name</label>
+              <input
+                type="text"
+                value={lastName}
+                placeholder='Last Name'
+                onChange={(e) => setLastName(e.target.value)}
+                required
+              />
+            </div>
+            <div className={Style.formGroup}>
+              <label>Email Address</label>
+              <input
+                type="email"
+                value={email}
+                placeholder='Email Address'
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+            <div className={Style.formGroup}>
+              <label>Password</label>
+              <input
+                type="password"
+                value={password}
+                placeholder='Password'
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+            <div className={Style.termsContainer}>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={agreed}
+                  onChange={(e) => setAgreed(e.target.checked)}
+                  required
+                />
+                I agree to the <strong><a href="/terms">Terms</a></strong> & <strong><a href="/conditions">Conditions</a></strong>
+              </label>
+            </div>
+            <button type="submit" className={Style.registerButton}>Sign Up</button>
+          </form>
         </div>
-        <div className="form-group">
-          <label>Email</label>
-          <input
-            type="email"
-            value={email}
-            placeholder='Email'
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
-        <div className="form-group">
-          <label>Password</label>
-          <input
-            type="password"
-            value={password}
-            placeholder='Password'
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-        <div className="form-group">
-          <label>Confirm Password</label>
-          <input
-            type="password"
-            value={confirmPassword}
-            placeholder='Confirm Password'
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            required
-          />          
-        </div>
-        <div className='Sign'>
-            <a href="login" className="login">Sign In</a>
-          </div>
-        <button type="submit" className="register-button">Sign Up</button>
-      </form>
-    </div>
+      </div>
     </div>
   );
 };

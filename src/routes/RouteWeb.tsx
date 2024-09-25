@@ -5,6 +5,7 @@ import LayoutWeb from "@/pages/(Website)/LayoutWeb";
 import Login from "@/pages/(Website)/Login/Login";
 import ProductCategory from "@/pages/(Website)/Product/Category/page";
 import Register from "@/pages/(Website)/Register/Register";
+import ShoppingCart from "@/pages/(Website)/ShoppingCart/page";
 import { Route, Routes } from "react-router-dom";
 
 const RouteWeb = () => {
@@ -16,8 +17,10 @@ const RouteWeb = () => {
                 <Route path="/" element={<LayoutWeb />}>
                     <Route index element={<Home />} />
                     <Route path="products" element={<ProductCategory />} />
-                    <Route path="checkout" element={<CheckoutPage />} />                   
-
+                    <Route path="checkout" element={<CheckoutPage />} />             
+                    <Route path="cua-hang" element={<ProductCategory />} />
+                    <Route path="thanh-toan" element={<CheckoutPage />} />
+                    <Route path="gio-hang" element={<ShoppingCart />} />
                 </Route>
                 <Route path="login" element={<Login />} />
                 <Route path="register" element={<Register />} />

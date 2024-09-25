@@ -1,0 +1,110 @@
+.login-page {
+    display: flex;
+    height: 100vh; /* Chiều cao đầy đủ của viewport */
+  }
+  
+  .logo {
+    position: absolute; /* Định vị logo */
+    top: 30px; /* Cách từ trên */
+    left: 30px; /* Cách từ trái */
+  }
+  
+  .left-side {
+    flex: 3; /* Chiếm 3/5 chiều rộng */
+    img {
+      width: 100%;
+      height: 100%; /* Đảm bảo hình ảnh chiếm toàn bộ chiều cao */
+      object-fit: cover; /* Cắt ảnh cho phù hợp */
+    }
+  }
+  
+  .right-side {
+    flex: 2; /* Chiếm 2/5 chiều rộng */
+    display: flex;
+    justify-content: center; /* Căn giữa theo chiều ngang */
+    align-items: center; /* Căn giữa theo chiều dọc */
+    padding: 20px; /* Khoảng cách bên trong */
+    background-color: white; /* Màu nền cho form */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Đổ bóng */
+    border-radius: 5px; /* Bo góc cho form */
+  }
+  
+  .login-container {
+    width: 400px; /* Chiều rộng của form */
+  }
+  
+  .login-title {
+    font-weight: bold;
+    font-size: 30px; /* Kích thước chữ lớn hơn */
+    text-align: left; /* Căn trái */
+    margin-bottom: 5px; /* Khoảng cách dưới */
+  }
+  
+  .wave-hand {
+    color: gold; /* Màu vàng cho bàn tay vẫy */
+    font-size: 30px; /* Kích thước biểu tượng */
+  }
+  
+  .login-subtitle {
+    font-size: 13px; /* Kích thước chữ nhỏ */
+    margin-bottom: 40px; /* Khoảng cách dưới */
+    text-align: left; /* Căn trái */
+  }
+  
+  .form-group {
+    margin-bottom: 15px; /* Khoảng cách giữa các trường */
+    text-align: left; /* Căn trái */
+  
+    /* Thay đổi font size cho label */
+    label {
+      font-size: 12px !important; /* Kích thước chữ cho label */
+      color: #615e5e; /* Màu chữ cho label, có thể điều chỉnh nếu cần */
+    }
+  
+    /* Thay đổi font size cho input placeholder */
+    input {
+      font-size: 18px; /* Kích thước chữ cho input */
+      
+      &::placeholder {
+        font-size: 12px; /* Kích thước chữ cho placeholder */
+        color: #aaa; /* Màu chữ cho placeholder, có thể điều chỉnh nếu cần */
+      }
+    }
+  }
+  
+  .form-options {
+    display: flex;
+    justify-content: space-between; /* Tách ra 2 bên */
+    align-items: center; /* Căn giữa theo chiều dọc */
+    margin-bottom: 20px;
+    margin-top: 40px;
+
+    label {
+        font-size: 14px !important; /* Kích thước chữ cho label */
+        color: #615e5e; /* Màu chữ cho label, có thể điều chỉnh nếu cần */
+      }
+      a {
+        font-size: 14px !important; /* Kích thước chữ cho label */
+        color: #615e5e; /* Màu chữ cho a, có thể điều chỉnh nếu cần */
+      }
+  }
+  
+  .forgot-password {
+    text-align: right; /* Căn phải cho forgot password */
+    text-decoration: none; /* Không gạch chân */
+  }
+  
+  .login-button {
+    width: 100%; /* Đặt chiều rộng nút 100% */
+    padding: 10px;
+    background-color: #0a0a0a; /* Màu nền nút */
+    color: white; /* Màu chữ */
+    border: none; /* Không có viền */
+    border-radius: 5px; /* Bo góc */
+    cursor: pointer; /* Con trỏ tay khi hover */
+  }
+  
+  .login-button:hover {
+    background-color: #2e3135; /* Màu khi hover */
+  }
+  
