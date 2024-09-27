@@ -17,6 +17,9 @@ import footer from "@/assets/Images/footer.jpg";
 import banner from "@/assets/Images/banner.jpeg";
 import banner1 from "@/assets/Images/banner.jpg";
 import banner2 from "@/assets/Images/banner1234.jpg";
+import sanpham1 from "@/assets/Images/sanpham1.jpg";
+import imageLogin from "@/assets/Images/login-pana.png";
+import logo_pana from "@/assets/Images/logo_pana.png";
 export {
     ban_nuoc_dura,
     ban_nuoc_dura_1,
@@ -36,5 +39,8 @@ export {
     footer,
     banner,
     banner1,
-    banner2
+    banner2,
+    sanpham1,
+    imageLogin,
+    logo_pana,
 };
