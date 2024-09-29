@@ -1,21 +1,17 @@
-
-import { Outlet } from 'react-router-dom';
-import Header from './Header/Header';
-import Footer from './Footer/Footer';
-
+import { Outlet } from "react-router-dom";
+import Footer from "./Components/Footer/Footer";
+import Header from "./Components/Header/Header";
 
 const LayoutWeb = () => {
     return (
         <>
-         
-                <Header />
-                <main>
-                    <Outlet />
-                </main>
-                <Footer />
-       
+            <Header />
+            <main>
+                <Outlet />
+            </main>
+            <Footer />
         </>
-    )
-}
+    );
+};
 
-export default LayoutWeb
+export default LayoutWeb;
