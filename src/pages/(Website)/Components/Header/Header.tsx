@@ -10,6 +10,8 @@ import { Link, NavLink } from "react-router-dom";
 import { FiPhone } from "react-icons/fi";
 import CartIcon from "./components/MiniCart";
 import IconMenu from "./components/Menu";
+import { logo } from "@/assets/img";
+import { Input } from "@mantine/core";
 
 const Header = () => {
     const [visible, setVisible] = useState(false);
@@ -50,12 +52,12 @@ const Header = () => {
                     <div className="md:mr-5 ml-10">
                         <IconMenu />
                     </div>
-                    <div className="w-[120px] flex justify-center md:justify-start">
+                    <div className="w-[120px] flex p-2 justify-center md:justify-start">
                         <Link to="/">
                             <img
-                                src="../src/assets/Images/logo.jpg"
+                                src={logo}
                                 alt=""
-                                width={90}
+                                width={120}
                                 className="object-contain"
                             />
                         </Link>
@@ -150,13 +152,14 @@ const Header = () => {
                         </li>
                     </ul>
                 </div>
-                <div className="relative flex items-center pr-2 md:pr-10 ">
-                    <input
+                <div>
+                    <Input
                         type="text"
+                        variant="filled"
+                        radius="xl"
                         placeholder="Tìm kiếm..."
-                        className="w-full py-2 pl-10 pr-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                        rightSection={<SearchOutlined />}
                     />
-                    <SearchOutlined className="absolute left-3 text-gray-500 text-lg" />
                 </div>
             </header>
             {/* Overlay */}
