@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Image, Text } from "@mantine/core";
+import { Box, Image } from "@mantine/core";
 import style from "./Auth.module.scss";
 import { imageLogin, logo } from "@/assets/img";
 import { Link, Outlet } from "react-router-dom";
