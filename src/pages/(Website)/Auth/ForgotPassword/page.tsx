@@ -1,21 +1,25 @@
 import { Button, Flex, Group, Text, TextInput, Title } from "@mantine/core";
 import { useForm } from "@mantine/form";
+import { message } from "antd";
 import { FaAt, FaChevronLeft } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const ForgotPassword = () => {
     const form = useForm({
         initialValues: {
             email: "",
         },
-
         validate: {
             email: (value) =>
                 /^\S+@\S+$/.test(value) ? null : "Email không hợp lệ",
         },
     });
+
     const handleSubmit = (values: typeof form.values) => {
         console.log(values);
+        message.success("Thành công");
+        toast.success("Thành công");
     };
 
     return (
@@ -37,7 +41,7 @@ const ForgotPassword = () => {
             </Flex>
             <Flex mb={20} w={340} direction="column">
                 <Title c="#342e79" fw={500} order={3}>
-                    Quên Mật Khảu !
+                    Quên Mật Khẩu !
                 </Title>
                 <Text c="#8e8e8e" fw="400" size="sm">
                     Nhập địa chỉ email đã đăng ký của bạn. <br />

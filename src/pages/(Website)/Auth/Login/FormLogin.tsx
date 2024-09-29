@@ -8,6 +8,7 @@ import {
     Title,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
+import { message } from "antd";
 import { FaAt } from "react-icons/fa";
 import { FiLock } from "react-icons/fi";
 import { Link } from "react-router-dom";
@@ -28,7 +29,8 @@ const Login = () => {
     });
 
     const handleSubmit = (values: typeof form.values) => {
-        console.log(values); // Handle form submission here
+        console.log(values);
+        message.success("Thành công");
     };
 
     return (

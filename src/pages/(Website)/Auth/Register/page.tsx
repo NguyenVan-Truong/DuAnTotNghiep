@@ -13,6 +13,7 @@ import { FaAt, FaUser } from "react-icons/fa";
 import { FiLock } from "react-icons/fi";
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import { message } from "antd";
 
 const Register = () => {
     const [visiblePassword, setVisiblePassword] = useState(false);
@@ -44,7 +45,8 @@ const Register = () => {
     });
 
     const handleSubmit = (values: typeof form.values) => {
-        console.log(values); // Handle form submission here
+        console.log(values);
+        message.success("Thành công");
     };
 
     return (
