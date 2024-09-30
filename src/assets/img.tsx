@@ -19,7 +19,7 @@ import banner1 from "@/assets/Images/banner.jpg";
 import banner2 from "@/assets/Images/banner1234.jpg";
 import sanpham1 from "@/assets/Images/sanpham1.jpg";
 import imageLogin from "@/assets/Images/login-pana.png";
-import logo from "@/assets/Images/logo.png";
+import logo from "@/assets/Images/logo1.jpg";
 export {
     ban_nuoc_dura,
     ban_nuoc_dura_1,

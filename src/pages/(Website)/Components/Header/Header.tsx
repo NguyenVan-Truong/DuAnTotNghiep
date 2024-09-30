@@ -49,16 +49,15 @@ const Header = () => {
             {/* Header2 */}
             <header className="sticky top-0 space-x-5 left-0 w-full bg-white shadow-md z-50 flex items-center md:px-20">
                 <div className="flex items-center">
-                    <div className="md:mr-5 ml-10">
+                    <div className="md:mr-5 ml-10 text-xl">
                         <IconMenu />
                     </div>
-                    <div className="w-[120px] flex p-2 justify-center md:justify-start">
+                    <div className="w-[120px] h-[60px] flex items-center justify-center md:justify-start">
                         <Link to="/">
                             <img
                                 src={logo}
                                 alt=""
-                                width={120}
-                                className="object-contain"
+                                className="object-cover w-full h-full scale-125 transition-transform duration-300 ease-in-out"
                             />
                         </Link>
                     </div>
