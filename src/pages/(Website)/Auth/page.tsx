@@ -1,15 +1,21 @@
-import React from "react";
-import { Box, Image } from "@mantine/core";
-import style from "./Auth.module.scss";
-import { imageLogin, logo } from "@/assets/img";
+import { imageLogin } from "@/assets/img";
+import { Box, Image, Text } from "@mantine/core";
 import { Link, Outlet } from "react-router-dom";
+import style from "./Auth.module.scss";
 const Auth = () => {
     return (
         <>
             <Box className={style.container}>
                 <Box className={style.logo}>
                     <Link to={"/"}>
-                        <Image w={140} h={65} src={logo} />
+                        <Text
+                            fw={700}
+                            size="xl"
+                            variant="gradient"
+                            gradient={{ from: "blue", to: "cyan", deg: 0 }}
+                        >
+                            Morden Home
+                        </Text>
                     </Link>
                 </Box>
                 <Box className={style.imageUser}>
