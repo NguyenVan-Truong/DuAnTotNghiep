@@ -68,7 +68,8 @@ const Register = () => {
                 mt={7}
                 size="sm"
             >
-                {meets ? <IconCheck /> : <IconX />} <Box ml={10}>{label}</Box>
+                {meets ? <IconCheck /> : <IconX />}{" "}
+                <span style={{ marginLeft: 10 }}>{label}</span>
             </Text>
         );
     }

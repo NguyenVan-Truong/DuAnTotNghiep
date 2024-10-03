@@ -1,18 +1,17 @@
-import { useState } from "react";
 import {
-    SearchOutlined,
     EnvironmentOutlined,
     HeartOutlined,
+    SearchOutlined,
 } from "@ant-design/icons";
-import { Button } from "antd";
-import "./Header.scss";
-import { Link, NavLink } from "react-router-dom";
-import { FiPhone } from "react-icons/fi";
-import CartIcon from "./components/MiniCart";
-import IconMenu from "./components/Menu";
-import { logo } from "@/assets/img";
 import { Input } from "@mantine/core";
+import { Button } from "antd";
+import { useState } from "react";
+import { FiPhone } from "react-icons/fi";
+import { Link, NavLink } from "react-router-dom";
 import Logo from "../logo/logo";
+import IconMenu from "./components/Menu";
+import CartIcon from "./components/MiniCart";
+import "./Header.scss";
 
 const Header = () => {
     const [visible, setVisible] = useState(false);
