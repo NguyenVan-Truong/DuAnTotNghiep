@@ -1,14 +1,11 @@
-import {
-    EnvironmentOutlined,
-    HeartOutlined,
-    SearchOutlined,
-} from "@ant-design/icons";
-import { Input } from "@mantine/core";
+import { EnvironmentOutlined, SearchOutlined } from "@ant-design/icons";
+import { ButtonGroup, Input } from "@mantine/core";
 import { Button } from "antd";
 import { useState } from "react";
 import { FiPhone } from "react-icons/fi";
 import { Link, NavLink } from "react-router-dom";
 import Logo from "../logo/logo";
+import Favorite from "./components/FavoriteCollection";
 import IconMenu from "./components/Menu";
 import CartIcon from "./components/MiniCart";
 import "./Header.scss";
@@ -38,16 +35,17 @@ const Header = () => {
                 </div>
                 <div className="hidden lg:flex items-center mr-10 space-x-4">
                     <EnvironmentOutlined className="text-lg" />
-                    <HeartOutlined className="text-lg" />
+                    <Favorite />
                     <CartIcon />
                     <Button className="border-none text-sm">Đăng Nhập</Button>
                 </div>
                 <div className="block lg-hidden items-center space-x-4">
+                    <Favorite />
                     <CartIcon />
                 </div>
             </header>
             {/* Header2 */}
-            <header className="sticky top-0 space-x-5 left-0 w-full bg-white shadow-md z-50 flex items-center md:px-20">
+            <header className="sticky top-0 space-x-5 !py-3  left-0 w-full bg-white shadow-md z-50 flex items-center md:px-20">
                 <div className="flex items-center">
                     <div className="md:mr-5 ml-10 text-5xl">
                         <IconMenu />
@@ -70,7 +68,7 @@ const Header = () => {
                                 Home
                             </NavLink>
                         </li>
-                        <li className="relative group ">
+                        <ButtonGroup className="relative group ">
                             <NavLink
                                 to="/shop"
                                 className={({ isActive }) =>
@@ -114,7 +112,8 @@ const Header = () => {
                                     Category 3
                                 </NavLink>
                             </div>
-                        </li>
+                        </ButtonGroup>
+
                         <li>
                             <NavLink
                                 to="/abc"

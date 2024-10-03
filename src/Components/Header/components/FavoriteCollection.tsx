@@ -1,9 +1,13 @@
-import { CloseCircleOutlined, ShoppingCartOutlined } from "@ant-design/icons";
+import {
+    CloseCircleOutlined,
+    HeartOutlined,
+    ShoppingCartOutlined,
+} from "@ant-design/icons";
 import { Badge, Drawer } from "antd";
 import { useState } from "react";
 import { sanpham1 } from "@/assets/img";
 
-const MiniCart = () => {
+const MiniFavorite = () => {
     const products = Array(10).fill({
         name: "Sofa 3 chỗ Orientale da beige R5",
         price: "115,387,500₫",
@@ -15,7 +19,7 @@ const MiniCart = () => {
         <div className="flex flex-col justify-between h-full">
             <div className="text-center h-[10%]">
                 <h3 className="font-bold mb-5 text-2xl pb-2 border-b-4 border-b-gray-400 inline-block">
-                    Giỏ Hàng
+                    Sưu tập yêu thích
                 </h3>
             </div>
             <div className="max-h-[80%] overflow-auto custom-scrollbar">
@@ -58,7 +62,7 @@ const MiniCart = () => {
     );
 };
 
-const IconCart = () => {
+const Favorite = () => {
     const [drawerVisible, setDrawerVisible] = useState(false);
 
     const showDrawer = () => {
@@ -73,7 +77,7 @@ const IconCart = () => {
         <>
             <div className="items-center space-x-4">
                 <Badge count={1} className="relative">
-                    <ShoppingCartOutlined
+                    <HeartOutlined
                         className="text-xl cursor-pointer"
                         onClick={showDrawer}
                     />
@@ -86,10 +90,10 @@ const IconCart = () => {
                 open={drawerVisible}
                 width={500}
             >
-                <MiniCart />
+                <MiniFavorite />
             </Drawer>
         </>
     );
 };
 
-export default IconCart;
+export default Favorite;
