@@ -1,0 +1,132 @@
+.container {
+    max-width: 1300px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    margin-top: 50px;
+    border-radius: 10px;
+    background-color: #f6f7f8;
+
+    @media screen and (max-width: 1150px) {
+        grid-template-columns: 1fr;
+    }
+
+    .bannerLeft {
+        margin: 0 auto;
+        position: relative;
+        width: 550px;
+        padding: 100px 10px;
+
+        @media screen and (max-width: 1024px) {
+            width: 100%;
+            padding: 50px 10px;
+        }
+
+        @media screen and (max-width: 768px) {
+            padding: 30px 9px;
+            width: 100%;
+        }
+
+        .hotline {
+            display: flex;
+            width: auto;
+            position: absolute;
+            right: 1px;
+            color: #fff;
+            font-size: 16px;
+            top: 0;
+            font-weight: 600;
+            background-color: #a5886f;
+            text-transform: uppercase;
+            padding: 6px 15px;
+        }
+
+        .title {
+            h1 {
+                font-size: 30px;
+                font-weight: 600;
+                color: #0a0a0b;
+                line-height: 56px;
+                font-style: normal;
+                margin-bottom: 0.5em;
+
+                @media screen and (max-width: 768px) {
+                    font-size: 24px;
+                    line-height: 40px;
+                }
+            }
+
+            p {
+                font-size: 15px;
+                color: #000;
+                margin-bottom: 1.3em;
+
+                @media screen and (max-width: 768px) {
+                    font-size: 13px;
+                }
+            }
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+
+            @media screen and (max-width: 768px) {
+                align-items: flex-start;
+            }
+
+            .input {
+                width: 250px;
+                margin-bottom: 10px;
+
+                @media screen and (max-width: 1024px) {
+                    width: 250px;
+                }
+
+                @media screen and (max-width: 768px) {
+                    width: 100%;
+                }
+                @media screen and (max-width: 450px) {
+                    width: 375px;
+                }
+            }
+            .inputEmail {
+                width: 520px;
+                margin-bottom: 10px;
+
+                @media screen and (max-width: 1024px) {
+                    width: 515px;
+                }
+
+                @media screen and (max-width: 768px) {
+                    width: 437px;
+                }
+                @media screen and (max-width: 450px) {
+                    width: 375px;
+                }
+            }
+            .textarea {
+                width: 515px;
+                margin-top: 10px;
+
+                @media screen and (max-width: 768px) {
+                    width: 437px;
+                }
+                @media screen and (max-width: 450px) {
+                    width: 375px;
+                }
+            }
+        }
+    }
+
+    .bannerRight {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        @media screen and (max-width: 1024px) {
+            display: none;
+        }
+    }
+}
