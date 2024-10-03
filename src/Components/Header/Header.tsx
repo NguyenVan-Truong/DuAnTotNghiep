@@ -12,6 +12,7 @@ import CartIcon from "./components/MiniCart";
 import IconMenu from "./components/Menu";
 import { logo } from "@/assets/img";
 import { Input } from "@mantine/core";
+import Logo from "../logo/logo";
 
 const Header = () => {
     const [visible, setVisible] = useState(false);
@@ -52,13 +53,9 @@ const Header = () => {
                     <div className="md:mr-5 ml-10 text-5xl">
                         <IconMenu />
                     </div>
-                    <div className="w-[120px] h-[60px] flex items-center justify-center md:justify-start">
+                    <div className="w-[150px] h-[60px] flex items-center justify-center md:justify-start">
                         <Link to="/">
-                            <img
-                                src={logo}
-                                alt=""
-                                className="object-cover w-full mt-2 h-full scale-125 transition-transform duration-300 ease-in-out"
-                            />
+                            <Logo />
                         </Link>
                     </div>
                 </div>

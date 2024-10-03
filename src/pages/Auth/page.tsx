@@ -1,5 +1,6 @@
 import { imageLogin } from "@/assets/img";
-import { Box, Image, Text } from "@mantine/core";
+import Logo from "@/Components/logo/logo";
+import { Box, Image } from "@mantine/core";
 import { Link, Outlet } from "react-router-dom";
 import style from "./Auth.module.scss";
 const Auth = () => {
@@ -8,14 +9,7 @@ const Auth = () => {
             <Box className={style.container}>
                 <Box className={style.logo}>
                     <Link to={"/"}>
-                        <Text
-                            fw={700}
-                            size="xl"
-                            variant="gradient"
-                            gradient={{ from: "blue", to: "cyan", deg: 0 }}
-                        >
-                            Morden Home
-                        </Text>
+                        <Logo />
                     </Link>
                 </Box>
                 <Box className={style.imageUser}>
