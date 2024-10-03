@@ -20,6 +20,9 @@ import banner2 from "@/assets/Images/banner1234.jpg";
 import sanpham1 from "@/assets/Images/sanpham1.jpg";
 import imageLogin from "@/assets/Images/login-pana.png";
 import logo from "@/assets/Images/logo.png";
+import imageNotFound from "@/assets/404/6167023.webp";
+import imageNotFound2 from "@/assets/404/error4042.gif";
+import imageNotFound3 from "@/assets/404/ERROR 404.gif";
 export {
     ban_nuoc_dura,
     ban_nuoc_dura_1,
@@ -43,4 +46,7 @@ export {
     sanpham1,
     imageLogin,
     logo,
+    imageNotFound,
+    imageNotFound2,
+    imageNotFound3,
 };
