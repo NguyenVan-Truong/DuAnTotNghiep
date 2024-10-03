@@ -1,8 +1,8 @@
-import { banner, banner1, banner2 } from "@/assets/img";
+import { banner1, bannerh1 } from "@/assets/img";
 const Banner = () => {
     return (
         <>
-            <div className="relative mb-10">
+            {/* <div className="relative mb-10">
                 <img src={banner} alt="" className="w-full h-auto" />
                 <div className="absolute inset-0 flex flex-col items-center mt-16 md:mt-56 text-center">
                     <h1 className="text-white text-2xl md:text-6xl font-medium md:mb-2">
@@ -15,17 +15,22 @@ const Banner = () => {
                         ƯU ĐÃI 15% ++
                     </button>
                 </div>
-            </div>
-            <div className="relative mb-10">
-                <img src={banner2} alt="" className="w-full h-auto" />
-                <div className="absolute inset-0 flex flex-col items-center mt-20 md:mt-52  text-center">
-                    <h1 className="text-red-600 text-2xl md:text-6xl font-medium md:mb-2">
+            </div> */}
+            <div className="relative mb-10 ">
+                <img
+                    src={bannerh1}
+                    alt=""
+                    className="w-full h-auto lg:h-[700px] "
+                />
+
+                <div className="absolute inset-0 flex flex-col items-start justify-center ml-10 text-left pl-4 md:pl-10">
+                    <h1 className="text-white text-2xl md:text-5xl font-medium md:mb-2">
                         SALE UP TO 70%
                     </h1>
-                    <p className="text-red-600 text-sm md:text-2xl mb-2 md:mb-4">
+                    <p className="text-white text-sm md:text-xl mb-2 md:mb-4">
                         Áp dụng tại Mordem Home{" "}
                     </p>
-                    <button className="bg-red-600 text-white hover:bg-red-300 font-medium text-sm py-2 md:py-4 px-3 md:px-6 rounded-lg">
+                    <button className="bg-[#ffffff] text-black hover:bg-gray-300 font-medium text-sm py-1 md:py-2 px-3 md:px-6 rounded-md">
                         Xem Chi Tiết
                     </button>
                 </div>
