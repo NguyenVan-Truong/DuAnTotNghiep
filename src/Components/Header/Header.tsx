@@ -1,17 +1,14 @@
-import { useState } from "react";
-import {
-    SearchOutlined,
-    EnvironmentOutlined,
-    HeartOutlined,
-} from "@ant-design/icons";
+import { EnvironmentOutlined, SearchOutlined } from "@ant-design/icons";
+import { ButtonGroup, Input } from "@mantine/core";
 import { Button } from "antd";
-import "./Header.scss";
-import { Link, NavLink } from "react-router-dom";
+import { useState } from "react";
 import { FiPhone } from "react-icons/fi";
-import CartIcon from "./components/MiniCart";
+import { Link, NavLink } from "react-router-dom";
+import Logo from "../logo/logo";
+import Favorite from "./components/FavoriteCollection";
 import IconMenu from "./components/Menu";
-import { logo } from "@/assets/img";
-import { Input } from "@mantine/core";
+import CartIcon from "./components/MiniCart";
+import "./Header.scss";
 
 const Header = () => {
     const [visible, setVisible] = useState(false);
@@ -38,28 +35,24 @@ const Header = () => {
                 </div>
                 <div className="hidden lg:flex items-center mr-10 space-x-4">
                     <EnvironmentOutlined className="text-lg" />
-                    <HeartOutlined className="text-lg" />
+                    <Favorite />
                     <CartIcon />
                     <Button className="border-none text-sm">Đăng Nhập</Button>
                 </div>
                 <div className="block lg-hidden items-center space-x-4">
+                    <Favorite />
                     <CartIcon />
                 </div>
             </header>
             {/* Header2 */}
-            <header className="sticky top-0 space-x-5 left-0 w-full bg-white shadow-md z-50 flex items-center md:px-20">
+            <header className="sticky top-0 space-x-5 !py-3  left-0 w-full bg-white shadow-md z-50 flex items-center md:px-20">
                 <div className="flex items-center">
-                    <div className="md:mr-5 ml-10">
+                    <div className="md:mr-5 ml-10 text-5xl">
                         <IconMenu />
                     </div>
-                    <div className="w-[120px] flex p-2 justify-center md:justify-start">
+                    <div className="w-[150px] h-[60px] flex items-center justify-center md:justify-start">
                         <Link to="/">
-                            <img
-                                src={logo}
-                                alt=""
-                                width={120}
-                                className="object-contain"
-                            />
+                            <Logo />
                         </Link>
                     </div>
                 </div>
@@ -75,7 +68,7 @@ const Header = () => {
                                 Home
                             </NavLink>
                         </li>
-                        <li className="relative group ">
+                        <ButtonGroup className="relative group ">
                             <NavLink
                                 to="/shop"
                                 className={({ isActive }) =>
@@ -119,7 +112,8 @@ const Header = () => {
                                     Category 3
                                 </NavLink>
                             </div>
-                        </li>
+                        </ButtonGroup>
+
                         <li>
                             <NavLink
                                 to="/abc"

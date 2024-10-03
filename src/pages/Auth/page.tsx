@@ -1,15 +1,15 @@
-import React from "react";
+import { imageLogin } from "@/assets/img";
+import Logo from "@/Components/logo/logo";
 import { Box, Image } from "@mantine/core";
-import style from "./Auth.module.scss";
-import { imageLogin, logo } from "@/assets/img";
 import { Link, Outlet } from "react-router-dom";
+import style from "./Auth.module.scss";
 const Auth = () => {
     return (
         <>
             <Box className={style.container}>
                 <Box className={style.logo}>
                     <Link to={"/"}>
-                        <Image w={140} h={65} src={logo} />
+                        <Logo />
                     </Link>
                 </Box>
                 <Box className={style.imageUser}>
