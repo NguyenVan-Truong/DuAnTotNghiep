@@ -23,6 +23,8 @@ import logo from "@/assets/Images/logo.png";
 import imageNotFound from "@/assets/404/6167023.webp";
 import imageNotFound2 from "@/assets/404/error4042.gif";
 import imageNotFound3 from "@/assets/404/ERROR 404.gif";
+import BannerBottomm from "@/assets/Images/BannerBottom.png";
+import BannerBottom2 from "@/assets/Images/BannerBottom2.png";
 export {
     ban_nuoc_dura,
     ban_nuoc_dura_1,
@@ -49,4 +51,6 @@ export {
     imageNotFound,
     imageNotFound2,
     imageNotFound3,
+    BannerBottomm,
+    BannerBottom2,
 };
