@@ -6,6 +6,7 @@ import BannerFooter from "./components/Banner/BannerFooter";
 import TitleInspiration from "./components/Title/TitleInspiration";
 import FormSupport from "./components/FormFooter/FormSupport";
 import Banner from "./components/Banner/Banner";
+import BannerBottom from "./components/BannerBottom/BannerBottom";
 
 const Home = () => {
     return (
@@ -26,6 +27,8 @@ const Home = () => {
             <BannerFooter />
             {/* Form */}
             <FormSupport />
+            {/* BannerBottom */}
+            <BannerBottom />
         </>
     );
 };
