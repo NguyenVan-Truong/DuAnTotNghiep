@@ -1,5 +1,14 @@
+import { bannerh1 } from "@/assets/img";
 import { EnvironmentOutlined, SearchOutlined } from "@ant-design/icons";
-import { Avatar, Image, Input, Menu, Text, Tooltip } from "@mantine/core";
+import { Avatar, Input, Menu, Text, Tooltip } from "@mantine/core";
+import {
+    IconArrowsLeftRight,
+    IconMessageCircle,
+    IconPhoto,
+    IconSearch,
+    IconSettings,
+    IconTrash,
+} from "@tabler/icons-react";
 import { Button, Dropdown } from "antd";
 import { useState } from "react";
 import { FiPhone } from "react-icons/fi";
@@ -9,15 +18,6 @@ import Favorite from "./components/FavoriteCollection";
 import IconMenu from "./components/Menu";
 import CartIcon from "./components/MiniCart";
 import "./Header.scss";
-import { bannerh1 } from "@/assets/img";
-import {
-    IconArrowsLeftRight,
-    IconMessageCircle,
-    IconPhoto,
-    IconSearch,
-    IconSettings,
-    IconTrash,
-} from "@tabler/icons-react";
 
 const Header = () => {
     const [visible, setVisible] = useState(false);

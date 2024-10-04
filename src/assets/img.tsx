@@ -19,8 +19,14 @@ import banner1 from "@/assets/Images/banner.jpg";
 import banner2 from "@/assets/Images/banner1234.jpg";
 import sanpham1 from "@/assets/Images/sanpham1.jpg";
 import imageLogin from "@/assets/Images/login-pana.png";
+import imageNotFound from "@/assets/404/6167023.webp";
+import imageNotFound2 from "@/assets/404/error4042.gif";
+import imageNotFound3 from "@/assets/404/ERROR 404.gif";
+import BannerBottomm from "@/assets/Images/BannerBottom.png";
+import BannerBottom2 from "@/assets/Images/BannerBottom2.png";
 import logo from "@/assets/Images/logo1.jpg";
 import bannerh1 from "@/assets/Images/Bannerh1.png";
+import BannerBottom3 from "@/assets/Images/BannerBottom3.png";
 export {
     ban_nuoc_dura,
     ban_nuoc_dura_1,
@@ -44,5 +50,11 @@ export {
     sanpham1,
     imageLogin,
     logo,
+    imageNotFound,
+    imageNotFound2,
+    imageNotFound3,
+    BannerBottomm,
+    BannerBottom2,
     bannerh1,
+    BannerBottom3,
 };
