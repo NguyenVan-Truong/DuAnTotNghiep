@@ -1,6 +1,6 @@
 import { EnvironmentOutlined, SearchOutlined } from "@ant-design/icons";
-import { ButtonGroup, Input } from "@mantine/core";
-import { Button } from "antd";
+import { Input } from "@mantine/core";
+import { Button, Dropdown } from "antd";
 import { useState } from "react";
 import { FiPhone } from "react-icons/fi";
 import { Link, NavLink } from "react-router-dom";
@@ -39,9 +39,13 @@ const Header = () => {
                     <CartIcon />
                     <Button className="border-none text-sm">Đăng Nhập</Button>
                 </div>
-                <div className="block lg-hidden items-center space-x-4">
-                    <Favorite />
-                    <CartIcon />
+                <div className="lg-hidden flex space-x-5">
+                    <div className="block lg-hidden">
+                        <Favorite />
+                    </div>
+                    <div className="block lg-hidden items-center space-x-4">
+                        <CartIcon />
+                    </div>
                 </div>
             </header>
             {/* Header2 */}
@@ -68,52 +72,49 @@ const Header = () => {
                                 Home
                             </NavLink>
                         </li>
-                        <ButtonGroup className="relative group ">
-                            <NavLink
-                                to="/shop"
-                                className={({ isActive }) =>
-                                    `relative flex items-center ${isActive ? "border-b-4 border-red-500" : "hover:border-b-2 hover:text-orange-300"}`
-                                }
+                        <li>
+                            <Dropdown
+                                menu={{
+                                    items: [
+                                        {
+                                            key: "1",
+                                            label: (
+                                                <NavLink to="/shop/sub1">
+                                                    Subitem 1
+                                                </NavLink>
+                                            ),
+                                        },
+                                        {
+                                            key: "2",
+                                            label: (
+                                                <NavLink to="/shop/sub2">
+                                                    Subitem 2
+                                                </NavLink>
+                                            ),
+                                        },
+                                        {
+                                            key: "3",
+                                            label: (
+                                                <NavLink to="/shop/sub3">
+                                                    Subitem 3
+                                                </NavLink>
+                                            ),
+                                        },
+                                    ],
+                                }}
+                                placement="bottomLeft"
+                                arrow
                             >
-                                Shop
-                                <svg
-                                    className="w-4 h-4 ml-1"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M19 9l-7 7-7-7"
-                                    />
-                                </svg>
-                            </NavLink>
-
-                            <div className="absolute left-0 top-full mt-2 w-48 bg-white shadow-lg border border-gray-200 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                 <NavLink
-                                    to="/shop/category1"
-                                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                    to="/shop"
+                                    className={({ isActive }) =>
+                                        `relative ${isActive ? "border-b-4 border-red-500" : "hover:border-b-2 hover:border-red-500"}`
+                                    }
                                 >
-                                    Category 1
+                                    Shop
                                 </NavLink>
-                                <NavLink
-                                    to="/shop/category2"
-                                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                >
-                                    Category 2
-                                </NavLink>
-                                <NavLink
-                                    to="/shop/category3"
-                                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                >
-                                    Category 3
-                                </NavLink>
-                            </div>
-                        </ButtonGroup>
-
+                            </Dropdown>
+                        </li>
                         <li>
                             <NavLink
                                 to="/abc"
@@ -146,6 +147,7 @@ const Header = () => {
                         </li>
                     </ul>
                 </div>
+
                 <div>
                     <Input
                         type="text"
