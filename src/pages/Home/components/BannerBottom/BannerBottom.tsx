@@ -1,4 +1,4 @@
-import { BannerBottom2 } from "@/assets/img";
+import { BannerBottom3 } from "@/assets/img";
 import { Button } from "@mantine/core";
 import { IconArrowNarrowRight } from "@tabler/icons-react";
 import styles from "./BannerBottom.module.scss";
@@ -8,15 +8,14 @@ const BannerBottom = (props: Props) => {
     return (
         <div className={styles.bannerBottom}>
             <img
-                src={BannerBottom2}
+                src={BannerBottom3}
                 alt="Decorative banner"
                 className={styles.bannerBottomImage}
             />
             <div className={styles.bannerBottomContent}>
-                <h2 className={styles.bannerBottomTitle}>
-                    Xem, chạm và cảm nhận
-                </h2>
-                <div className="flex justify-end">
+                <h2 className={styles.bannerBottomTitle}>MORDEN HOME</h2>
+                <p>LÀM CHO NGÔI NHÀ BẠN THÊM TRANG TRỌNG</p>
+                <div className="flex justify-start">
                     <Button
                         className={styles.bannerBottomButton}
                         variant="outline"

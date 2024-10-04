@@ -26,6 +26,7 @@ import BannerBottomm from "@/assets/Images/BannerBottom.png";
 import BannerBottom2 from "@/assets/Images/BannerBottom2.png";
 import logo from "@/assets/Images/logo1.jpg";
 import bannerh1 from "@/assets/Images/Bannerh1.png";
+import BannerBottom3 from "@/assets/Images/BannerBottom3.png";
 export {
     ban_nuoc_dura,
     ban_nuoc_dura_1,
@@ -55,4 +56,5 @@ export {
     BannerBottomm,
     BannerBottom2,
     bannerh1,
+    BannerBottom3,
 };
