@@ -23,9 +23,19 @@ footer {
         color: #f1f1f1;
     }
 }
+.footer__top {
+    @media (max-width: 1300px) {
+        padding: 0 10px;
+    }
+}
 .footer__middle {
     margin: 10px 0;
     padding: 10px 0;
     border-top: 1px solid #525459;
     border-bottom: 1px solid #525459;
+}
+.footer__bottom {
+    @media (max-width: 1024px) {
+        padding: 0 10px;
+    }
 }

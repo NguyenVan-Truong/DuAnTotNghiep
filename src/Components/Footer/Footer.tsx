@@ -19,9 +19,11 @@ const Footer = () => {
         <footer>
             <div>
                 <div className="container">
-                    <div className={styles.footer__top}>
+                    <div className={`${styles.footer__top}`}>
                         <Grid>
-                            <Grid.Col span={{ base: 12, md: 6, lg: 3 }}>
+                            <Grid.Col
+                                span={{ base: 12, xs: 6, sm: 6, md: 6, lg: 3 }}
+                            >
                                 <ul>
                                     <li className={styles.footer__title}>
                                         KẾT NỐI VỚI NHÀ XINH
@@ -66,7 +68,9 @@ const Footer = () => {
                                     </li> */}
                                 </ul>
                             </Grid.Col>
-                            <Grid.Col span={{ base: 12, md: 6, lg: 3 }}>
+                            <Grid.Col
+                                span={{ base: 12, xs: 6, sm: 6, md: 6, lg: 3 }}
+                            >
                                 <ul>
                                     <li className={styles.footer__title}>
                                         NHÀ XINH
@@ -86,7 +90,9 @@ const Footer = () => {
                                     </li>
                                 </ul>
                             </Grid.Col>
-                            <Grid.Col span={{ base: 12, md: 6, lg: 3 }}>
+                            <Grid.Col
+                                span={{ base: 12, xs: 6, sm: 6, md: 6, lg: 3 }}
+                            >
                                 <ul>
                                     <li className={styles.footer__title}>
                                         CẢM HỨNG
@@ -102,7 +108,9 @@ const Footer = () => {
                                     </li>
                                 </ul>
                             </Grid.Col>
-                            <Grid.Col span={{ base: 12, md: 6, lg: 3 }}>
+                            <Grid.Col
+                                span={{ base: 12, xs: 6, sm: 6, md: 6, lg: 3 }}
+                            >
                                 <ul>
                                     <li className={styles.footer__title}>
                                         LỜI NHẮN
