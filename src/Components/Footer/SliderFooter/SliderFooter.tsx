@@ -6,7 +6,7 @@ import {
     IconFountain,
     IconGardenCart,
     IconIroningSteam,
-    IconMountain
+    IconMountain,
 } from "@tabler/icons-react";
 import Slider from "react-slick";
 import styles from "./SliderFooterIcon.module.scss";
@@ -20,6 +20,7 @@ const SliderFooter = () => {
         speed: 2000,
         autoplaySpeed: 2000,
         cssEase: "linear",
+        arrows: false,
     };
     return (
         <div className="container">
