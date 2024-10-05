@@ -26,7 +26,7 @@ const Index = () => {
                     <Route path="quen-mat-khau" element={<ForgotPassword />} />
                 </Route>
                 <Route path="*" element={<PageNotFound />} />
-            </Routes>
+            </Routes>   
         </>
     );
 };

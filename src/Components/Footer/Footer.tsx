@@ -33,7 +33,7 @@ const Footer = () => {
                                     </li>
                                     <li>
                                         <div
-                                            className={`w-[150px] ${styles.logoFooter}`}
+                                            className={`w-[142px] ${styles.logoFooter}`}
                                         >
                                             <Text
                                                 size="lg"
