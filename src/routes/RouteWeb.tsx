@@ -1,14 +1,16 @@
-import CheckoutPage from "@/pages/(Website)/Checkout/page";
-import ForgotPassword from "@/pages/(Website)/Auth/ForgotPassword/page";
-import Home from "@/pages/(Website)/Home/Home";
-import LayoutWeb from "@/pages/(Website)/LayoutWeb";
-import ProductCategory from "@/pages/(Website)/Product/Category/page";
-import Register from "@/pages/(Website)/Auth/Register/page";
-import ShoppingCart from "@/pages/(Website)/ShoppingCart/page";
+
 import { Route, Routes } from "react-router-dom";
-import Auth from "@/pages/(Website)/Auth/page";
-import Login from "./../pages/(Website)/Auth/Login/FormLogin";
+
 import ChiTietSP from "@/pages/(Website)/ChiTietSP/ChiTietSP";
+import LayoutWeb from "@/pages/Layout";
+import Home from "@/pages/Home/Home";
+import ProductCategory from "@/pages/Product/Category/page";
+import CheckoutPage from "@/pages/Checkout/page";
+import ShoppingCart from "@/pages/ShoppingCart/page";
+import Auth from "@/pages/Auth/page";
+import Login from "@/pages/Auth/Login/FormLogin";
+import Register from "@/pages/Auth/Register/page";
+import ForgotPassword from "@/pages/Auth/ForgotPassword/page";
 
 const RouteWeb = () => {
 
