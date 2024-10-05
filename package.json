@@ -35,8 +35,12 @@
     "@tiptap/react": "^2.6.6",
     "@tiptap/starter-kit": "^2.6.6",
     "@types/lodash": "^4.17.0",
+<<<<<<< HEAD
     "@types/swiper": "^6.0.0",
     "antd": "^5.20.2",
+=======
+    "antd": "^5.21.2",
+>>>>>>> b64e091e2d60fe0b6e8e052e092e1dee6bef9c50
     "axios": "^1.6.8",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
