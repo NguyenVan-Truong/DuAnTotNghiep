@@ -3,6 +3,8 @@ import { ActionIcon, Flex, Radio, ScrollArea, Textarea } from "@mantine/core";
 import { Button, Checkbox, Group, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import styles from "./checkoutPage.module.scss"; // Import CSS module
+import { IconBuildingBank, IconCashBanknote } from "@tabler/icons-react";
+import DescriptionShipping from "./DescriptionShipping";
 
 type Props = {};
 
@@ -27,7 +29,7 @@ const CheckoutPage = (props: Props) => {
     });
 
     return (
-        <div className="padding my-[30px]">
+        <div className="padding my-[80px]">
             <div className="container">
                 <div className={styles.checkoutForm}>
                     <div className={styles.container}>
@@ -170,60 +172,27 @@ const CheckoutPage = (props: Props) => {
                                             PHƯƠNG THỨC THANH TOÁN
                                         </h2>
                                         <Flex className={styles.paymentMethod}>
-                                            <div className="px-[20px] py-[20px] flex flex-col border border-spacing-1 mr-[10px]">
-                                                <svg
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    width="50"
-                                                    height="50"
-                                                    viewBox="0 0 24 24"
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                    strokeWidth="2"
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
-                                                    className="icon icon-tabler icons-tabler-outline icon-tabler-building-bank mx-auto"
-                                                >
-                                                    <path
-                                                        stroke="none"
-                                                        d="M0 0h24v24H0z"
-                                                        fill="none"
-                                                    />
-                                                    <path d="M3 21l18 0" />
-                                                    <path d="M3 10l18 0" />
-                                                    <path d="M5 6l7 -3l7 3" />
-                                                    <path d="M4 10l0 11" />
-                                                    <path d="M20 10l0 11" />
-                                                    <path d="M8 14l0 3" />
-                                                    <path d="M12 14l0 3" />
-                                                    <path d="M16 14l0 3" />
-                                                </svg>
+                                            <div
+                                                className="px-[20px] py-[20px] flex flex-col border border-spacing-1 mr-[10px] "
+                                                style={{ alignItems: "center" }}
+                                            >
+                                                <IconBuildingBank
+                                                    stroke={1.25}
+                                                    size={50}
+                                                />
+
                                                 <span className="text-[12px] text-[#656565]">
                                                     Chuyển khoản ngân hàng
                                                 </span>
                                             </div>
-                                            <div className="px-[20px] py-[20px] flex flex-col border border-spacing-1">
-                                                <svg
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    width="50"
-                                                    height="50"
-                                                    viewBox="0 0 24 24"
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                    strokeWidth="2"
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
-                                                    className="icon icon-tabler icons-tabler-outline icon-tabler-cash-banknote mx-auto"
-                                                >
-                                                    <path
-                                                        stroke="none"
-                                                        d="M0 0h24v24H0z"
-                                                        fill="none"
-                                                    />
-                                                    <path d="M12 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" />
-                                                    <path d="M3 6m0 2a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2z" />
-                                                    <path d="M18 12l.01 0" />
-                                                    <path d="M6 12l.01 0" />
-                                                </svg>
+                                            <div
+                                                className="px-[20px] py-[20px] flex flex-col border border-spacing-1"
+                                                style={{ alignItems: "center" }}
+                                            >
+                                                <IconCashBanknote
+                                                    stroke={1.25}
+                                                    size={50}
+                                                />
                                                 <span className="text-[12px] text-[#656565]">
                                                     Thanh toán khi nhận hàng
                                                 </span>
@@ -298,7 +267,7 @@ const CheckoutPage = (props: Props) => {
                                                     <p>
                                                         Armchair Hùng King + Gối
                                                         VACT3231{" "}
-                                                        <span>× 1</span>
+                                                        <strong>× 1</strong>
                                                     </p>
                                                 </div>
                                                 <p
@@ -325,7 +294,7 @@ const CheckoutPage = (props: Props) => {
                                                     <p>
                                                         Armchair Hùng King + Gối
                                                         VACT3231{" "}
-                                                        <span>× 1</span>
+                                                        <strong>× 1</strong>
                                                     </p>
                                                 </div>
                                                 <p
@@ -341,41 +310,7 @@ const CheckoutPage = (props: Props) => {
 
                                     <div className="my-[7px] py-3">
                                         <ScrollArea h={200} type="always">
-                                            Lorem Ipsum is simply dummy text of
-                                            the printing and typesetting
-                                            industry. Lorem Ipsum has been the
-                                            industry's standard dummy text ever
-                                            since the 1500s, when an unknown
-                                            printer took a galley of type and
-                                            scrambled it to make a type specimen
-                                            book. It has survived not only five
-                                            centuries, but also the leap into
-                                            electronic typesetting, remaining
-                                            essentially unchanged. It was
-                                            popularised in the 1960s with the
-                                            release of Letraset sheets
-                                            containing Lorem Ipsum passages, and
-                                            more recently with desktop
-                                            publishing software like Aldus
-                                            PageMaker including versions of
-                                            Lorem Ipsum. Lorem Ipsum is simply
-                                            dummy text of the printing and
-                                            typesetting industry. Lorem Ipsum
-                                            has been the industry's standard
-                                            dummy text ever since the 1500s,
-                                            when an unknown printer took a
-                                            galley of type and scrambled it to
-                                            make a type specimen book. It has
-                                            survived not only five centuries,
-                                            but also the leap into electronic
-                                            typesetting, remaining essentially
-                                            unchanged. It was popularised in the
-                                            1960s with the release of Letraset
-                                            sheets containing Lorem Ipsum
-                                            passages, and more recently with
-                                            desktop publishing software like
-                                            Aldus PageMaker including versions
-                                            of Lorem Ipsum.
+                                            <DescriptionShipping />
                                         </ScrollArea>
                                     </div>
                                     <div className="mt-[20px]">
@@ -394,7 +329,7 @@ const CheckoutPage = (props: Props) => {
                                                 type="submit"
                                                 style={{ width: "100%" }}
                                             >
-                                                Button
+                                                ĐẶT MUA
                                             </Button>
                                         </div>
                                     </div>

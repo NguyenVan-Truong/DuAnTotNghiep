@@ -154,7 +154,7 @@ const Header = () => {
                                 arrow
                             >
                                 <NavLink
-                                    to="/shop"
+                                    to="/cua-hang"
                                     className={({ isActive }) =>
                                         `relative ${isActive ? "border-b-4 border-red-500" : "hover:border-b-2 hover:border-red-500"}`
                                     }
