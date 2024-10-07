@@ -1,7 +1,7 @@
 import { banner, banner_footer1, banner_footer2, banner_footer6 } from "@/assets/img";
 import './ChiTietSP.scss';
 import { useState } from "react";
-import ListProducts from "../Product/Category/ListProduct/Listproduct";
+
 
 
 // Import Swiper styles
@@ -9,6 +9,7 @@ import 'swiper/css';
 import 'swiper/css/free-mode';
 import 'swiper/css/navigation';
 import 'swiper/css/thumbs';
+import ListProducts from "@/pages/Product/Category/ListProduct/Listproduct";
 
 
 // import required modules
