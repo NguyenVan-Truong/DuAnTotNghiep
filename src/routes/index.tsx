@@ -3,7 +3,7 @@ import Login from "@/pages/Auth/Login/FormLogin";
 import Auth from "@/pages/Auth/page";
 import Register from "@/pages/Auth/Register/page";
 import CheckoutPage from "@/pages/Checkout/page";
-import ChiTietSP from "@/pages/ChiTietSP/ChiTietSP";
+import ChiTietSP from "@/pages/Product/ProductDetail/ProductDetail";
 import Home from "@/pages/Home/Home";
 import LayoutWeb from "@/pages/Layout";
 import PageNotFound from "@/pages/NotFound/page";
@@ -28,7 +28,7 @@ const Index = () => {
                     <Route path="quen-mat-khau" element={<ForgotPassword />} />
                 </Route>
                 <Route path="*" element={<PageNotFound />} />
-            </Routes>   
+            </Routes>
         </>
     );
 };
