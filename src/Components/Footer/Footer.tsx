@@ -33,7 +33,7 @@ const Footer = () => {
                                     </li>
                                     <li>
                                         <div
-                                            className={`w-[150px] ${styles.logoFooter}`}
+                                            className={`w-[142px] ${styles.logoFooter}`}
                                         >
                                             <Text
                                                 size="lg"
@@ -126,7 +126,7 @@ const Footer = () => {
                                             HOME
                                         </p>
                                     </li>
-                                    <li>Email: MordenhomeContact@gmail.com</li>
+                                    <li>Email: support@mordenhome.com</li>
                                     <li>
                                         <form
                                             onSubmit={form.onSubmit((values) =>
@@ -164,7 +164,7 @@ const Footer = () => {
                     <div className={styles.footer__bottom}>
                         <div>
                             <Text size="xs">
-                                © 2021 Morden Home. All Rights Reserved
+                                © 2024 Morden Home. All Rights Reserved
                             </Text>
                         </div>
                     </div>
