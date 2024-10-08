@@ -1,6 +1,5 @@
 import { sanpham1 } from "@/assets/img";
 import { Badge, Button, Flex, Indicator, Rating, Tabs } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
 import {
     IconMinus,
     IconPlus,
@@ -12,8 +11,9 @@ import { useEffect, useRef, useState } from "react";
 import Slider from "react-slick";
 import CommentProductDetail from "./Component/Comment/Comment";
 import DescriptionProduct from "./Component/Description/Description";
-import "./ProductDetail.scss";
 import ListSimilarProducts from "./Component/ListSimilarProducts/ListSimilarProducts";
+import "./ProductDetail.scss";
+import { GrNext, GrPrevious } from "react-icons/gr";
 const ChiTietSP = () => {
     const [isLiked, setIsLiked] = useState(false);
     const [nav1, setNav1] = useState<Slider | null>(null);
@@ -32,6 +32,18 @@ const ChiTietSP = () => {
     const handleLike = () => {
         setIsLiked(!isLiked);
     };
+
+    // count
+    const [quantity, setQuantity] = useState(1);
+    const increaseQuantity = () => {
+        setQuantity(quantity + 1);
+    };
+    const decreaseQuantity = () => {
+        if (quantity > 1) {
+            setQuantity(quantity - 1);
+        }
+    };
+
     return (
         <>
             <div className="product-detail-main ">
@@ -55,6 +67,19 @@ const ChiTietSP = () => {
                                         autoplaySpeed={6000}
                                         beforeChange={(oldIndex, newIndex) =>
                                             setCurrentSlide(newIndex)
+                                        }
+                                        nextArrow={
+                                            <div className="slick-arrow slick-next">
+                                                <GrNext color="red" size={24} />
+                                            </div>
+                                        }
+                                        prevArrow={
+                                            <div className="slick-arrow slick-prev">
+                                                <GrPrevious
+                                                    color="red"
+                                                    size={24}
+                                                />
+                                            </div>
                                         }
                                     >
                                         <div>
@@ -290,11 +315,22 @@ const ChiTietSP = () => {
                                 <Flex direction="row" gap="lg" align="center">
                                     <div>
                                         <Button.Group>
-                                            <Button variant="default">
+                                            <Button
+                                                variant="default"
+                                                onClick={decreaseQuantity}
+                                            >
                                                 <IconMinus size={14} />
                                             </Button>
-                                            <Button variant="default">2</Button>
-                                            <Button variant="default">
+                                            <Button
+                                                variant="default"
+                                                className="!w-[50px] text-center"
+                                            >
+                                                {quantity}
+                                            </Button>
+                                            <Button
+                                                variant="default"
+                                                onClick={increaseQuantity}
+                                            >
                                                 <IconPlus size={14} />
                                             </Button>
                                         </Button.Group>
