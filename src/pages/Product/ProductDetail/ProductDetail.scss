@@ -117,6 +117,44 @@
         }
     }
 }
+// tabss
+.warranty-content ul {
+    list-style: none;
+    padding-left: 0;
+
+    p {
+        font-weight: bold;
+        font-size: 13px;
+        text-align: justify;
+    }
+
+    li {
+        margin-bottom: 10px;
+        font-size: 13px;
+        text-align: justify;
+        color: #666161;
+
+        &:before {
+            content: "✓";
+            font-size: 27px;
+            color: green;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+    }
+}
+
+.shipping-content ul {
+    list-style: none;
+    padding-left: 0;
+
+    li {
+        margin-bottom: 10px;
+        font-size: 13px;
+        text-align: justify;
+        color: #666161;
+    }
+}
 
 // --------------------------------
 .product-title-1 {
@@ -125,7 +163,7 @@
     justify-items: center;
 
     p {
-        font-size: 35px;
+        font-size: 30px;
         font-weight: 600;
     }
 }
@@ -299,43 +337,5 @@
                 }
             }
         }
-    }
-}
-// tabss
-.warranty-content ul {
-    list-style: none;
-    padding-left: 0;
-
-    p {
-        font-weight: bold;
-        font-size: 13px;
-        text-align: justify;
-    }
-
-    li {
-        margin-bottom: 10px;
-        font-size: 13px;
-        text-align: justify;
-        color: #666161;
-
-        &:before {
-            content: "✓";
-            font-size: 27px;
-            color: green;
-            font-weight: bold;
-            margin-right: 10px;
-        }
-    }
-}
-
-.shipping-content ul {
-    list-style: none;
-    padding-left: 0;
-
-    li {
-        margin-bottom: 10px;
-        font-size: 13px;
-        text-align: justify;
-        color: #666161;
     }
 }

@@ -1,36 +1,20 @@
+import { sanpham1 } from "@/assets/img";
+import { Badge, Button, Flex, Indicator, Rating, Tabs } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
 import {
-    banner,
-    banner_footer1,
-    banner_footer2,
-    banner_footer6,
-    sanpham1,
-} from "@/assets/img";
-import { useEffect, useRef, useState } from "react";
-import Slider from "react-slick";
-import ListProducts from "../Category/ListProduct/Listproduct";
-import "./ProductDetail.scss";
-import { Image } from "antd";
-import {
-    Badge,
-    Button,
-    Flex,
-    Indicator,
-    Rating,
-    ScrollArea,
-    Tabs,
-} from "@mantine/core";
-import {
-    IconMessageCircle,
     IconMinus,
-    IconPhoto,
     IconPlus,
-    IconSettings,
     IconTableSpark,
     IconTir,
 } from "@tabler/icons-react";
-
+import { Image } from "antd";
+import { useEffect, useRef, useState } from "react";
+import Slider from "react-slick";
+import CommentProductDetail from "./Component/Comment/Comment";
+import DescriptionProduct from "./Component/Description/Description";
+import "./ProductDetail.scss";
+import ListSimilarProducts from "./Component/ListSimilarProducts/ListSimilarProducts";
 const ChiTietSP = () => {
-    const [activeTab, setActiveTab] = useState("warranty");
     const [isLiked, setIsLiked] = useState(false);
     const [nav1, setNav1] = useState<Slider | null>(null);
     const [nav2, setNav2] = useState<Slider | null>(null);
@@ -167,6 +151,12 @@ const ChiTietSP = () => {
                                     ))}
                                 </Slider>
                             </div>
+                            <div className="mt-[30px]">
+                                <DescriptionProduct />
+                            </div>
+                            <div>
+                                <CommentProductDetail />
+                            </div>
                         </div>
                         {/* Phần bên phải: Chi tiết sản phẩm */}
                         <div className="product-details">
@@ -280,7 +270,7 @@ const ChiTietSP = () => {
                                     </Flex>
                                 </div>
                             </Flex>
-                            <div className="py-[5px]">
+                            {/* <div className="py-[5px]">
                                 <ScrollArea h={150} offsetScrollbars>
                                     - Thân giường: Gỗ tràm tự nhiên, Veneer gỗ
                                     tràm tự nhiên - Chân giường: Gỗ cao su tự
@@ -295,7 +285,7 @@ const ChiTietSP = () => {
                                     nostrum corporis necessitatibus sapiente eos
                                     veritatis laborum harum!
                                 </ScrollArea>
-                            </div>
+                            </div> */}
                             <div className="mt-[20px]">
                                 <Flex direction="row" gap="lg" align="center">
                                     <div>
@@ -363,12 +353,12 @@ const ChiTietSP = () => {
                                             <ul>
                                                 <li>
                                                     Các sản phẩm nội thất tại
-                                                    Mordren Home đa số đều được sản
-                                                    xuất tại nhà máy của công ty
-                                                    cổ phần xây dựng kiến trúc
-                                                    AA với đội ngũ nhân viên và
-                                                    công nhân ưu tú cùng cơ sở
-                                                    vật chất hiện đại
+                                                    Mordren Home đa số đều được
+                                                    sản xuất tại nhà máy của
+                                                    công ty cổ phần xây dựng
+                                                    kiến trúc AA với đội ngũ
+                                                    nhân viên và công nhân ưu tú
+                                                    cùng cơ sở vật chất hiện đại
                                                     (http://www.aacorporation.com/).
                                                     Mordren Home đã kiểm tra kỹ
                                                     lưỡng từ nguồn nguyên liệu
@@ -376,10 +366,10 @@ const ChiTietSP = () => {
                                                     cuối cùng.
                                                 </li>
                                                 <li>
-                                                    Mordren Home bảo hành một năm
-                                                    cho các trường hợp có lỗi về
-                                                    kỹ thuật trong quá trình sản
-                                                    xuất hay lắp đặt.
+                                                    Mordren Home bảo hành một
+                                                    năm cho các trường hợp có
+                                                    lỗi về kỹ thuật trong quá
+                                                    trình sản xuất hay lắp đặt.
                                                 </li>
                                                 <li>
                                                     Quý khách không nên tự sửa
@@ -441,10 +431,10 @@ const ChiTietSP = () => {
                                         <div className="shipping-content">
                                             <ul>
                                                 <li>
-                                                    Mordren Home cung cấp dịch vụ
-                                                    giao hàng tận nơi, lắp ráp
-                                                    và sắp xếp vị trí theo đúng
-                                                    ý muốn của quý khách:
+                                                    Mordren Home cung cấp dịch
+                                                    vụ giao hàng tận nơi, lắp
+                                                    ráp và sắp xếp vị trí theo
+                                                    đúng ý muốn của quý khách:
                                                 </li>
                                                 <li>
                                                     MIỄN PHÍ giao hàng trong các
@@ -466,94 +456,12 @@ const ChiTietSP = () => {
                             </div>
                         </div>
                     </div>
+
                     <div>
                         <div className="product-title-1">
                             <p>Có Thể Bạn Cũng Thích</p>
                         </div>
-                        <ListProducts />
-                    </div>
-                    <div className="">
-                        <div className="product-title-2 ">
-                            <h2>Mẫu thiết kế</h2>
-                            <div className="container">
-                                <div className="left">
-                                    <img
-                                        src={banner_footer6}
-                                        alt="Sofa Image"
-                                        className="image-left"
-                                    />
-                                </div>
-
-                                <div className="middle">
-                                    <div className="content">
-                                        <h2>Mẫu thiết kế phòng khách</h2>
-                                        <p>
-                                            Phòng khách là không gian chính của
-                                            ngôi nhà, là nơi sum họp gia đình
-                                        </p>
-                                        <a href="#">MẪU PHÒNG KHÁCH →</a>
-                                    </div>
-                                    <div className="content">
-                                        <h2>Đồ trang trí</h2>
-                                        <p>
-                                            Mang lại những nguồn cảm hứng và nét
-                                            sinh động cho không gian
-                                        </p>
-                                        <a href="#">KHÁM PHÁ →</a>
-                                    </div>
-                                </div>
-
-                                <div className="right">
-                                    <img
-                                        src={banner}
-                                        alt="Decor Image"
-                                        className="image-right"
-                                    />
-                                </div>
-                            </div>
-                            <div className="design-examples">
-                                <div className="design-example design-example-1">
-                                    <div className="image-container">
-                                        <img
-                                            src={banner_footer2}
-                                            alt="Mẫu thiết kế phòng ngủ"
-                                        />
-                                    </div>
-                                    <div className="content-container">
-                                        <h3>Mẫu thiết kế phòng ngủ</h3>
-                                        <p>
-                                            Những mẫu phòng ngủ của Mordren Home
-                                            mang đến cảm giác ấm cúng, gần gũi
-                                            và thoải mái
-                                        </p>
-                                        <a href="#" className="read-more">
-                                            MẪU PHÒNG NGỦ →
-                                        </a>
-                                    </div>
-                                </div>
-
-                                <div className="design-example design-example-2">
-                                    <div className="image-container">
-                                        <img
-                                            src={banner_footer1}
-                                            alt="Mẫu thiết kế phòng ăn"
-                                        />
-                                    </div>
-                                    <div className="content-container">
-                                        <h3>Mẫu thiết kế phòng ăn</h3>
-                                        <p>
-                                            Một bữa ăn ngon luôn là mong ước của
-                                            mỗi gia đình. Không gian phòng ăn
-                                            đóng vai trò rất quan trọng trong
-                                            văn hóa Việt.
-                                        </p>
-                                        <a href="#" className="read-more">
-                                            MẪU PHÒNG ĂN →
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <ListSimilarProducts />
                     </div>
                 </div>
             </div>
