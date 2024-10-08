@@ -98,10 +98,10 @@
 .slick-prev,
 .slick-next {
     display: block !important;
-    background-color: red !important;
-    z-index: 1000; /* Đảm bảo nút hiển thị trên các phần tử khác */
-    width: 40px; /* Kích thước nút */
+    z-index: 1000;
+    width: 40px;
     height: 40px;
-    border-radius: 50%; /* Bo góc */
-    cursor: pointer; /* Thay đổi con trỏ khi hover */
+    border-radius: 50%;
+    cursor: pointer;
+    background-color: transparent;
 }
