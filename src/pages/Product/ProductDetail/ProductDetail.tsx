@@ -10,6 +10,15 @@ import Slider from "react-slick";
 import ListProducts from "../Category/ListProduct/Listproduct";
 import "./ProductDetail.scss";
 import { Image } from "antd";
+import {
+    Badge,
+    Button,
+    Flex,
+    Indicator,
+    Rating,
+    ScrollArea,
+} from "@mantine/core";
+import { IconMinus, IconPlus } from "@tabler/icons-react";
 
 const ChiTietSP = () => {
     const [activeTab, setActiveTab] = useState("warranty");
@@ -42,7 +51,7 @@ const ChiTietSP = () => {
                     </div>
                 </div>
                 <div className="container">
-                    <div className="product-content">
+                    <div className="product-content padding">
                         <div className="imageMain">
                             <div className="slider-container">
                                 <Image.PreviewGroup>
@@ -151,7 +160,179 @@ const ChiTietSP = () => {
                             </div>
                         </div>
                         {/* Phần bên phải: Chi tiết sản phẩm */}
-                        <div></div>
+                        <div className="product-details">
+                            <div className="product-header">
+                                <h2 className="product-title text-[20px] font-medium">
+                                    Giường Ngủ Gỗ Tràm MOHO VLINE 601 Nhiều Kích
+                                    Thước
+                                </h2>
+                            </div>
+                            <Flex
+                                direction="row"
+                                className="product-interactions"
+                            >
+                                <Flex
+                                    className="product-rating"
+                                    direction="row"
+                                >
+                                    <Rating
+                                        defaultValue={5}
+                                        size="xs"
+                                        readOnly
+                                    />
+                                    <span className="rating-count">(77)</span>
+                                </Flex>
+                                <div className="product-sales">
+                                    <span>Đã bán 965</span>
+                                </div>
+                            </Flex>
+                            <div className="product-pricing my-[5px] py-[5px] ">
+                                <Flex direction="row" align="center" gap="lg">
+                                    <Badge
+                                        size="lg"
+                                        variant="gradient"
+                                        gradient={{
+                                            from: "blue",
+                                            to: "cyan",
+                                            deg: 90,
+                                        }}
+                                        radius="sm"
+                                    >
+                                        -35%
+                                    </Badge>
+                                    <span className="current-price text-[#ef683a] text-[17px] font-bold">
+                                        1.200.000đ
+                                    </span>
+                                    <span className="original-price text-[#777a7b] text-[14px] ">
+                                        <del>1.500.000đ</del>
+                                    </span>
+                                </Flex>
+                            </div>
+                            <Flex
+                                direction="column"
+                                gap="sm"
+                                className="product-attributes"
+                            >
+                                <div>
+                                    <h4>Chất liệu</h4>
+                                    <Flex direction="row" gap="lg">
+                                        <Indicator withBorder processing>
+                                            <Badge
+                                                variant="default"
+                                                color="rgba(5, 5, 5, 1)"
+                                                radius="xs"
+                                                size="lg"
+                                            >
+                                                Gỗ-kim loại
+                                            </Badge>
+                                        </Indicator>
+                                    </Flex>
+                                </div>
+                                <div>
+                                    <h4>Màu sắc</h4>
+                                    <Flex direction="row" gap="lg">
+                                        <Badge
+                                            variant="default"
+                                            color="rgba(5, 5, 5, 1)"
+                                            radius="xs"
+                                            size="lg"
+                                        >
+                                            Màu gỗ tự nhiên
+                                        </Badge>{" "}
+                                        <Badge
+                                            variant="default"
+                                            color="rgba(5, 5, 5, 1)"
+                                            radius="xs"
+                                            size="lg"
+                                        >
+                                            Màu nâu
+                                        </Badge>
+                                    </Flex>
+                                </div>
+                                <div>
+                                    <h4>Kích thước</h4>
+                                    <Flex direction="row" gap="lg">
+                                        <Badge
+                                            variant="default"
+                                            color="rgba(5, 5, 5, 1)"
+                                            radius="xs"
+                                            size="lg"
+                                        >
+                                            1m5
+                                        </Badge>
+                                        <Badge
+                                            variant="default"
+                                            color="rgba(5, 5, 5, 1)"
+                                            radius="xs"
+                                            size="lg"
+                                        >
+                                            1m8
+                                        </Badge>
+                                    </Flex>
+                                </div>
+                            </Flex>
+                            <div className="py-[5px]">
+                                <ScrollArea h={150} offsetScrollbars>
+                                    - Thân giường: Gỗ tràm tự nhiên, Veneer gỗ
+                                    tràm tự nhiên - Chân giường: Gỗ cao su tự
+                                    nhiên - Tấm phản: Gỗ plywood chuẩn CARB-P2
+                                    (*) (*) Tiêu chuẩn California Air Resources
+                                    Board xuất khẩu Mỹ, đảm bảo gỗ không độc
+                                    hại, an toàn cho sức khỏe Lorem ipsum dolor
+                                    sit amet consectetur adipisicing elit.
+                                    Corporis non suscipit accusamus alias facere
+                                    numquam! Odio, corporis perspiciatis.
+                                    Architecto eligendi repellendus, sequi
+                                    nostrum corporis necessitatibus sapiente eos
+                                    veritatis laborum harum!
+                                </ScrollArea>
+                            </div>
+                            <div className="mt-[20px]">
+                                <Flex direction="row" gap="lg" align="center">
+                                    <div>
+                                        <Button.Group>
+                                            <Button variant="default">
+                                                <IconMinus size={14} />
+                                            </Button>
+                                            <Button variant="default">2</Button>
+                                            <Button variant="default">
+                                                <IconPlus size={14} />
+                                            </Button>
+                                        </Button.Group>
+                                    </div>
+                                    <div>
+                                        <Badge
+                                            size="lg"
+                                            variant="gradient"
+                                            gradient={{
+                                                from: "rgba(3, 0, 207, 1)",
+                                                to: "cyan",
+                                                deg: 35,
+                                            }}
+                                            radius="xs"
+                                            style={{ padding: "20px " }}
+                                        >
+                                            Mua ngay
+                                        </Badge>
+                                    </div>
+                                    <div>
+                                        <Badge
+                                            size="lg"
+                                            variant="gradient"
+                                            gradient={{
+                                                from: "rgba(5, 3, 2, 1)",
+                                                to: "rgba(61, 61, 61, 1)",
+                                                deg: 35,
+                                            }}
+                                            style={{ padding: "20px " }}
+                                            radius="xs"
+                                        >
+                                            Thêm vào giỏ hàng
+                                        </Badge>
+                                    </div>
+                                </Flex>
+                            </div>
+                        </div>
                     </div>
                     {/* <div>
                     <div className="product-title-1">
