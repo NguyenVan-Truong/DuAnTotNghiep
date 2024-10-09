@@ -1,20 +1,12 @@
 import { sanpham1 } from "@/assets/img";
-import { Badge, Button, Flex, Indicator, Rating, Tabs } from "@mantine/core";
-import {
-    IconMinus,
-    IconPlus,
-    IconTableSpark,
-    IconTir,
-} from "@tabler/icons-react";
 import { Image } from "antd";
 import { useEffect, useRef, useState } from "react";
 import Slider from "react-slick";
 import CommentProductDetail from "./Component/Comment/Comment";
 import DescriptionProduct from "./Component/Description/Description";
 import ListSimilarProducts from "./Component/ListSimilarProducts/ListSimilarProducts";
-import "./ProductDetail.scss";
-import { GrNext, GrPrevious } from "react-icons/gr";
 import RightProduct from "./Component/RightProduct/RightProduct";
+import "./ProductDetail.scss";
 const ChiTietSP = () => {
     const [isLiked, setIsLiked] = useState(false);
     const [nav1, setNav1] = useState<Slider | null>(null);
@@ -55,22 +47,23 @@ const ChiTietSP = () => {
                                         ref={sliderRef1}
                                         autoplay={true}
                                         autoplaySpeed={6000}
+                                        arrows={false}
                                         beforeChange={(oldIndex, newIndex) =>
                                             setCurrentSlide(newIndex)
                                         }
-                                        nextArrow={
-                                            <div className="slick-arrow slick-next">
-                                                <GrNext color="red" size={24} />
-                                            </div>
-                                        }
-                                        prevArrow={
-                                            <div className="slick-arrow slick-prev">
-                                                <GrPrevious
-                                                    color="red"
-                                                    size={24}
-                                                />
-                                            </div>
-                                        }
+                                        // nextArrow={
+                                        //     <div className="slick-arrow slick-next">
+                                        //         <GrNext color="red" size={24} />
+                                        //     </div>
+                                        // }
+                                        // prevArrow={
+                                        //     <div className="slick-arrow slick-prev">
+                                        //         <GrPrevious
+                                        //             color="red"
+                                        //             size={24}
+                                        //         />
+                                        //     </div>
+                                        // }
                                     >
                                         <div>
                                             <Image

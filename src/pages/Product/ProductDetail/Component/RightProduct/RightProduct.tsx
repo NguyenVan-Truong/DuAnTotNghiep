@@ -5,8 +5,8 @@ import {
     IconTableSpark,
     IconTir,
 } from "@tabler/icons-react";
-import "../../ProductDetail.scss";
 import { useState } from "react";
+import "../../ProductDetail.scss";
 
 const RightProduct = () => {
     // count

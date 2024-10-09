@@ -42,7 +42,7 @@
         }
         .slick-prev,
         .slick-next {
-            display: none !important;
+            display: block !important;
         }
     }
     // css cho slider
@@ -64,7 +64,7 @@
         }
         .slick-prev::before,
         .slick-next::before {
-            content: none;
+            content: block;
         }
     }
 }
@@ -128,7 +128,7 @@
             }
             .slick-prev,
             .slick-next {
-                display: none !important;
+                display: block !important;
             }
         }
     }

@@ -1,7 +1,10 @@
 import { ban_an_6_cho1, ban_an_6_cho2, bg_bage } from "@/assets/img";
 import { Button, Flex } from "@mantine/core";
-import { IconMessageCircleHeart } from "@tabler/icons-react";
-import { GrNext, GrPrevious } from "react-icons/gr";
+import {
+    IconChevronLeft,
+    IconChevronRight,
+    IconMessageCircleHeart,
+} from "@tabler/icons-react";
 import Slider from "react-slick";
 import style from "./ListSimilarProducts.module.scss";
 const ListSimilarProducts = () => {
@@ -16,12 +19,12 @@ const ListSimilarProducts = () => {
         arrows: true,
         nextArrow: (
             <div className="slick-arrow slick-next">
-                <GrNext color="red" size={24} />
+                <IconChevronRight stroke={3} color="#4A4947" />
             </div>
         ),
         prevArrow: (
             <div className="slick-arrow slick-prev">
-                <GrPrevious color="red" size={24} />
+                <IconChevronLeft stroke={3} color="#4A4947" />
             </div>
         ),
         responsive: [
