@@ -42,7 +42,7 @@
         }
         .slick-prev,
         .slick-next {
-            display: none !important;
+            display: block !important;
         }
     }
     // css cho slider
@@ -64,7 +64,7 @@
         }
         .slick-prev::before,
         .slick-next::before {
-            content: none;
+            content: block;
         }
     }
 }
@@ -92,10 +92,21 @@
     padding: 5px 0 10px 0;
     border-bottom: 1px solid #eeeeee;
 }
-
+.rightProductTop {
+    display: none !important;
+}
+.rightProductBottom {
+    display: block !important;
+}
 @media (max-width: 1024px) {
     .product-content {
         flex-direction: column;
+    }
+    .rightProductTop {
+        display: block !important;
+    }
+    .rightProductBottom {
+        display: none !important;
     }
     .imageMain {
         width: 98%;
@@ -117,7 +128,7 @@
             }
             .slick-prev,
             .slick-next {
-                display: none !important;
+                display: block !important;
             }
         }
     }
