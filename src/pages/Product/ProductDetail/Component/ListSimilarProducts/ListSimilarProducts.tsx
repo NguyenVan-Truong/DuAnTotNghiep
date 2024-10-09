@@ -14,19 +14,45 @@ const ListSimilarProducts = () => {
         className: "center",
         centerMode: true,
         infinite: true,
-        centerPadding: "60px",
+        // centerPadding: "60px",
         slidesToShow: 4,
         speed: 500,
         rows: 2,
         arrows: true,
         nextArrow: (
-            <div className="slick-arrow slick-next">
-                <IconChevronRight stroke={3} color="#4A4947" />
+            <div className={style.NextPrev} style={{ zIndex: 1000 }}>
+                <IconChevronRight
+                    stroke={3}
+                    color="#4A4947"
+                    style={{
+                        position: "absolute",
+                        backgroundColor: "#ebebeb",
+                        width: "19px",
+                        height: "60px",
+                        right: "6px",
+                        top: "-38px",
+                        borderRadius: "0 12px 12px 0",
+                        zIndex: 9999,
+                    }}
+                />
             </div>
         ),
         prevArrow: (
-            <div className="slick-arrow slick-prev">
-                <IconChevronLeft stroke={3} color="#4A4947" />
+            <div className={style.BackPrev} style={{ zIndex: 1000 }}>
+                <IconChevronLeft
+                    stroke={3}
+                    color="#4A4947"
+                    style={{
+                        position: "absolute",
+                        backgroundColor: "#ebebeb",
+                        width: "19px",
+                        height: "60px",
+                        top: "-38px",
+                        left: "7px",
+                        borderRadius: "12px 0 0 12px",
+                        zIndex: 9999,
+                    }}
+                />
             </div>
         ),
         responsive: [
@@ -43,7 +69,7 @@ const ListSimilarProducts = () => {
                 },
             },
             {
-                breakpoint: 400,
+                breakpoint: 560,
                 settings: {
                     slidesToShow: 1,
                 },
@@ -52,8 +78,11 @@ const ListSimilarProducts = () => {
     };
 
     return (
-        <div className={style.sliderProductSimilar}>
-            <div className="slider-container">
+        <div
+            className={style.sliderProductSimilar}
+            style={{ position: "relative", zIndex: 3 }}
+        >
+            <div className={style.sliderContainer}>
                 <Slider {...settings}>
                     <div>
                         <ItemProduct />
