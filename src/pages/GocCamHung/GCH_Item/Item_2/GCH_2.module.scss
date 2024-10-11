@@ -1,0 +1,102 @@
+.headerImage {
+    img {
+        width: 100%;
+        height: 400px;
+        overflow: hidden;
+        object-fit: cover; // Để giữ tỷ lệ hình ảnh
+    }
+}
+
+.content {
+    padding: 50px 150px 50px 150px;
+    font-size: 14px;
+}
+
+.flexContainer {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 20px;
+}
+.flexContainer1 {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 20px;
+}
+
+.flexContainer2 {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 20px;
+}
+
+.flexItemContent {
+    flex: 1; // Để nội dung chiếm không gian
+    max-width: 600px; // Giới hạn chiều rộng
+    margin-right: 20px; // Khoảng cách giữa nội dung và ảnh
+    padding-top: 10%;
+    text-align: justify;
+    padding-right: 10%;
+    h2 {
+        font-size: 30px;
+        font-weight: bold;
+        margin-bottom: 30px;
+    }
+}
+
+.flexItemContent1 {
+    flex: 1; // Để nội dung chiếm không gian
+    max-width: 600px; // Giới hạn chiều rộng
+    margin-right: 20px; // Khoảng cách giữa nội dung và ảnh
+    padding-top: 10%;
+    text-align: justify;
+    padding-left: 10%;
+    h2 {
+        font-size: 30px;
+        font-weight: bold;
+        margin-bottom: 30px;
+    }
+}
+
+.flexItemContent2 {
+    flex: 1; // Để nội dung chiếm không gian
+    max-width: 400px; // Giới hạn chiều rộng
+    margin-right: 20px; // Khoảng cách giữa nội dung và ảnh
+    padding-top: 10%;
+    text-align: justify;
+    padding-right: 10%;
+    h2 {
+        font-size: 30px;
+        font-weight: bold;
+        margin-bottom: 30px;
+    }
+}
+
+.flexItemImage {
+    max-width: 500px; // Giới hạn chiều rộng cho ảnh
+    height: auto; // Giữ tỷ lệ ảnh
+}
+
+.flexItemImage1 {
+    max-width: 500px; // Giới hạn chiều rộng cho ảnh
+    height: auto; // Giữ tỷ lệ ảnh
+}
+
+.flexItemImage2 {
+    max-width: 800px; // Giới hạn chiều rộng cho ảnh
+    height: auto; // Giữ tỷ lệ ảnh
+    padding-top: 11%;
+}
+
+.producttitle {
+    height: 100px;
+    text-align: center;
+    justify-items: center;
+
+    p {
+        font-size: 35px;
+        font-weight: bold;
+    }
+}

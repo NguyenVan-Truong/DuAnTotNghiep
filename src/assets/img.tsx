@@ -27,6 +27,13 @@ import BannerBottom2 from "@/assets/Images/BannerBottom2.png";
 import logo from "@/assets/Images/logo1.jpg";
 import bannerh1 from "@/assets/Images/Bannerh1.png";
 import BannerBottom3 from "@/assets/Images/BannerBottom3.png";
+import giuong_ngu_May_1 from "@/assets/Images/giuong_ngu_May_1.jpg";
+import giuong_ngu_May_2 from "@/assets/Images/giuong_ngu_May_1.jpg";
+import giuong_ngu_May from "@/assets/Images/giuong_ngu_May_1.jpg";
+import duong_dai_5_new from "@/assets/Images/giuong_ngu_May_1.jpg";
+import duong_dai_6 from "@/assets/Images/giuong_ngu_May_1.jpg";
+import phong_cach_3 from "@/assets/Images/giuong_ngu_May_1.jpg";
+import nang_dong_2 from "@/assets/Images/giuong_ngu_May_1.jpg";
 export {
     ban_nuoc_dura,
     ban_nuoc_dura_1,
@@ -57,4 +64,11 @@ export {
     BannerBottom2,
     bannerh1,
     BannerBottom3,
+    giuong_ngu_May_1,
+    giuong_ngu_May_2,
+    giuong_ngu_May,
+    duong_dai_5_new,
+    duong_dai_6,
+    phong_cach_3,
+    nang_dong_2,
 };

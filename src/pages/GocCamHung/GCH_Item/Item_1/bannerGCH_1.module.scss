@@ -1,0 +1,85 @@
+.imageGallery {
+    display: flex;
+    width: 100%;
+    height: 600px;
+    justify-content: space-between;
+    margin-top: 40px;
+  }
+  
+  .mainImageContainers {
+    position: relative;
+    width: 50%; // 5/7 width
+    height: 100%;
+    overflow: hidden;
+    padding: 20px 10px 50px 40px;
+  
+    .mainImageContainer {
+        height: 100%;
+        overflow: hidden;
+
+        .mainImage {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+              transition: transform 0.5s ease;
+        
+            &:hover {
+              transform: scale(1.10); // Phóng to một chút khi hover
+              filter: brightness(1.2); // Làm sáng hơn một chút khi hover
+            }
+        }
+    }
+  
+    
+  }
+  .ImageContainers_1 {
+    position: relative;
+    width: 25%; // 5/7 width
+    height: 100%;
+    overflow: hidden;
+    padding: 20px 10px 50px 10px;
+  
+    .ImageContainer_1 {
+        height: 100%;
+        overflow: hidden;
+
+        .mainImage {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+              transition: transform 0.5s ease;
+        
+            &:hover {
+              transform: scale(1.10); // Phóng to một chút khi hover
+              filter: brightness(1.2); // Làm sáng hơn một chút khi hover
+            }
+        }
+    }
+  
+    
+  }
+  
+  .sideImages {
+    width: 25%; // 2/7 width
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 20px 40px 50px 10px;
+  
+    .sideImageContainer {
+      height: 48%;
+      overflow: hidden;
+  
+      .sideImage {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+  
+        &:hover {
+          transform: scale(1.15); // Phóng to một chút khi hover
+          filter: brightness(0.9);
+        }
+      }
+    }
+  }
