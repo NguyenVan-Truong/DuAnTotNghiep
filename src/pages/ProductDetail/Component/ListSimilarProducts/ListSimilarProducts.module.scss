@@ -1,5 +1,5 @@
 .slick-slider .slick-list {
-    z-index: -10 !important;
+    z-index: 1 !important;
 }
 .listProductss {
     padding-bottom: 30px;
@@ -88,14 +88,24 @@
 }
 
 .sliderProductSimilar {
-    .sliderContainer {
-        padding: 0 26px;
-        .slick-slider {
-            .slick-list {
-                .slick-track {
-                    z-index: -10 !important;
-                }
-            }
-        }
-    }
+    position: relative;
+    z-index: 1;
+}
+
+.NextPrev,
+.BackPrev {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1000;
+    pointer-events: auto;
+    cursor: pointer;
+}
+
+.NextPrev {
+    right: 10px;
+}
+
+.BackPrev {
+    left: 10px;
 }
