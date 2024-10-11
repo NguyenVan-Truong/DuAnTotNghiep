@@ -3,7 +3,7 @@ import styles from './GCH_2.module.scss';
 import ListProducts from '@/pages/Product/Category/ListProduct/Listproduct';
 import { Box, Image, Text } from "@mantine/core";
 
-const GCH_2 = () => {
+const InspirationCorner_2 = () => {
     return (
         <div>
             {/* Ảnh đầu trang */}
@@ -165,4 +165,4 @@ const GCH_2 = () => {
     );
 }
 
-export default GCH_2;
+export default InspirationCorner_2;

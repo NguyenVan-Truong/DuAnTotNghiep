@@ -8,7 +8,7 @@ import {
     banner_footer4,
 } from "@/assets/img";
 
-const BannerGCH = () => {
+const Inspiration = () => {
     
 
     return (
@@ -242,4 +242,4 @@ const BannerGCH = () => {
     );
 };
 
-export default BannerGCH;
+export default Inspiration;

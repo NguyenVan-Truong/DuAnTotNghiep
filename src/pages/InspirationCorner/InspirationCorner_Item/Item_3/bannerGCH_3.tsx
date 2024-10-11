@@ -3,10 +3,10 @@ import styles from '../Item_2/GCH_2.module.scss';
 import localstyle from './GCH_3.module.scss';
 import ListProducts from '@/pages/Product/Category/ListProduct/Listproduct';
 import { Box, Image, Text } from "@mantine/core";
-import GCH_1 from '../Item_1/bannerGCH_1';
+import InspirationCorner_1 from '../Item_1/InspirationCorner_1';
 
 
-const GCH_3 = () => {
+const InspirationCorner_3 = () => {
     return (
         <div>
             {/* Ảnh đầu trang */}
@@ -34,7 +34,7 @@ const GCH_3 = () => {
                 <img src={banner} alt="Mô tả ảnh" />
             </div>
             <div>
-                <GCH_1 />
+                <InspirationCorner_1 />
             </div>
 
             {/* Phần flex */}
@@ -168,4 +168,4 @@ const GCH_3 = () => {
     );
 }
 
-export default GCH_3;
+export default InspirationCorner_3;
