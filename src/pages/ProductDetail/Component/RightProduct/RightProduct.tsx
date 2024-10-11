@@ -61,7 +61,13 @@ const RightProduct = () => {
                 <div>
                     <h4>Chất liệu</h4>
                     <Flex direction="row" gap="lg">
-                        <Indicator withBorder processing>
+                        <Indicator
+                            style={{
+                                zIndex: 10,
+                            }}
+                            withBorder
+                            processing
+                        >
                             <Badge
                                 variant="default"
                                 color="rgba(5, 5, 5, 1)"
@@ -128,7 +134,7 @@ const RightProduct = () => {
                             </Button>
                             <Button
                                 variant="default"
-                                className="!w-[50px] text-center"
+                                className="!w-[60px] text-center"
                             >
                                 {quantity}
                             </Button>

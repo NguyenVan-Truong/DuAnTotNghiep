@@ -1,5 +1,5 @@
+import ListProducts from "@/Components/ListProduct/Listproduct";
 import BannerProduct from "./BannerProduct/BannerProduct";
-import ListProducts from "../../../Components/ListProduct/Listproduct";
 import ProductFilter from "./ProductFilter/ProductFilter";
 const ProductCategory = () => {
     return (

@@ -2,11 +2,11 @@ import { sanpham1 } from "@/assets/img";
 import { Image } from "antd";
 import { useEffect, useRef, useState } from "react";
 import Slider from "react-slick";
-import CommentProductDetail from "./Component/Comment/Comment";
-import DescriptionProduct from "./Component/Description/Description";
-import ListSimilarProducts from "./Component/ListSimilarProducts/ListSimilarProducts";
-import RightProduct from "./Component/RightProduct/RightProduct";
 import "./ProductDetail.scss";
+import RightProduct from "./Component/RightProduct/RightProduct";
+import DescriptionProduct from "./Component/Description/Description";
+import CommentProductDetail from "./Component/Comment/Comment";
+import ListSimilarProducts from "./Component/ListSimilarProducts/ListSimilarProducts";
 const ChiTietSP = () => {
     const [isLiked, setIsLiked] = useState(false);
     const [nav1, setNav1] = useState<Slider | null>(null);
