@@ -150,7 +150,7 @@ const RightProduct = () => {
                                 deg: 35,
                             }}
                             radius="xs"
-                            style={{ padding: "20px " }}
+                            style={{ padding: "20px ", cursor: "pointer" }}
                         >
                             Mua ngay
                         </Badge>
@@ -164,7 +164,7 @@ const RightProduct = () => {
                                 to: "rgba(61, 61, 61, 1)",
                                 deg: 35,
                             }}
-                            style={{ padding: "20px " }}
+                            style={{ padding: "20px ", cursor: "pointer" }}
                             radius="xs"
                         >
                             Thêm vào giỏ hàng

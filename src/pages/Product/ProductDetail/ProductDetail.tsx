@@ -51,19 +51,6 @@ const ChiTietSP = () => {
                                         beforeChange={(oldIndex, newIndex) =>
                                             setCurrentSlide(newIndex)
                                         }
-                                        // nextArrow={
-                                        //     <div className="slick-arrow slick-next">
-                                        //         <GrNext color="red" size={24} />
-                                        //     </div>
-                                        // }
-                                        // prevArrow={
-                                        //     <div className="slick-arrow slick-prev">
-                                        //         <GrPrevious
-                                        //             color="red"
-                                        //             size={24}
-                                        //         />
-                                        //     </div>
-                                        // }
                                     >
                                         <div>
                                             <Image
@@ -120,13 +107,6 @@ const ChiTietSP = () => {
                                                 }}
                                             />{" "}
                                         </div>
-                                        {/* <div>
-                                    <img
-                                        src={sanpham1}
-                                        alt=""
-                                        className="featured-photo"
-                                    />{" "}
-                                </div> */}
                                     </Slider>
                                 </Image.PreviewGroup>
                                 <Slider
