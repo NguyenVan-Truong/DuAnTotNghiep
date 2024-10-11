@@ -16,8 +16,8 @@
     position: absolute;
     top: 0;
     right: 0;
-    left: 0;
     margin-top: 13px;
+    // margin-right: 10px;
     .discountTag,
     .newTag {
         margin-left: 0;
@@ -40,10 +40,26 @@
         }
     }
 }
+.listProductsItemMain {
+    .listProductsButton {
+        width: 50%;
+        transition: width 0.9s ease-in-out;
+    }
+}
+
 .listProductsItemMain:hover {
     // border: 1px solid #e1e1e1;
     box-sizing: border-box !important;
     outline: 1px solid #e1e1e1;
+    .listProductsButton {
+        width: 80%;
+        color: #fff;
+        background: linear-gradient(
+            90deg,
+            rgba(64, 32, 153, 1),
+            rgba(33, 143, 156, 1)
+        );
+    }
 }
 .listProductsImageContainer {
     position: relative;

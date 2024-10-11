@@ -1,8 +1,14 @@
 import style from "../ListProduct.module.scss";
-import { Button, Flex, Grid, GridCol, Rating } from "@mantine/core";
+import { Button, Flex, Grid, GridCol, Rating, Tooltip } from "@mantine/core";
 import { ban_an_6_cho1, ban_an_6_cho2, bg_bage } from "@/assets/img";
 import { CiHeart } from "react-icons/ci";
+import { IconHeartCheck, IconHeartFilled } from "@tabler/icons-react";
+import { useState } from "react";
 const ItemProduct = () => {
+    const [tym, setTym] = useState(false);
+    const onhandleTymItem = () => {
+        setTym(!tym);
+    };
     return (
         <div className={style.listProductsItemMain}>
             <div className={style.listProductsItem}>
@@ -22,12 +28,16 @@ const ItemProduct = () => {
                     direction="row"
                     className={`${style.listProductsInfo} items-center justify-between`}
                 >
-                    <h2 className={`${style.listProductsTitle} font-medium`}>
-                        Armchair Doultoun vintage
-                    </h2>
-                    <CiHeart
+                    <Tooltip label="Tooltip" color="rgba(166, 166, 166, 1)">
+                        <h2
+                            className={`${style.listProductsTitle} font-medium`}
+                        >
+                            Armchair Doultoun vintage
+                        </h2>
+                    </Tooltip>
+                    {/* <CiHeart
                         className={`${style.listProductsFavoriteIcon} text-[24px]`}
-                    />
+                    /> */}
                 </Flex>
                 <Flex
                     direction="row"
@@ -60,11 +70,25 @@ const ItemProduct = () => {
                     className={`${style.listProductsActions} items-center justify-between mt-[20px]`}
                     gap="xs"
                 >
-                    <Button variant="light">THÊM VÀO GIỎ</Button>
+                    {tym ? (
+                        <>
+                            <IconHeartFilled
+                                color="red"
+                                onClick={() => setTym(false)}
+                            />
+                        </>
+                    ) : (
+                        <>
+                            <CiHeart
+                                className={`${style.listProductsFavoriteIcon} text-[24px]`}
+                                onClick={() => onhandleTymItem()}
+                            />
+                        </>
+                    )}
 
                     <Button
-                        variant="gradient"
-                        gradient={{ from: "blue", to: "cyan", deg: 90 }}
+                        variant="light"
+                        className={`${style.listProductsButton}`}
                     >
                         XEM THÊM
                     </Button>
