@@ -28,8 +28,8 @@ const Header = () => {
     return (
         <>
             {/* Header1 */}
-            <header className="container flex border-b border-gray-100 bg-white justify-between items-center !py-3">
-                <div className="flex flex-row">
+            <header className="container flex border-b border-gray-100 bg-white justify-between items-center !py-3 ">
+                <div className="flex flex-row ml-5 xl:ml-0">
                     <span className="text-black flex flex-row items-center font-bold text-sm">
                         <FiPhone style={{ fontSize: "13px", color: "black" }} />{" "}
                         1800 7200
@@ -40,7 +40,7 @@ const Header = () => {
                         <span className="text-red-500">Giám giá đặc biệt</span>
                     </div>
                 </div>
-                <div className="hidden lg:flex items-center mr-10 space-x-4">
+                <div className="hidden lg:flex items-center mr-10 space-x-3">
                     <EnvironmentOutlined className="text-xl mb-1" />
                     <Favorite />
                     <CartIcon />
@@ -110,7 +110,7 @@ const Header = () => {
                         </Menu.Dropdown>
                     </Menu>
                 </div>
-                <div className="lg-hidden flex space-x-5">
+                <div className="lg-hidden flex space-x-5 mr-5">
                     <div className="block lg-hidden">
                         <Favorite />
                     </div>
@@ -122,11 +122,11 @@ const Header = () => {
             {/* Header2 */}
             <header className=" sticky top-0 space-x-5  bg-white left-0 w-ful z-50 flex items-center">
                 <div
-                    className="container top-0 space-x-5 !py-3 bg-white left-0 w-ful z-[9999] flex items-center"
+                    className="container top-0 space-x-5  !py-1 bg-white left-0 w-ful z-[9999] flex items-center"
                     style={{ zIndex: 999 }}
                 >
-                    <div className="flex items-center">
-                        <div className="md:mr-5 text-5xl lg:hidden">
+                    <div className="flex items-center ml-5 xl:ml-0">
+                        <div className=" mr-2 md:mr-5 text-5xl  lg:hidden">
                             <IconMenu />
                         </div>
                         <div className="w-[150px] h-[60px] flex items-center justify-center md:justify-start">
@@ -233,7 +233,7 @@ const Header = () => {
                         </ul>
                     </div>
 
-                    <div className="pr-5 md:pr-1">
+                    <div className="!mr-3 md:mr-0">
                         <Input
                             type="text"
                             variant="filled"
