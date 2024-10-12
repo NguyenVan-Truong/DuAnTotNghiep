@@ -2,7 +2,7 @@ import ForgotPassword from "@/pages/Auth/ForgotPassword/page";
 import Login from "@/pages/Auth/Login/FormLogin";
 import Auth from "@/pages/Auth/page";
 import Register from "@/pages/Auth/Register/page";
-import ProductCategory from "@/pages/Category/page";
+import ProductCategory from "@/pages/ProductsCategory/page";
 import CheckoutPage from "@/pages/Checkout/page";
 import Home from "@/pages/Home/Home";
 import LayoutWeb from "@/pages/Layout";
