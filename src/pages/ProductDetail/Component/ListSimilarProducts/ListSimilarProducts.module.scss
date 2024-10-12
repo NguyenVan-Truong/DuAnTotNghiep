@@ -1,3 +1,6 @@
+.slick-slider .slick-list {
+    z-index: 1 !important;
+}
 .listProductss {
     padding-bottom: 30px;
 }
@@ -83,25 +86,26 @@
         color: #9f9f9f;
     }
 }
-// ----------Slider
+
 .sliderProductSimilar {
-    .slider-container {
-        .slick-slider {
-            .slick-prev,
-            .slick-next {
-                display: block !important;
-                background-color: red !important;
-            }
-        }
-    }
+    position: relative;
+    z-index: 1;
 }
-.slick-prev,
-.slick-next {
-    display: block !important;
+
+.NextPrev,
+.BackPrev {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
     z-index: 1000;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
+    pointer-events: auto;
     cursor: pointer;
-    background-color: transparent;
+}
+
+.NextPrev {
+    right: 10px;
+}
+
+.BackPrev {
+    left: 10px;
 }

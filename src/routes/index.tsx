@@ -2,12 +2,12 @@ import ForgotPassword from "@/pages/Auth/ForgotPassword/page";
 import Login from "@/pages/Auth/Login/FormLogin";
 import Auth from "@/pages/Auth/page";
 import Register from "@/pages/Auth/Register/page";
+import ProductCategory from "@/pages/Category/page";
 import CheckoutPage from "@/pages/Checkout/page";
-import ChiTietSP from "@/pages/Product/ProductDetail/ProductDetail";
 import Home from "@/pages/Home/Home";
 import LayoutWeb from "@/pages/Layout";
 import PageNotFound from "@/pages/NotFound/page";
-import ProductCategory from "@/pages/Product/Category/page";
+import ChiTietSP from "@/pages/ProductDetail/ProductDetail";
 import ShoppingCart from "@/pages/ShoppingCart/page";
 import { Route, Routes } from "react-router-dom";
 
