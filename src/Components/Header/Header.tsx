@@ -1,13 +1,11 @@
 import { bannerh1 } from "@/assets/img";
 import { EnvironmentOutlined, SearchOutlined } from "@ant-design/icons";
-import { Avatar, Input, Menu, Text, Tooltip } from "@mantine/core";
+import { Avatar, Box, Input, Menu, Text, Tooltip } from "@mantine/core";
 import {
-    IconArrowsLeftRight,
-    IconMessageCircle,
-    IconPhoto,
-    IconSearch,
-    IconSettings,
-    IconTrash,
+    IconHeartSpark,
+    IconLogout,
+    IconShoppingCart,
+    IconUserCircle,
 } from "@tabler/icons-react";
 import { Button, Dropdown } from "antd";
 import { useState } from "react";
@@ -47,42 +45,67 @@ const Header = () => {
                     <Favorite />
                     <CartIcon />
                     <Button className="border-none text-sm">Đăng Nhập</Button>
-                    <Menu shadow="md" width={200} offset={2}>
+                    <Menu
+                        shadow="md"
+                        width={200}
+                        offset={2}
+                        transitionProps={{
+                            transition: "rotate-right",
+                            duration: 150,
+                        }}
+                    >
                         <Menu.Target>
-                            <Tooltip label="Chào , Salazar Troop">
+                            <Tooltip label="Chào , Trường">
                                 <Avatar src={bannerh1} />
                             </Tooltip>
                         </Menu.Target>
                         <Menu.Dropdown>
-                            <Menu.Label>Application</Menu.Label>
-                            <Menu.Item leftSection={<IconSettings />}>
-                                Settings
-                            </Menu.Item>
-                            <Menu.Item leftSection={<IconMessageCircle />}>
-                                Messages
-                            </Menu.Item>
-                            <Menu.Item leftSection={<IconPhoto />}>
-                                Gallery
+                            <Menu.Label>
+                                <Box w={170}>
+                                    <Text truncate="end" size="sm">
+                                        Chào , Nguyễn Văn Trường
+                                    </Text>
+                                </Box>
+                            </Menu.Label>
+                            <Menu.Divider />
+                            <Menu.Item
+                                leftSection={
+                                    <IconUserCircle
+                                        style={{ fontSize: "14px" }}
+                                    />
+                                }
+                                style={{ fontSize: "13px" }}
+                            >
+                                Thông tin của tôi
                             </Menu.Item>
                             <Menu.Item
-                                leftSection={<IconSearch />}
-                                rightSection={
-                                    <Text size="xs" c="dimmed">
-                                        ⌘K
-                                    </Text>
+                                leftSection={
+                                    <IconShoppingCart
+                                        style={{ fontSize: "14px" }}
+                                    />
+                                }
+                                style={{ fontSize: "13px" }}
+                            >
+                                Đơn hàng
+                            </Menu.Item>
+                            <Menu.Item
+                                leftSection={
+                                    <IconHeartSpark
+                                        style={{ fontSize: "14px" }}
+                                    />
+                                }
+                                style={{ fontSize: "13px" }}
+                            >
+                                Sản Phẩm Yêu thích
+                            </Menu.Item>
+                            <Menu.Divider />
+                            <Menu.Item
+                                color="red"
+                                leftSection={
+                                    <IconLogout style={{ fontSize: "14px" }} />
                                 }
                             >
-                                Search
-                            </Menu.Item>
-
-                            <Menu.Divider />
-
-                            <Menu.Label>Danger zone</Menu.Label>
-                            <Menu.Item leftSection={<IconArrowsLeftRight />}>
-                                Transfer my data
-                            </Menu.Item>
-                            <Menu.Item color="red" leftSection={<IconTrash />}>
-                                Delete my account
+                                Đăng xuất
                             </Menu.Item>
                         </Menu.Dropdown>
                     </Menu>
