@@ -16,9 +16,9 @@ const ProfileUser = () => {
             <div className="container !mt-5">
                 <hr />
             </div>
-            <div className="container grid grid-cols-[25%_75%] !mt-6 !pb-5">
-                <div className="w-64 border-2 flex flex-col bg-white">
-                    <div className="flex items-center space-x-2 mx-auto py-2">
+            <div className="container grid grid-cols-1 lg:grid-cols-[25%_75%] !mt-6 !pb-5">
+                <div className="w-64 border-2 hidden lg:block bg-white">
+                    <div className="flex items-center space-x-2 justify-center mx-auto py-2">
                         <Image
                             src={Avatar}
                             radius="xl"
