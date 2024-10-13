@@ -1,13 +1,11 @@
 import { bannerh1 } from "@/assets/img";
 import { EnvironmentOutlined, SearchOutlined } from "@ant-design/icons";
-import { Avatar, Input, Menu, Text, Tooltip } from "@mantine/core";
+import { Avatar, Box, Input, Menu, Text, Tooltip } from "@mantine/core";
 import {
-    IconArrowsLeftRight,
-    IconMessageCircle,
-    IconPhoto,
-    IconSearch,
-    IconSettings,
-    IconTrash,
+    IconHeartSpark,
+    IconLogout,
+    IconShoppingCart,
+    IconUserCircle,
 } from "@tabler/icons-react";
 import { Button, Dropdown } from "antd";
 import { useState } from "react";
@@ -30,8 +28,8 @@ const Header = () => {
     return (
         <>
             {/* Header1 */}
-            <header className="container flex border-b border-gray-100 bg-white justify-between items-center !py-3">
-                <div className="flex flex-row">
+            <header className="container flex border-b border-gray-100 bg-white justify-between items-center !py-3 ">
+                <div className="flex flex-row ml-5 xl:ml-0">
                     <span className="text-black flex flex-row items-center font-bold text-sm">
                         <FiPhone style={{ fontSize: "13px", color: "black" }} />{" "}
                         1800 7200
@@ -42,52 +40,77 @@ const Header = () => {
                         <span className="text-red-500">Giám giá đặc biệt</span>
                     </div>
                 </div>
-                <div className="hidden lg:flex items-center mr-10 space-x-4">
+                <div className="hidden lg:flex items-center mr-10 space-x-3">
                     <EnvironmentOutlined className="text-xl mb-1" />
                     <Favorite />
                     <CartIcon />
                     <Button className="border-none text-sm">Đăng Nhập</Button>
-                    <Menu shadow="md" width={200} offset={2}>
+                    <Menu
+                        shadow="md"
+                        width={200}
+                        offset={2}
+                        transitionProps={{
+                            transition: "rotate-right",
+                            duration: 150,
+                        }}
+                    >
                         <Menu.Target>
-                            <Tooltip label="Chào , Salazar Troop">
+                            <Tooltip label="Chào , Trường">
                                 <Avatar src={bannerh1} />
                             </Tooltip>
                         </Menu.Target>
                         <Menu.Dropdown>
-                            <Menu.Label>Application</Menu.Label>
-                            <Menu.Item leftSection={<IconSettings />}>
-                                Settings
-                            </Menu.Item>
-                            <Menu.Item leftSection={<IconMessageCircle />}>
-                                Messages
-                            </Menu.Item>
-                            <Menu.Item leftSection={<IconPhoto />}>
-                                Gallery
+                            <Menu.Label>
+                                <Box w={170}>
+                                    <Text truncate="end" size="sm">
+                                        Chào , Nguyễn Văn Trường
+                                    </Text>
+                                </Box>
+                            </Menu.Label>
+                            <Menu.Divider />
+                            <Menu.Item
+                                leftSection={
+                                    <IconUserCircle
+                                        style={{ fontSize: "14px" }}
+                                    />
+                                }
+                                style={{ fontSize: "13px" }}
+                            >
+                                Thông tin của tôi
                             </Menu.Item>
                             <Menu.Item
-                                leftSection={<IconSearch />}
-                                rightSection={
-                                    <Text size="xs" c="dimmed">
-                                        ⌘K
-                                    </Text>
+                                leftSection={
+                                    <IconShoppingCart
+                                        style={{ fontSize: "14px" }}
+                                    />
+                                }
+                                style={{ fontSize: "13px" }}
+                            >
+                                Đơn hàng
+                            </Menu.Item>
+                            <Menu.Item
+                                leftSection={
+                                    <IconHeartSpark
+                                        style={{ fontSize: "14px" }}
+                                    />
+                                }
+                                style={{ fontSize: "13px" }}
+                            >
+                                Sản Phẩm Yêu thích
+                            </Menu.Item>
+                            <Menu.Divider />
+                            <Menu.Item
+                                color="red"
+                                leftSection={
+                                    <IconLogout style={{ fontSize: "14px" }} />
                                 }
                             >
-                                Search
-                            </Menu.Item>
-
-                            <Menu.Divider />
-
-                            <Menu.Label>Danger zone</Menu.Label>
-                            <Menu.Item leftSection={<IconArrowsLeftRight />}>
-                                Transfer my data
-                            </Menu.Item>
-                            <Menu.Item color="red" leftSection={<IconTrash />}>
-                                Delete my account
+                                Đăng xuất
                             </Menu.Item>
                         </Menu.Dropdown>
                     </Menu>
                 </div>
-                <div className="lg-hidden flex space-x-5">
+                <div className="lg-hidden flex space-x-5 mr-5">
                     <div className="block lg-hidden">
                         <Favorite />
                     </div>
@@ -99,11 +122,11 @@ const Header = () => {
             {/* Header2 */}
             <header className=" sticky top-0 space-x-5  bg-white left-0 w-ful z-50 flex items-center">
                 <div
-                    className="container top-0 space-x-5 !py-3 bg-white left-0 w-ful z-[9999] flex items-center"
+                    className="container top-0 space-x-5  !py-1 bg-white left-0 w-ful z-[9999] flex items-center"
                     style={{ zIndex: 999 }}
                 >
-                    <div className="flex items-center">
-                        <div className="md:mr-5 text-5xl lg:hidden">
+                    <div className="flex items-center ml-5 xl:ml-0">
+                        <div className=" mr-2 md:mr-5 text-5xl  lg:hidden">
                             <IconMenu />
                         </div>
                         <div className="w-[150px] h-[60px] flex items-center justify-center md:justify-start">
@@ -210,7 +233,7 @@ const Header = () => {
                         </ul>
                     </div>
 
-                    <div className="pr-5 md:pr-1">
+                    <div className="!mr-3 md:mr-0">
                         <Input
                             type="text"
                             variant="filled"
