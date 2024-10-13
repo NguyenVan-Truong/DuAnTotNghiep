@@ -17,7 +17,7 @@ const Footer = () => {
     });
     return (
         <footer>
-            <div>
+            <div className="mt-[20px]">
                 <div className="container">
                     <div className={`${styles.footer__top}`}>
                         <Grid>
@@ -158,7 +158,7 @@ const Footer = () => {
                             </Grid.Col>
                         </Grid>
                     </div>
-                    <div className={styles.footer__middle}>
+                    <div className={`${styles.footer__middle} padding`}>
                         <SliderFooter />
                     </div>
                     <div className={styles.footer__bottom}>
