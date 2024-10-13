@@ -6,7 +6,7 @@ import ListSimilarProducts from "./Component/ListSimilarProducts/ListSimilarProd
 import ProductImageSlider from "./Component/ProductImageSlider/ProductImageSlider";
 import RightProduct from "./Component/RightProduct/RightProduct";
 import "./ProductDetail.scss";
-const ChiTietSP = () => {
+const ProductDetail = () => {
     const [isLiked, setIsLiked] = useState(false);
     const handleLike = () => {
         setIsLiked(!isLiked);
@@ -58,4 +58,4 @@ const ChiTietSP = () => {
     );
 };
 
-export default ChiTietSP;
+export default ProductDetail;

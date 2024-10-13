@@ -1,6 +1,7 @@
 import ListProducts from "@/Components/ListProduct/Listproduct";
-import BannerProduct from "./Component/BannerProduct/BannerProduct";
-import ProductFilter from "./Component/ProductFilter/ProductFilter";
+import ProductFilter from "./ProductFilter/ProductFilter";
+import BannerProduct from "./BannerProduct/BannerProduct";
+
 const ProductCategory = () => {
     return (
         <>

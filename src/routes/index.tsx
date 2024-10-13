@@ -14,6 +14,7 @@ import WishList from "@/pages/ProfileUser/components/Wishlist/WishList";
 import ProfileUser from "@/pages/ProfileUser/pages";
 import ShoppingCart from "@/pages/ShoppingCart/page";
 import { Navigate, Route, Routes } from "react-router-dom";
+import ProductDetail from "@/pages/ProductDetail/ProductDetail";
 
 const Index = () => {
     return (
@@ -24,7 +25,10 @@ const Index = () => {
                     <Route path="san-pham" element={<ProductCategory />} />
                     <Route path="thanh-toan" element={<CheckoutPage />} />
                     <Route path="gio-hang" element={<ShoppingCart />} />
-                    <Route path="chi-tiet-san-pham" element={<ChiTietSP />} />
+                    <Route
+                        path="chi-tiet-san-pham"
+                        element={<ProductDetail />}
+                    />
                     <Route path="/nguoi-dung" element={<ProfileUser />}>
                         <Route
                             index
