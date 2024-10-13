@@ -7,16 +7,19 @@ import "@mantine/core/styles.css";
 import "../src/Styles/global.css";
 
 import { MantineProvider } from "@mantine/core";
+import { ModalsProvider } from "@mantine/modals";
 
 const queryClient = new QueryClient();
 ReactDOM.createRoot(document.getElementById("root")!).render(
     <React.StrictMode>
         <MantineProvider>
-            <QueryClientProvider client={queryClient}>
-                <BrowserRouter>
-                    <App />
-                </BrowserRouter>
-            </QueryClientProvider>
+            <ModalsProvider>
+                <QueryClientProvider client={queryClient}>
+                    <BrowserRouter>
+                        <App />
+                    </BrowserRouter>
+                </QueryClientProvider>
+            </ModalsProvider>
         </MantineProvider>
     </React.StrictMode>,
 );
