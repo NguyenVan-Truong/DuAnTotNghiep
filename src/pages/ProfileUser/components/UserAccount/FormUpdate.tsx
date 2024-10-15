@@ -3,6 +3,7 @@ import { Box, Button, Grid, Group, Radio, TextInput } from "@mantine/core";
 import { modals } from "@mantine/modals";
 import { DateInput } from "@mantine/dates";
 const FormUpdate = () => {
+    const [value, setValue] = useState<Date | null>(null);
     return (
         <Box
             component="form"
@@ -43,7 +44,14 @@ const FormUpdate = () => {
                     </Radio.Group>
                 </Grid.Col>
                 <Grid.Col span={12}>
-                    <DateInput size="xs" label="Ngày sinh" withAsterisk />
+                    {/* <DateInput size="xs" label="Ngày sinh" withAsterisk /> */}
+                    <DateInput
+                        value={value}
+                        onChange={setValue}
+                        label="Date input"
+                        placeholder="Date input"
+                        withAsterisk
+                    />
                 </Grid.Col>
             </Grid>
 

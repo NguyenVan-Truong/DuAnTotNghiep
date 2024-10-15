@@ -1,9 +1,10 @@
-import style from "../ListProduct.module.scss";
-import { Button, Flex, Grid, GridCol, Rating, Tooltip } from "@mantine/core";
 import { ban_an_6_cho1, ban_an_6_cho2, bg_bage } from "@/assets/img";
-import { CiHeart } from "react-icons/ci";
-import { IconHeartCheck, IconHeartFilled } from "@tabler/icons-react";
+import { Button, Flex, Rating, Tooltip } from "@mantine/core";
+import { IconHeartFilled } from "@tabler/icons-react";
 import { useState } from "react";
+import { CiHeart } from "react-icons/ci";
+import style from "../ListProduct.module.scss";
+import { Link } from "react-router-dom";
 const ItemProduct = () => {
     const [tym, setTym] = useState(false);
     const onhandleTymItem = () => {
@@ -85,12 +86,11 @@ const ItemProduct = () => {
                             />
                         </>
                     )}
-
                     <Button
                         variant="light"
                         className={`${style.listProductsButton}`}
                     >
-                        XEM THÊM
+                        <Link to="/chi-tiet-san-pham">XEM THÊM</Link>
                     </Button>
                 </Flex>
             </div>

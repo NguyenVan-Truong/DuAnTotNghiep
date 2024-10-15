@@ -2,6 +2,7 @@ import { Button, Flex, Grid, Text, TextInput } from "@mantine/core";
 import styles from "./Footer.module.scss";
 import { useForm } from "@mantine/form";
 import SliderFooter from "./SliderFooter/SliderFooter";
+import { Link } from "react-router-dom";
 const Footer = () => {
     const form = useForm({
         mode: "uncontrolled",
@@ -35,19 +36,21 @@ const Footer = () => {
                                         <div
                                             className={`w-[142px] ${styles.logoFooter}`}
                                         >
-                                            <Text
-                                                size="lg"
-                                                fw={900}
-                                                variant="gradient"
-                                                gradient={{
-                                                    from: "rgb(43 ,29 ,82,0.94)",
-                                                    to: "rgb(98 ,0 ,255,0.95)",
-                                                    deg: 0,
-                                                }}
-                                                style={{ padding: "5px" }}
-                                            >
-                                                Morden Home
-                                            </Text>
+                                            <Link to="/">
+                                                <Text
+                                                    size="lg"
+                                                    fw={900}
+                                                    variant="gradient"
+                                                    gradient={{
+                                                        from: "rgb(43 ,29 ,82,0.94)",
+                                                        to: "rgb(98 ,0 ,255,0.95)",
+                                                        deg: 0,
+                                                    }}
+                                                    style={{ padding: "5px" }}
+                                                >
+                                                    Morden Home
+                                                </Text>
+                                            </Link>
                                         </div>
                                     </li>
                                     <li
