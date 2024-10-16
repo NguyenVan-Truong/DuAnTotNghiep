@@ -1,9 +1,10 @@
 import { banner, banner_footer, banner_footer1, banner_footer4, BannerBottom2, footer, phong_cach_3 } from '@/assets/img';
 import styles from '../Item_2/GCH_2.module.scss';
 import localstyle from './GCH_3.module.scss';
-import ListProducts from '@/pages/Product/Category/ListProduct/Listproduct';
+
 import { Box, Image, Text } from "@mantine/core";
 import InspirationCorner_1 from '../Item_1/InspirationCorner_1';
+import ListProducts from '@/Components/ListProduct/Listproduct';
 
 
 const InspirationCorner_3 = () => {

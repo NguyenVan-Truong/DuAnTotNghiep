@@ -1,7 +1,8 @@
 import { banner, banner_footer, banner_footer1, banner_footer4, BannerBottom2, footer, phong_cach_3 } from '@/assets/img';
 import styles from './GCH_2.module.scss';
-import ListProducts from '@/pages/Product/Category/ListProduct/Listproduct';
+
 import { Box, Image, Text } from "@mantine/core";
+import ListProducts from '@/Components/ListProduct/Listproduct';
 
 const InspirationCorner_2 = () => {
     return (
