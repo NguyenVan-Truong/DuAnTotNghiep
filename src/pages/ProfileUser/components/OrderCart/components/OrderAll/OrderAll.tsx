@@ -1,5 +1,6 @@
+import { DatePickerInput } from "@mantine/dates";
 import type { TableColumnsType } from "antd";
-import { Table, Input, Button } from "antd";
+import { Button, Input, Table } from "antd";
 import React, { useState } from "react";
 import styles from "./OrderAll.module.scss";
 
@@ -52,7 +53,6 @@ const OrderAll: React.FC = () => {
         setFilteredDataSource(filteredData);
     };
 
-    // Định nghĩa rowSelection
     const rowSelection = {
         onChange: (selectedRowKeys: React.Key[]) => {
             console.log("Selected row keys:", selectedRowKeys);
@@ -66,24 +66,38 @@ const OrderAll: React.FC = () => {
                     marginBottom: 16,
                     display: "flex",
                     justifyContent: "space-between",
+                    marginTop: 10,
                 }}
             >
-                <div>
+                <div className="flex">
                     <Input
                         placeholder="Tìm kiếm theo mã đơn hàng"
                         value={searchText}
                         onChange={(e) => setSearchText(e.target.value)}
-                        style={{ width: 300 }}
+                        style={{ width: 200, marginRight: 5 }}
                     />
-                    <Button onClick={handleSearch}>Tìm kiếm</Button>
+                    <DatePickerInput
+                        clearable
+                        type="range"
+                        placeholder="Tìm theo ngày mua"
+                        style={{ width: 270 }}
+                    />
+                    <Button
+                        onClick={handleSearch}
+                        // className="!py-2"
+                        style={{ height: 35, marginLeft: 5 }}
+                    >
+                        Tìm kiếm
+                    </Button>
                 </div>
-                <div>
-                    <Button>Xem chi tiết</Button>
-                </div>
+
+                <Button style={{ height: 35, marginLeft: 5 }}>
+                    Xem chi tiết
+                </Button>
             </div>
             <Table<DataType>
                 className={styles.customTable}
-                rowSelection={rowSelection} // Sử dụng rowSelection ở đây
+                rowSelection={rowSelection}
                 pagination={{
                     pageSize: 5,
                     showSizeChanger: true,

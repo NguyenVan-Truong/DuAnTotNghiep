@@ -120,9 +120,7 @@ const OrderCart = () => {
                             <OrderAll />
                         </Tabs.Panel>
 
-                        <Tabs.Panel value="messages">
-                            Messages tab content
-                        </Tabs.Panel>
+                        <Tabs.Panel value="messages">123</Tabs.Panel>
 
                         <Tabs.Panel value="settings">
                             Settings tab content
