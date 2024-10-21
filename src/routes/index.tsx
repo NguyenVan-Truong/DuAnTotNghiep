@@ -6,11 +6,8 @@ import CheckoutPage from "@/pages/Checkout/page";
 import Home from "@/pages/Home/Home";
 import InspirationCorner from "@/pages/InspirationCorner/InspirationCorner";
 import Introduce from "@/pages/Introduce/Introduce";
-
 import LayoutWeb from "@/pages/Layout";
 import PageNotFound from "@/pages/NotFound/page";
-import ChiTietSP from "@/pages/ProductDetail/ProductDetail";
-
 import ProductDetail from "@/pages/ProductDetail/ProductDetail";
 import ProductCategory from "@/pages/ProductsCategory/page";
 import OrderCart from "@/pages/ProfileUser/components/OrderCart/OrderCart";
@@ -34,7 +31,7 @@ const Index = () => {
                     <Route path="san-pham" element={<ProductCategory />} />
                     <Route path="thanh-toan" element={<CheckoutPage />} />
                     <Route path="gio-hang" element={<ShoppingCart />} />
-                    <Route path="san-pham" element={<ChiTietSP />} />
+                    <Route path="san-pham" element={<ProductDetail />} />
                     <Route path="gioi-thieu" element={<Introduce />} />
                     <Route path="gch" element={<InspirationCorner />} />
                     <Route
