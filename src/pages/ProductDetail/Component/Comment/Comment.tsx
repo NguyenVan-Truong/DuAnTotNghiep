@@ -2,6 +2,9 @@ import { Box, Button, Flex, Progress, Rating, Textarea } from "@mantine/core";
 // import CommentRating from "./CommentRating/CommentRating";
 import "./Comment.scss";
 const CommentProductDetail = () => {
+    const handleRatingChange = (value: number | string) => {
+        console.log("Rating changed to: ", value);
+    };
     return (
         <div className="rating-container">
             <Flex direction="column" gap="md">
@@ -22,6 +25,7 @@ const CommentProductDetail = () => {
                                 <Rating
                                     defaultValue={5}
                                     size="md"
+                                    readOnly
                                     className="average-icon"
                                 />
                             </div>
@@ -31,12 +35,16 @@ const CommentProductDetail = () => {
                             direction="row"
                             className="rating-summary-breakdown"
                         >
-                            <div className="rating-summary-breakdown-item">
+                            <div
+                                className="rating-summary-breakdown-item"
+                                onClick={() => handleRatingChange("all")}
+                            >
                                 Tất cả
                             </div>
                             <Flex
                                 direction="row"
                                 className="rating-summary-breakdown-item"
+                                onClick={() => handleRatingChange(5)}
                             >
                                 5{" "}
                                 <Rating defaultValue={2} size="sm" count={1} />
@@ -44,36 +52,33 @@ const CommentProductDetail = () => {
                             <Flex
                                 direction="row"
                                 className="rating-summary-breakdown-item"
+                                onClick={() => handleRatingChange(4)}
                             >
-                                5{" "}
+                                4{" "}
                                 <Rating defaultValue={2} size="sm" count={1} />
                             </Flex>
                             <Flex
                                 direction="row"
                                 className="rating-summary-breakdown-item"
+                                onClick={() => handleRatingChange(3)}
                             >
-                                5{" "}
+                                3{" "}
                                 <Rating defaultValue={2} size="sm" count={1} />
                             </Flex>
                             <Flex
                                 direction="row"
                                 className="rating-summary-breakdown-item"
+                                onClick={() => handleRatingChange(2)}
                             >
-                                5{" "}
+                                2{" "}
                                 <Rating defaultValue={2} size="sm" count={1} />
                             </Flex>
                             <Flex
                                 direction="row"
                                 className="rating-summary-breakdown-item"
+                                onClick={() => handleRatingChange(1)}
                             >
-                                5{" "}
-                                <Rating defaultValue={2} size="sm" count={1} />
-                            </Flex>
-                            <Flex
-                                direction="row"
-                                className="rating-summary-breakdown-item"
-                            >
-                                5{" "}
+                                1{" "}
                                 <Rating defaultValue={2} size="sm" count={1} />
                             </Flex>
                         </Flex>

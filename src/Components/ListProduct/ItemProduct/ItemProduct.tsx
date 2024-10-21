@@ -19,11 +19,11 @@ const ItemProduct = () => {
                         alt="Armchair Doultoun vintage"
                         className={`${style.listProductsImage} ${style.listProductsImagePrimary}`}
                     />
-                    <img
+                    {/* <img
                         src={ban_an_6_cho2}
                         alt="Armchair Doultoun vintage"
                         className={`${style.listProductsImage} ${style.listProductsImageSecondary}`}
-                    />
+                    /> */}
                 </div>
                 <Flex
                     direction="row"
@@ -83,15 +83,21 @@ const ItemProduct = () => {
                             <CiHeart
                                 className={`${style.listProductsFavoriteIcon} text-[24px]`}
                                 onClick={() => onhandleTymItem()}
+                                style={{ cursor: "pointer" }}
                             />
                         </>
                     )}
-                    <Button
-                        variant="light"
-                        className={`${style.listProductsButton}`}
+                    <Link
+                        to="/chi-tiet-san-pham"
+                        className={`${style.LinkButtonWrapper}`}    
                     >
-                        <Link to="/chi-tiet-san-pham">XEM THÊM</Link>
-                    </Button>
+                        <Button
+                            variant="light"
+                            className={`${style.listProductsButton}`}
+                        >
+                            XEM THÊM
+                        </Button>
+                    </Link>
                 </Flex>
             </div>
             <div className={style.promotionTags}>
