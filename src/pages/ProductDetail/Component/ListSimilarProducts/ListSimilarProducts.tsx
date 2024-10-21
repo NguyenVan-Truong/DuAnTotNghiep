@@ -57,8 +57,8 @@ const ListSimilarProducts = () => {
                     color="#4A4947"
                     style={{
                         position: "absolute",
-                        backgroundColor: "#ebebeb",
-                        width: "19px",
+                        backgroundColor: "#F4F6FF",
+                        width: "29px",
                         height: "60px",
                         right: "-10px",
                         top: "-38px",
@@ -76,8 +76,8 @@ const ListSimilarProducts = () => {
                     color="#4A4947"
                     style={{
                         position: "absolute",
-                        backgroundColor: "#ebebeb",
-                        width: "19px",
+                        backgroundColor: "#F4F6FF",
+                        width: "29px",
                         height: "60px",
                         top: "-38px",
                         left: "-10px",
