@@ -17,10 +17,30 @@ const SliderFooter = () => {
         slidesToShow: 6,
         slidesToScroll: 1,
         autoplay: true,
-        speed: 3000,
-        autoplaySpeed: 3000,
+        speed: 6000,
+        autoplaySpeed: 6000,
         cssEase: "linear",
         arrows: false,
+        responsive: [
+            {
+                breakpoint: 980,
+                settings: {
+                    slidesToShow: 5,
+                },
+            },
+            {
+                breakpoint: 780,
+                settings: {
+                    slidesToShow: 4,
+                },
+            },
+            {
+                breakpoint: 560,
+                settings: {
+                    slidesToShow: 3,
+                },
+            },
+        ],
     };
     return (
         <div className="container">
