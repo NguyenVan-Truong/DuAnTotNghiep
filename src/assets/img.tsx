@@ -27,6 +27,18 @@ import BannerBottom2 from "@/assets/Images/BannerBottom2.png";
 import logo from "@/assets/Images/logo1.jpg";
 import bannerh1 from "@/assets/Images/Bannerh1.png";
 import BannerBottom3 from "@/assets/Images/BannerBottom3.png";
+import giuong_ngu_May_1 from "@/assets/Images/giuong_ngu_May_1.jpg";
+import giuong_ngu_May_2 from "@/assets/Images/giuong_ngu_May_2.jpg";
+import duong_dai_5_new from "@/assets/Images/duong_dai_5_new.jpg";
+import duong_dai_6 from "@/assets/Images/duong_dai_6.jpg";
+import phong_cach_3 from "@/assets/Images/phong_cach_3.jpg";
+import nang_dong_2 from "@/assets/Images/nang_dong_2.jpg";
+import ghe_ngoi_lam_viec_phu_hop_6 from "@/assets/Images/ghe_ngoi_lam_viec_phu_hop_6.jpg";
+import ghe_ngoi_lam_viec_phu_hop from "@/assets/Images/ghe_ngoi_lam_viec_phu_hop.jpg";
+import ghe_ngoi_lam_viec_phu_hop_1 from "@/assets/Images/ghe_ngoi_lam_viec_phu_hop_1.jpg";
+import ghe_ngoi_lam_viec_phu_hop_2 from "@/assets/Images/ghe_ngoi_lam_viec_phu_hop_2.jpg";
+import ghe_ngoi_lam_viec_phu_hop_3 from "@/assets/Images/ghe_ngoi_lam_viec_phu_hop_3.jpg";
+import ghe_ngoi_lam_viec_phu_hop_4 from "@/assets/Images/ghe_ngoi_lam_viec_phu_hop_4.jpg";
 import Avatar from "@/assets/Images/avatar.jpg";
 export {
     ban_nuoc_dura,
@@ -58,5 +70,17 @@ export {
     BannerBottom2,
     bannerh1,
     BannerBottom3,
+    giuong_ngu_May_1,
+    giuong_ngu_May_2,
+    duong_dai_5_new,
+    duong_dai_6,
+    phong_cach_3,
+    nang_dong_2,
+    ghe_ngoi_lam_viec_phu_hop_6,
+    ghe_ngoi_lam_viec_phu_hop,
+    ghe_ngoi_lam_viec_phu_hop_1,
+    ghe_ngoi_lam_viec_phu_hop_2,
+    ghe_ngoi_lam_viec_phu_hop_3,
+    ghe_ngoi_lam_viec_phu_hop_4,
     Avatar,
 };
