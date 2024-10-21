@@ -5,6 +5,7 @@ import Register from "@/pages/Auth/Register/page";
 import ProductCategory from "@/pages/Category/page";
 import CheckoutPage from "@/pages/Checkout/page";
 import Home from "@/pages/Home/Home";
+import InspirationCorner from "@/pages/InspirationCorner/InspirationCorner";
 import Introduce from "@/pages/Introduce/Introduce";
 
 import LayoutWeb from "@/pages/Layout";
@@ -25,6 +26,7 @@ const Index = () => {
                     <Route path="gio-hang" element={<ShoppingCart />} />
                     <Route path="san-pham" element={<ChiTietSP />} />
                     <Route path="gioi-thieu" element={<Introduce />} />
+                    <Route path="gch" element={<InspirationCorner />} />
                 </Route>
                 <Route path="/xac-thuc" element={<Auth />}>
                     <Route path="dang-nhap" element={<Login />} />

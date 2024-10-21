@@ -1,4 +1,4 @@
-import { giuong_ngu_May } from '@/assets/img';
+import { duong_dai_5_new, duong_dai_6 } from '@/assets/img';
 import styles from './StoryNew.module.scss';
 
 const StoryNew = () => {
@@ -7,7 +7,7 @@ const StoryNew = () => {
             <h1 className={styles.pageTitle}>CHUYỆN NHÀ XINH</h1>
             <div className={styles.newsContainer}>
                 <div className={styles.newsItem}>
-                    <img src={giuong_ngu_May} alt="Cùng LG và AKA" className={styles.newsImage} />
+                    <img src={duong_dai_5_new} alt="Cùng LG và AKA" className={styles.newsImage} />
                     <div className={styles.newsDetails}>
                         <div className={styles.newsDate}>15 Jul</div>
                         <h2 className={styles.newsTitle}>Cùng LG VÀ AKA “Nâng tầm không gian – Sống sang đẳng cấp”</h2>
@@ -17,7 +17,7 @@ const StoryNew = () => {
                     </div>
                 </div>
                 <div className={styles.newsItem}>
-                    <img src={giuong_ngu_May} alt="Tập đoàn AA Corporation" className={styles.newsImage} />
+                    <img src={duong_dai_6} alt="Tập đoàn AA Corporation" className={styles.newsImage} />
                     <div className={styles.newsDetails}>
                         <div className={styles.newsDate}>11 Jun</div>
                         <h2 className={styles.newsTitle}>Tập đoàn AA Corporation Gây Ấn Tượng Tại INDEX Dubai 2024</h2>
@@ -27,7 +27,7 @@ const StoryNew = () => {
                     </div>
                 </div>
                 <div className={styles.newsItem}>
-                    <img src={giuong_ngu_May} alt="Bàn làm việc Wing" className={styles.newsImage} />
+                    <img src={duong_dai_5_new} alt="Bàn làm việc Wing" className={styles.newsImage} />
                     <div className={styles.newsDetails}>
                         <div className={styles.newsDate}>16 Apr</div>
                         <h2 className={styles.newsTitle}>Bàn làm việc Wing tại Milan Design Week 2024</h2>
