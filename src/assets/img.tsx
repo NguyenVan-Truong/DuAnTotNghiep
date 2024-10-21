@@ -39,6 +39,7 @@ import ghe_ngoi_lam_viec_phu_hop_1 from "@/assets/Images/ghe_ngoi_lam_viec_phu_h
 import ghe_ngoi_lam_viec_phu_hop_2 from "@/assets/Images/ghe_ngoi_lam_viec_phu_hop_2.jpg";
 import ghe_ngoi_lam_viec_phu_hop_3 from "@/assets/Images/ghe_ngoi_lam_viec_phu_hop_3.jpg";
 import ghe_ngoi_lam_viec_phu_hop_4 from "@/assets/Images/ghe_ngoi_lam_viec_phu_hop_4.jpg";
+import Avatar from "@/assets/Images/avatar.jpg";
 export {
     ban_nuoc_dura,
     ban_nuoc_dura_1,
@@ -81,4 +82,5 @@ export {
     ghe_ngoi_lam_viec_phu_hop_2,
     ghe_ngoi_lam_viec_phu_hop_3,
     ghe_ngoi_lam_viec_phu_hop_4,
+    Avatar,
 };

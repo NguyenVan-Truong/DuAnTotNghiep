@@ -5,19 +5,32 @@ import {
     IconTableSpark,
     IconTir,
 } from "@tabler/icons-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "../../ProductDetail.scss";
+import { NotificationExtension } from "@/extension/NotificationExtension";
 
 const RightProduct = () => {
-    // count
     const [quantity, setQuantity] = useState(1);
+    const [value, setValue] = useState({
+        a: "",
+        b: "",
+    });
     const increaseQuantity = () => {
-        setQuantity(quantity + 1);
+        if (quantity < 5) {
+            setQuantity(quantity + 1);
+        } else {
+            console.log("không được vượt 5");
+            NotificationExtension.Fails("Không được vượt quá 5 sản phẩm");
+        }
     };
     const decreaseQuantity = () => {
         if (quantity > 1) {
             setQuantity(quantity - 1);
         }
+    };
+
+    const handleChangeSearchValue = (value: string, key: string) => {
+        setValue((prevData) => ({ ...prevData, [key]: value }));
     };
     return (
         <div className="product-details">
@@ -61,40 +74,56 @@ const RightProduct = () => {
                 <div>
                     <h4>Chất liệu</h4>
                     <Flex direction="row" gap="lg">
-                        <Indicator
-                            style={{
-                                zIndex: 10,
-                            }}
-                            withBorder
-                            processing
-                        >
-                            <Badge
-                                variant="default"
-                                color="rgba(5, 5, 5, 1)"
-                                radius="xs"
-                                size="lg"
-                            >
-                                Gỗ-kim loại
-                            </Badge>
-                        </Indicator>
-                    </Flex>
-                </div>
-                <div>
-                    <h4>Màu sắc</h4>
-                    <Flex direction="row" gap="lg">
                         <Badge
                             variant="default"
                             color="rgba(5, 5, 5, 1)"
                             radius="xs"
                             size="lg"
                         >
-                            Màu gỗ tự nhiên
+                            Gỗ-kim loại
                         </Badge>{" "}
                         <Badge
                             variant="default"
                             color="rgba(5, 5, 5, 1)"
                             radius="xs"
                             size="lg"
+                        >
+                            Gỗ-Nhôm
+                        </Badge>
+                    </Flex>
+                </div>
+                <div>
+                    <h4>Màu sắc</h4>
+                    <Flex direction="row" gap="lg">
+                        <Badge
+                            radius="xs"
+                            size="lg"
+                            color={
+                                value?.a === "go"
+                                    ? "rgba(0, 17, 94, 1)"
+                                    : "rgba(5, 5, 5, 1)"
+                            }
+                            variant={value?.a === "go" ? "filled" : "default"}
+                            onClick={() => handleChangeSearchValue("go", "a")}
+                            style={{ cursor: "pointer" }}
+                        >
+                            Màu gỗ tự nhiên
+                        </Badge>{" "}
+                        <Badge
+                            variant={
+                                value?.a === "gonau" ? "filled" : "default"
+                            }
+                            color={
+                                value?.a === "gonau"
+                                    ? "rgba(0, 17, 94, 1)"
+                                    : "rgba(5, 5, 5, 1)"
+                            }
+                            radius="xs"
+                            size="lg"
+                            onClick={() =>
+                                handleChangeSearchValue("gonau", "a")
+                            }
+                            style={{ cursor: "pointer" }}
                         >
                             Màu nâu
                         </Badge>

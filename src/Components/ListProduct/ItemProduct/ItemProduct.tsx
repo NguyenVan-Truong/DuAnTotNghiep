@@ -1,9 +1,10 @@
-import style from "../ListProduct.module.scss";
-import { Button, Flex, Grid, GridCol, Rating, Tooltip } from "@mantine/core";
 import { ban_an_6_cho1, ban_an_6_cho2, bg_bage } from "@/assets/img";
-import { CiHeart } from "react-icons/ci";
-import { IconHeartCheck, IconHeartFilled } from "@tabler/icons-react";
+import { Button, Flex, Rating, Tooltip } from "@mantine/core";
+import { IconHeartFilled } from "@tabler/icons-react";
 import { useState } from "react";
+import { CiHeart } from "react-icons/ci";
+import style from "../ListProduct.module.scss";
+import { Link } from "react-router-dom";
 const ItemProduct = () => {
     const [tym, setTym] = useState(false);
     const onhandleTymItem = () => {
@@ -18,11 +19,11 @@ const ItemProduct = () => {
                         alt="Armchair Doultoun vintage"
                         className={`${style.listProductsImage} ${style.listProductsImagePrimary}`}
                     />
-                    <img
+                    {/* <img
                         src={ban_an_6_cho2}
                         alt="Armchair Doultoun vintage"
                         className={`${style.listProductsImage} ${style.listProductsImageSecondary}`}
-                    />
+                    /> */}
                 </div>
                 <Flex
                     direction="row"
@@ -82,16 +83,21 @@ const ItemProduct = () => {
                             <CiHeart
                                 className={`${style.listProductsFavoriteIcon} text-[24px]`}
                                 onClick={() => onhandleTymItem()}
+                                style={{ cursor: "pointer" }}
                             />
                         </>
                     )}
-
-                    <Button
-                        variant="light"
-                        className={`${style.listProductsButton}`}
+                    <Link
+                        to="/chi-tiet-san-pham"
+                        className={`${style.LinkButtonWrapper}`}    
                     >
-                        XEM THÊM
-                    </Button>
+                        <Button
+                            variant="light"
+                            className={`${style.listProductsButton}`}
+                        >
+                            XEM THÊM
+                        </Button>
+                    </Link>
                 </Flex>
             </div>
             <div className={style.promotionTags}>

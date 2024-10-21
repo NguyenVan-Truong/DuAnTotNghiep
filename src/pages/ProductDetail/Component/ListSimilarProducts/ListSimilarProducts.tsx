@@ -38,7 +38,7 @@ const ListSimilarProducts = () => {
 
     return (
         <div
-            className={style.sliderProductSimilar}
+            className={`${style.sliderProductSimilar}`}
             style={{ position: "relative", zIndex: 3 }}
         >
             <Slider ref={sliderRef} {...settings}>
@@ -57,12 +57,12 @@ const ListSimilarProducts = () => {
                     color="#4A4947"
                     style={{
                         position: "absolute",
-                        backgroundColor: "#ebebeb",
-                        width: "19px",
+                        backgroundColor: "#F4F6FF",
+                        width: "29px",
                         height: "60px",
-                        right: "0px",
+                        right: "-10px",
                         top: "-38px",
-                        borderRadius: "0 12px 12px 0",
+                        borderRadius: " 12px 0 0 12px ",
                         zIndex: 9999,
                     }}
                 />
@@ -76,12 +76,12 @@ const ListSimilarProducts = () => {
                     color="#4A4947"
                     style={{
                         position: "absolute",
-                        backgroundColor: "#ebebeb",
-                        width: "19px",
+                        backgroundColor: "#F4F6FF",
+                        width: "29px",
                         height: "60px",
                         top: "-38px",
-                        left: "0px",
-                        borderRadius: "12px 0 0 12px",
+                        left: "-10px",
+                        borderRadius: "0 12px 12px 0",
                         zIndex: 9999,
                     }}
                 />
