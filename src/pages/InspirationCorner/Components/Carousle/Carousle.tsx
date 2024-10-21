@@ -3,7 +3,7 @@ import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import { banner_footer, banner_footer1 } from "@/assets/img";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import styles from "./Carousle.module.scss"; // Import SCSS file
+import styles from "./Carousle.module.scss";
 
 
 // Custom next arrow using FiChevronRight

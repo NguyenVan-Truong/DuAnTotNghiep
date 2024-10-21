@@ -4,6 +4,7 @@ $secondary-color: #ffffff; // Màu nền cho khung
 $hover-color: #f0f0f0; // Màu nền hover
 $text-color: #333; // Màu chữ
 $shadow-color: rgba(0, 0, 0, 0.1); // Màu đổ bóng
+$slide-height: 350px; // Chiều cao cố định cho slide
 
 .list-products-slider {
     margin: 20px auto; // Căn giữa slider
@@ -23,6 +24,7 @@ $shadow-color: rgba(0, 0, 0, 0.1); // Màu đổ bóng
         box-shadow: 0 4px 12px $shadow-color; // Đổ bóng cho khung
         overflow: hidden; // Ẩn phần nội dung tràn ra ngoài
         transition: transform 0.3s ease, box-shadow 0.3s ease; // Hiệu ứng khi hover
+        height: $slide-height; // Thiết lập chiều cao cố định cho slide
 
         &:hover {
             transform: scale(1.05); // Phóng to khi hover
@@ -31,7 +33,8 @@ $shadow-color: rgba(0, 0, 0, 0.1); // Màu đổ bóng
 
         img {
             width: 100%; // Đảm bảo hình ảnh đầy đủ chiều rộng
-            height: auto; // Giữ tỉ lệ cho hình ảnh
+            height: 70%; // Giữ tỉ lệ cho hình ảnh
+            object-fit: cover; // Cắt hình ảnh để giữ tỉ lệ
             border-bottom: 4px solid $primary-color; // Đường viền dưới cho hình ảnh
         }
 

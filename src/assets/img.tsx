@@ -33,6 +33,12 @@ import duong_dai_5_new from "@/assets/Images/duong_dai_5_new.jpg";
 import duong_dai_6 from "@/assets/Images/duong_dai_6.jpg";
 import phong_cach_3 from "@/assets/Images/phong_cach_3.jpg";
 import nang_dong_2 from "@/assets/Images/nang_dong_2.jpg";
+import ghe_ngoi_lam_viec_phu_hop_6 from "@/assets/Images/ghe_ngoi_lam_viec_phu_hop_6.jpg";
+import ghe_ngoi_lam_viec_phu_hop from "@/assets/Images/ghe_ngoi_lam_viec_phu_hop.jpg";
+import ghe_ngoi_lam_viec_phu_hop_1 from "@/assets/Images/ghe_ngoi_lam_viec_phu_hop_1.jpg";
+import ghe_ngoi_lam_viec_phu_hop_2 from "@/assets/Images/ghe_ngoi_lam_viec_phu_hop_2.jpg";
+import ghe_ngoi_lam_viec_phu_hop_3 from "@/assets/Images/ghe_ngoi_lam_viec_phu_hop_3.jpg";
+import ghe_ngoi_lam_viec_phu_hop_4 from "@/assets/Images/ghe_ngoi_lam_viec_phu_hop_4.jpg";
 export {
     ban_nuoc_dura,
     ban_nuoc_dura_1,
@@ -69,4 +75,10 @@ export {
     duong_dai_6,
     phong_cach_3,
     nang_dong_2,
+    ghe_ngoi_lam_viec_phu_hop_6,
+    ghe_ngoi_lam_viec_phu_hop,
+    ghe_ngoi_lam_viec_phu_hop_1,
+    ghe_ngoi_lam_viec_phu_hop_2,
+    ghe_ngoi_lam_viec_phu_hop_3,
+    ghe_ngoi_lam_viec_phu_hop_4,
 };
