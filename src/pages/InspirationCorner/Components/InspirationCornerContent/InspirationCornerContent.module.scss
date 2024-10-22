@@ -41,23 +41,44 @@
     }
   }
   
-  @media (max-width: 768px) {
-    .imageWrapper {
-      width: 100%;  /* Trên thiết bị nhỏ hơn 768px, hình ảnh chiếm toàn bộ chiều rộng */
-    }
+  @media (max-width: 1200px) {
   
     .textContainer {
       h3 {
-        font-size: 1rem;
+        font-size: 1.1rem !important;
       }
   
       p {
-        font-size: 0.9rem;
+        font-size: 1rem !important;
+      }
+    }
+  }
+  @media (max-width: 1000px) {
+  
+    .textContainer {
+      h3 {
+        font-size: 1rem !important;
+      }
+  
+      p {
+        font-size: 0.9rem !important;
+      }
+    }
+  }
+  @media (max-width: 800px) {
+  
+    .textContainer {
+      h3 {
+        font-size: 0.9rem !important;
+      }
+  
+      p {
+        font-size: 0.8rem !important;
       }
     }
   }
   
-  @media (max-width: 500px) {
+  @media (max-width: 640px) {
     .showcaseContainer {
       margin: 10px;
     }
@@ -80,11 +101,11 @@
   
     .textContainer {
       h3 {
-        font-size: 0.9rem;
+        font-size: 0.8rem !important;
       }
   
       p {
-        font-size: 0.8rem;
+        font-size: 0.7rem !important;
       }
     }
   }
