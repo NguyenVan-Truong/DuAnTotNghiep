@@ -76,7 +76,9 @@ const Header = () => {
                                 }
                                 style={{ fontSize: "13px" }}
                             >
-                                Thông tin của tôi
+                                <Link to={"/nguoi-dung/thong-tin-tai-khoan"}>
+                                    Thông tin của tôi
+                                </Link>
                             </Menu.Item>
                             <Menu.Item
                                 leftSection={
@@ -86,7 +88,9 @@ const Header = () => {
                                 }
                                 style={{ fontSize: "13px" }}
                             >
-                                Đơn hàng
+                                <Link to={"/nguoi-dung/don-hang"}>
+                                    Đơn hàng
+                                </Link>
                             </Menu.Item>
                             <Menu.Item
                                 leftSection={
@@ -96,7 +100,9 @@ const Header = () => {
                                 }
                                 style={{ fontSize: "13px" }}
                             >
-                                Sản Phẩm Yêu thích
+                                <Link to={"/nguoi-dung/san-pham-yeu-thich"}>
+                                    Sản Phẩm Yêu thích
+                                </Link>
                             </Menu.Item>
                             <Menu.Divider />
                             <Menu.Item
