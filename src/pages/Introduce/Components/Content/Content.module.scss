@@ -32,12 +32,13 @@
 
     .imageSection {
         flex: 1; /* Chiếm 50% chiều rộng */
-        padding-right: 20px;
-
+        
         .image {
-            width: 100%;
-            height: auto;
-            object-fit: cover;
+            width: 100%; /* Đảm bảo hình ảnh chiếm 100% chiều rộng */
+            height: auto; /* Đặt chiều cao tự động để duy trì tỉ lệ */
+            min-height: 300px; /* Thiết lập chiều cao tối thiểu cho hình ảnh */
+            object-fit: cover; /* Đảm bảo hình ảnh không bị méo */
+            max-width: 100%; /* Đảm bảo hình ảnh không vượt quá chiều rộng của container */
         }
     }
 
@@ -59,41 +60,27 @@
     }
 }
 
-/* Responsive styles */
-@media (max-width: 768px) {
+/* Media query cho màn hình nhỏ hơn 550px */
+@media (max-width: 550px) {
+    .content {
+        padding: 10px; /* Giảm padding cho content */
+    }
+
     .historyContainer,
     .founderContainer,
     .valuesContainer {
         flex-direction: column; /* Đổi thành cột khi màn hình nhỏ */
-        align-items: flex-start; /* Căn lề trái cho phần tử */
     }
 
     .imageSection {
-        padding-right: 0; /* Bỏ padding phải */
-        margin-bottom: 20px; /* Thêm margin dưới cho khoảng cách */
-    }
-
-    .textSection {
-        padding-left: 0; /* Bỏ padding trái */
-        /* Giữ căn lề trái cho nội dung văn bản */
-    }
-
-    h2 {
-        font-size: 24px; /* Giảm kích thước font cho h2 */
-    }
-
-    p {
-        font-size: 14px; /* Giảm kích thước font cho paragraph */
-    }
-}
-
-@media (max-width: 480px) {
-    .content {
-        padding: 20px; /* Giảm padding cho content */
+        .image {
+            min-height: 200px; /* Đặt chiều cao tối thiểu cho hình ảnh */
+        }
     }
 
     h2 {
         font-size: 20px; /* Giảm kích thước font cho h2 */
+        margin-top: 30px;
     }
 
     p {
