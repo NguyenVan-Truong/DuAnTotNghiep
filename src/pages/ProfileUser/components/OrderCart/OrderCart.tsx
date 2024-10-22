@@ -1,37 +1,32 @@
-import { sanpham1 } from "@/assets/img";
-import {
-    Image,
-    Menu,
-    Tabs,
-    Text,
-    Grid,
-    Card,
-    Badge,
-    Button,
-    Flex,
-} from "@mantine/core";
+import { Menu, Tabs, Text } from "@mantine/core";
 import {
     IconCards,
+    IconClipboardList,
     IconDoorExit,
     IconHeart,
+    IconLoader,
     IconMapPin,
     IconMenuDeep,
-    IconMessageCircle,
-    IconPhoto,
-    IconSettings,
+    IconShieldCheck,
     IconShoppingCart,
+    IconTruckDelivery,
+    IconTruckReturn,
     IconUser,
 } from "@tabler/icons-react";
 import OrderAll from "./components/OrderAll/OrderAll";
+import OrderLoader from "./components/OrderLoader/OrderLoader";
+import OrderShipping from "./components/OrderShipping/OrderShipping";
+import OrderSucces from "./components/OrderSuccess/OrderSucces";
+import OrderBack from "./components/OrderBack/OrderBack";
 
 const OrderCart = () => {
-    const iconStyle = { width: 12, height: 12 };
+    const iconStyle = { width: 15, height: 15 };
     return (
         <div className="bg-white !pb-6">
             <div className="px-10 py-2">
                 <div className="flex items-center justify-between my-5">
                     <div>
-                        <Text size="lg">Đơn hàng của tôi</Text>
+                        <Text size="xl">Đơn hàng của tôi</Text>
                     </div>
                     <div className="block lg:hidden">
                         <Menu position="bottom-end" shadow="md" width={230}>
@@ -80,56 +75,69 @@ const OrderCart = () => {
                     </div>
                 </div>
                 <div>
-                    <Tabs defaultValue="gallery">
+                    <Tabs defaultValue="orderAll">
                         <Tabs.List>
                             <Tabs.Tab
-                                value="gallery"
-                                leftSection={<IconPhoto style={iconStyle} />}
+                                value="orderAll"
+                                leftSection={
+                                    <IconClipboardList style={iconStyle} />
+                                }
+                                style={{ fontSize: "16px" }} // Tăng cỡ chữ tại đây
                             >
                                 Tất cả đơn hàng
                             </Tabs.Tab>
                             <Tabs.Tab
-                                value="messages"
-                                leftSection={
-                                    <IconMessageCircle style={iconStyle} />
-                                }
+                                value="orderLoader"
+                                leftSection={<IconLoader style={iconStyle} />}
+                                style={{ fontSize: "16px" }} // Tăng cỡ chữ tại đây
                             >
                                 Đang xử lý
                             </Tabs.Tab>
                             <Tabs.Tab
-                                value="settings"
-                                leftSection={<IconSettings style={iconStyle} />}
+                                value="orderShipping"
+                                leftSection={
+                                    <IconTruckDelivery style={iconStyle} />
+                                }
+                                style={{ fontSize: "16px" }} // Tăng cỡ chữ tại đây
                             >
                                 Đang giao
                             </Tabs.Tab>
                             <Tabs.Tab
-                                value="settings1"
-                                leftSection={<IconSettings style={iconStyle} />}
+                                value="orderDone"
+                                leftSection={
+                                    <IconShieldCheck style={iconStyle} />
+                                }
+                                style={{ fontSize: "16px" }} // Tăng cỡ chữ tại đây
                             >
                                 Đã hoàn thành
                             </Tabs.Tab>
                             <Tabs.Tab
-                                value="settings2"
-                                leftSection={<IconSettings style={iconStyle} />}
+                                value="orderReturn"
+                                leftSection={
+                                    <IconTruckReturn style={iconStyle} />
+                                }
+                                style={{ fontSize: "16px" }} // Tăng cỡ chữ tại đây
                             >
                                 Trả lại
                             </Tabs.Tab>
                         </Tabs.List>
                         {/* noi dung */}
-                        <Tabs.Panel value="gallery">
+                        <Tabs.Panel value="orderAll">
                             <OrderAll />
                         </Tabs.Panel>
 
-                        <Tabs.Panel value="messages">123</Tabs.Panel>
+                        <Tabs.Panel value="orderLoader">
+                            <OrderLoader />
+                        </Tabs.Panel>
 
-                        <Tabs.Panel value="settings">
-                            Settings tab content
+                        <Tabs.Panel value="orderShipping">
+                            <OrderShipping />
                         </Tabs.Panel>
-                        <Tabs.Panel value="settings1">
-                            Settings tab content
+                        <Tabs.Panel value="orderDone">
+                            <OrderSucces />
                         </Tabs.Panel>
-                        <Tabs.Panel value="settings2">
-                            Settings tab content
+                        <Tabs.Panel value="orderReturn">
+                            <OrderBack />
                         </Tabs.Panel>
                     </Tabs>
                 </div>
