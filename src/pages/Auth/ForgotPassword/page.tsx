@@ -54,7 +54,7 @@ const ForgotPassword = () => {
                     withAsterisk
                     size="md"
                     radius="md"
-                    label="Tài khoản"
+                    label="Email"
                     placeholder="Mời bạn nhập email"
                     leftSection={<FaAt />}
                     {...form.getInputProps("email")}

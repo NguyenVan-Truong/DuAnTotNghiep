@@ -29,13 +29,14 @@ const Register = () => {
             email: "",
             password: "",
             confirmPassword: "",
-            name: "",
+            userName: "",
         },
 
         validate: {
-            name: (value) => {
-                if (!value) return "Tên không được để trống";
-                if (value.length < 2) return "Tên phải có ít nhất 2 ký tự";
+            userName: (value) => {
+                if (!value) return "Tên đăng nhập không được để trống";
+                if (value.length < 2)
+                    return "Tên đăng nhập phải có ít nhất 2 ký tự";
                 return null;
             },
             email: (value) =>
@@ -129,8 +130,8 @@ const Register = () => {
                     withAsterisk
                     size="md"
                     radius="md"
-                    label="Tên người dùng"
-                    placeholder="Mời bạn nhập tên"
+                    label="Tên đăng nhập"
+                    placeholder="Mời bạn nhập tên đăng nhập"
                     leftSection={<FaUser />}
                     {...form.getInputProps("name")}
                 />
@@ -139,7 +140,7 @@ const Register = () => {
                     withAsterisk
                     size="md"
                     radius="md"
-                    label="Tài khoản"
+                    label="Email"
                     placeholder="Mời bạn nhập email"
                     leftSection={<FaAt />}
                     {...form.getInputProps("email")}
@@ -159,6 +160,7 @@ const Register = () => {
                                 <PasswordInput
                                     withAsterisk
                                     label="Mật khẩu"
+                                    leftSection={<FiLock />}
                                     placeholder="Mời bạn nhập mật khẩu"
                                     {...form.getInputProps("password")}
                                     value={value}

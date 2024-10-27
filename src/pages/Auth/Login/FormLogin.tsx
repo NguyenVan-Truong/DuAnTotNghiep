@@ -9,20 +9,20 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { message } from "antd";
-import { FaAt } from "react-icons/fa";
+import { FaAt, FaUser } from "react-icons/fa";
 import { FiLock } from "react-icons/fi";
 import { Link } from "react-router-dom";
 
 const Login = () => {
     const form = useForm({
         initialValues: {
-            email: "",
+            username: "",
             password: "",
         },
 
         validate: {
-            email: (value) =>
-                /^\S+@\S+$/.test(value) ? null : "Email không hợp lệ",
+            username: (value) =>
+                value.length >= 6 ? null : "Tài khoản phải có ít nhất 6 ký tự",
             password: (value) =>
                 value.length >= 6 ? null : "Mật khẩu phải có ít nhất 6 ký tự",
         },
@@ -49,10 +49,10 @@ const Login = () => {
                     withAsterisk
                     size="md"
                     radius="md"
-                    label="Tài khoản"
-                    placeholder="Mời bạn nhập email"
-                    leftSection={<FaAt />}
-                    {...form.getInputProps("email")}
+                    label="Tên đăng nhập"
+                    placeholder="Mời bạn nhập tên đăng nhập"
+                    leftSection={<FaUser />}
+                    {...form.getInputProps("username")}
                 />
                 <PasswordInput
                     className="mb-3"
