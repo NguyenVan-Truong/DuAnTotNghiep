@@ -51,7 +51,7 @@ const MiniFavorite = () => {
                 </div>
                 <div className="mt-5">
                     <button className="w-full bg-black text-white p-2 rounded-md mb-3">
-                        Xem Giỏ Hàng
+                        Xem yêu thích
                     </button>
                     <button className="w-full hover:bg-gray-300 border border-collapse p-2 rounded-md">
                         Thanh Toán

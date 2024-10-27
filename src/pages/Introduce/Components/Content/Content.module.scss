@@ -56,6 +56,9 @@
             font-size: 15px;
             line-height: 1.8;
             margin-bottom: 15px;
+            text-align: justify;  /* Căn đều văn bản */
+            //text-align-last: left;
+            padding-right: 20px;
         }
     }
 }
@@ -85,5 +88,6 @@
 
     p {
         font-size: 12px; /* Giảm kích thước font cho paragraph */
+        text-align: justify; 
     }
 }

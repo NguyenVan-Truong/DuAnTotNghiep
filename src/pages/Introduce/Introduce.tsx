@@ -1,7 +1,7 @@
 import BannerIntroduce from "./Components/Banner/BannerIntroduce";
 import Content from "./Components/Content/Content";
 import ContentPost from "./Components/Content/ContentPost";
-import Founder from "./Components/Content/Founder";
+//import Founder from "./Components/Content/Founder";
 import Quality from "./Components/Content/Quality";
 import Values from "./Components/Content/Values";
 import StoryNew from "./Components/StoryNews/StoryNew";
@@ -16,7 +16,7 @@ const Introduce = () => {
       <Content />
       {/*ContentPost*/}
       <ContentPost />
-      <Founder />
+      {/*<Founder />*/}
       <Values />
       <Quality />
       <StoryNew />

@@ -1,15 +1,11 @@
 
 
-import { ghe_ngoi_lam_viec_phu_hop } from '@/assets/img';
+import { ghe_ngoi_lam_viec_phu_hop_4 } from '@/assets/img';
 import styles from './Content.module.scss';
 
 const Values = () => {
     return (
-        <div className={styles.valuesContainer}>
-
-            <div className={styles.imageSection}>
-                <img src={ghe_ngoi_lam_viec_phu_hop} alt="Giá trị của Nhà Xinh" className={styles.image} />
-            </div>
+        <div className={styles.valuesContainer}>            
             <div className={styles.textSection}>
                 <h2>Giá trị và sự khác biệt</h2>
                 <p>
@@ -24,6 +20,9 @@ const Values = () => {
                     Không chỉ là sản phẩm nội thất đơn thuần, mà còn là không gian sống theo phong cách riêng với cách bày trí hài hòa từ đồ nội thất kết hợp với đồ trang trí.
                     Giúp khách hàng cảm nhận được một không gian sống thực sự, cảm thấy thoải mái để tận hưởng cuộc sống.
                 </p>
+            </div>
+            <div className={styles.imageSection}>
+                <img src={ghe_ngoi_lam_viec_phu_hop_4} alt="Giá trị của Nhà Xinh" className={styles.image} />
             </div>
         </div>
     );
