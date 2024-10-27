@@ -42,6 +42,7 @@ import ghe_ngoi_lam_viec_phu_hop_4 from "@/assets/Images/ghe_ngoi_lam_viec_phu_h
 import Avatar from "@/assets/Images/avatar.jpg";
 import banner_gioi_thieu from "@/assets/Images/banner_gioi_thieu.jpg";
 import gioi_thieu from "@/assets/Images/gioi_thieu.jpg";
+import dia_chi from "@/assets/Images/dia_chi.jpg";
 export {
     ban_nuoc_dura,
     ban_nuoc_dura_1,
@@ -87,4 +88,5 @@ export {
     Avatar,
     banner_gioi_thieu,
     gioi_thieu,
+    dia_chi,
 };

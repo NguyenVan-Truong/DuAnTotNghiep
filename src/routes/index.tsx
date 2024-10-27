@@ -3,6 +3,7 @@ import Login from "@/pages/Auth/Login/FormLogin";
 import Auth from "@/pages/Auth/page";
 import Register from "@/pages/Auth/Register/page";
 import CheckoutPage from "@/pages/Checkout/page";
+import Contact from "@/pages/Contact/Contact";
 import Home from "@/pages/Home/Home";
 import InspirationCorner from "@/pages/InspirationCorner/InspirationCorner";
 import Introduce from "@/pages/Introduce/Introduce";
@@ -34,6 +35,7 @@ const Index = () => {
                     <Route path="san-pham" element={<ProductDetail />} />
                     <Route path="gioi-thieu" element={<Introduce />} />
                     <Route path="gch" element={<InspirationCorner />} />
+                    <Route path="lien-he" element={<Contact />} />
                     <Route
                         path="chi-tiet-san-pham"
                         element={<ProductDetail />}
