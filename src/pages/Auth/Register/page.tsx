@@ -133,7 +133,7 @@ const Register = () => {
                     label="Tên đăng nhập"
                     placeholder="Mời bạn nhập tên đăng nhập"
                     leftSection={<FaUser />}
-                    {...form.getInputProps("name")}
+                    {...form.getInputProps("userName")}
                 />
                 <TextInput
                     className="mb-3"
@@ -218,7 +218,7 @@ const Register = () => {
                     radius="md"
                     size="md"
                     fullWidth
-                    className="!bg-black hover:!bg-gray-900"
+                    className="!bg-black !border-white !text-white hover:!bg-gray-800"
                 >
                     Đăng Ký
                 </Button>

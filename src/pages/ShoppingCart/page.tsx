@@ -104,7 +104,7 @@ const ShoppingCart = () => {
                             </div>
                         </div>
                     </div>
-                    <Button className="flex-1 !bg-[#000000] text-white !px-4  rounded mt-5">
+                    <Button className="flex-1 !bg-[#000000] hover:!bg-gray-800 !text-white !border-white !px-4  rounded mt-5">
                         Cập Nhật Giỏ Hàng
                     </Button>
                 </div>
