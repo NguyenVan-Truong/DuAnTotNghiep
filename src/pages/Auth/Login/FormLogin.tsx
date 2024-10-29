@@ -85,7 +85,7 @@ const Login = () => {
                     radius="md"
                     size="md"
                     fullWidth
-                    className="!bg-black hover:!bg-gray-900"
+                    className="!bg-black !text-white hover:!bg-gray-800"
                 >
                     Đăng Nhập
                 </Button>
