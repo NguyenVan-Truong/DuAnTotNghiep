@@ -71,12 +71,23 @@ const ItemProduct = () => {
                             className={style.listProductsPricing}
                         >
                             <p className={`${style.listProductsPriceCurrent} `}>
-                                {Math.floor(product.price)}
+                                {Math.floor(product.price).toLocaleString(
+                                    "vi-VN",
+                                    {
+                                        style: "currency",
+                                        currency: "VND",
+                                    },
+                                )}
                             </p>
                             <p
                                 className={`${style.listProductsPriceOriginal} line-through`}
                             >
-                                {Math.floor(product.discount_price)}
+                                {Math.floor(
+                                    product.discount_price,
+                                ).toLocaleString("vi-VN", {
+                                    style: "currency",
+                                    currency: "VND",
+                                })}
                             </p>
                         </Flex>
                         <Flex direction="row" justify="space-between">
