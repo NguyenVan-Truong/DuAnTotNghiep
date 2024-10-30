@@ -14,7 +14,6 @@ const ItemProduct = () => {
     };
     const fetchData = async () => {
         const response = await instance.get("/products");
-        console.log("response", response);
         return response.data;
     };
     const { data, error, isLoading, isError } = useQuery({

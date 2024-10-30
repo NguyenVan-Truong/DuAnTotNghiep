@@ -1,4 +1,4 @@
-import { Avatar } from "@/assets/img";
+import { Avatar, AvatarDefault } from "@/assets/img";
 import { Box, Image, NavLink, Text } from "@mantine/core";
 import { Outlet } from "react-router-dom";
 import {
@@ -11,6 +11,7 @@ import {
     IconUser,
 } from "@tabler/icons-react";
 const ProfileUser = () => {
+    const userProFile = JSON.parse(localStorage.getItem("userProfile") || "{}");
     return (
         <div className="bg-[#F5F5F5]">
             <div className="container !mt-5">
@@ -20,7 +21,7 @@ const ProfileUser = () => {
                 <div className="w-64 border-2 hidden lg:block bg-white">
                     <div className="flex items-center space-x-2 mt-5 justify-center mx-auto py-2">
                         <Image
-                            src={Avatar}
+                            src={userProFile.avatar || AvatarDefault}
                             radius="xl"
                             h={45}
                             w="auto"
@@ -83,15 +84,6 @@ const ProfileUser = () => {
                             label={
                                 <span style={{ fontSize: "14.20px" }}>
                                     Danh sách yêu thích
-                                </span>
-                            }
-                        />
-                        <NavLink
-                            leftSection={<IconDoorExit size="1.3rem" />}
-                            href="/nguoi-dung/thong-tin-tai-khoan"
-                            label={
-                                <span style={{ fontSize: "14.20px" }}>
-                                    Đăng Xuất
                                 </span>
                             }
                         />
