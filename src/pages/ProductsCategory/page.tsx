@@ -12,12 +12,14 @@ const ProductCategory = () => {
 
                 {/* start main trang sản phẩm */}
                 <div className="container">
-                    {/* phần lọc sản phẩm */}
-                    <ProductFilter />
-                    {/* end phần lọc sản phẩm */}
-                    {/* Phần sản phẩm */}
-                    <ListProducts />
-                    {/* end phần sản phẩm */}
+                    <div className="grid grid-cols-[25%_75%]">
+                        {/* phần lọc sản phẩm */}
+                        <ProductFilter />
+                        {/* end phần lọc sản phẩm */}
+                        {/* Phần sản phẩm */}
+                        <ListProducts />
+                        {/* end phần sản phẩm */}
+                    </div>
                 </div>
 
                 {/* end main trang sản phẩm */}
