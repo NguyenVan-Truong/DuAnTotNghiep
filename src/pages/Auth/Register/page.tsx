@@ -14,10 +14,12 @@ import {
 import { useForm } from "@mantine/form";
 import { FaAt, FaUser } from "react-icons/fa";
 import { FiLock } from "react-icons/fi";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { message } from "antd";
 import { IconX, IconCheck } from "@tabler/icons-react";
+import instance from "@/configs/axios";
+import { useQuery } from "@tanstack/react-query";
 
 const Register = () => {
     const [visibleConfirmPassword, setVisibleConfirmPassword] = useState(false);
@@ -28,12 +30,12 @@ const Register = () => {
         initialValues: {
             email: "",
             password: "",
-            confirmPassword: "",
-            userName: "",
+            password_confirmation: "",
+            username: "",
         },
 
         validate: {
-            userName: (value) => {
+            username: (value) => {
                 if (!value) return "Tên đăng nhập không được để trống";
                 if (value.length < 2)
                     return "Tên đăng nhập phải có ít nhất 2 ký tự";
@@ -43,7 +45,7 @@ const Register = () => {
                 /^\S+@\S+$/.test(value) ? null : "Email không hợp lệ",
             password: (value) =>
                 value.length >= 6 ? null : "Mật khẩu không đc để trống",
-            confirmPassword: (value, values) => {
+            password_confirmation: (value, values) => {
                 if (!value) return "Nhập lại mật khẩu không được để trống";
                 if (value !== values.password) return "Mật khẩu không khớp";
                 return null;
@@ -51,10 +53,6 @@ const Register = () => {
         },
     });
 
-    const handleSubmit = (values: typeof form.values) => {
-        console.log(values);
-        message.success("Thành công");
-    };
     function PasswordRequirement({
         meets,
         label,
@@ -107,6 +105,17 @@ const Register = () => {
 
     const strength = getStrength(value);
     const color = strength === 100 ? "teal" : strength > 50 ? "yellow" : "red";
+    const navigate = useNavigate();
+    const onSubmit = async (user: any) => {
+        try {
+            const { data } = await instance.post(`/users/signup`, user);
+            message.success("Đăng Ký Thành Công");
+            navigate("/signin");
+        } catch (error) {
+            message.error("Đã có tài khoản này");
+            console.error("Error:", error);
+        }
+    };
 
     return (
         <>
@@ -124,7 +133,7 @@ const Register = () => {
                     Vui lòng nhập thông tin chi tiết
                 </Text>
             </Flex>
-            <form className="w-[340px]" onSubmit={form.onSubmit(handleSubmit)}>
+            <form className="w-[340px]" onSubmit={form.onSubmit(onSubmit)}>
                 <TextInput
                     className="mb-3"
                     withAsterisk
@@ -133,7 +142,7 @@ const Register = () => {
                     label="Tên đăng nhập"
                     placeholder="Mời bạn nhập tên đăng nhập"
                     leftSection={<FaUser />}
-                    {...form.getInputProps("userName")}
+                    {...form.getInputProps("username")}
                 />
                 <TextInput
                     className="mb-3"
@@ -202,7 +211,7 @@ const Register = () => {
                         leftSection={<FiLock />}
                         label="Nhập lại mật khẩu"
                         placeholder="Mời bạn nhập lại mật khẩu"
-                        {...form.getInputProps("confirmPassword")}
+                        {...form.getInputProps("password_confirmation")}
                     />
                 </Stack>
                 <Group justify="flex-end">
