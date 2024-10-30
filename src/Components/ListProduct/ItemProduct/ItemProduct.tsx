@@ -71,12 +71,12 @@ const ItemProduct = () => {
                             className={style.listProductsPricing}
                         >
                             <p className={`${style.listProductsPriceCurrent} `}>
-                                {product.price}
+                                {Math.floor(product.price)}
                             </p>
                             <p
                                 className={`${style.listProductsPriceOriginal} line-through`}
                             >
-                                {product.discount_price}
+                                {Math.floor(product.discount_price)}
                             </p>
                         </Flex>
                         <Flex direction="row" justify="space-between">

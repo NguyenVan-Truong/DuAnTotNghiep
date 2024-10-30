@@ -30,11 +30,11 @@
         .discountText {
             text-align: center;
             padding: 0 10px;
-            margin-left: 5px;
+            margin-left: 4px;
             margin-top: 5px;
             padding-top: 2px;
             span {
-                font-size: 12px;
+                font-size: 14px;
                 margin: 0 auto;
                 color: #fff;
             }
@@ -116,9 +116,9 @@
     scale: 1;
     transition: scale 0.3s ease-in-out;
 }
-.listProductsItem:hover .listProductsImage {
-    scale: 0.9;
-}
+// .listProductsItem:hover .listProductsImage {
+// scale: 0.9;
+// }
 .listProductsTitle {
     font-size: 15px;
     font-weight: 400 !important;
