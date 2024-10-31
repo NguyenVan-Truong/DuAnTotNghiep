@@ -7,12 +7,12 @@ const ListProducts = () => {
     return (
         <div className={`${style.listProductss} mt-[50px] padding`}>
             <Grid className={style.listProductsMain}>
-                {/* {products.map((_, index) => (
+                {products.map((_, index) => (
                     <Grid.Col span={{ lg: 3, md: 3, sm: 4, xs: 6 }} key={index}>
                         <ItemProduct />
                     </Grid.Col>
-                ))} */}
-                <ItemProduct />
+                ))}
+                {/* <ItemProduct /> */}
             </Grid>
         </div>
     );
