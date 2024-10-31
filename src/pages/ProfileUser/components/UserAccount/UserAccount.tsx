@@ -1,4 +1,4 @@
-import { Avatar } from "@/assets/img";
+import { Avatar, AvatarDefault } from "@/assets/img";
 import {
     Button,
     Group,
@@ -19,6 +19,8 @@ import {
     IconUser,
 } from "@tabler/icons-react";
 import FormUpdate from "./FormUpdate";
+import instance from "@/configs/axios";
+import { useQuery } from "@tanstack/react-query";
 
 const UserAccount = () => {
     const handleAdd = () => {
@@ -30,7 +32,23 @@ const UserAccount = () => {
             cancelProps: { display: "none" },
         });
     };
+    const fetchData = async () => {
+        const response = await instance.get("/auth/profile");
+        localStorage.setItem("userProfile", JSON.stringify(response.data));
+        return response.data;
+    };
+    const { data, error, isLoading, isError } = useQuery({
+        queryKey: ["profile"],
+        queryFn: fetchData,
+    });
 
+    if (isLoading) {
+        return <div>Loading...</div>;
+    }
+
+    if (isError) {
+        return <div>Error: {error.message}</div>;
+    }
     return (
         <div className="bg-white !pb-6">
             <div className="px-10 py-2">
@@ -102,7 +120,7 @@ const UserAccount = () => {
                                 disabled
                                 placeholder="Input component"
                                 className="flex-grow"
-                                value="Nguyễn Văn Trường"
+                                value={data.email || "Không có dữ liệu"}
                             />
                         </div>
                         <div className="flex items-center space-x-3">
@@ -113,7 +131,7 @@ const UserAccount = () => {
                                 disabled
                                 placeholder="Input component"
                                 className="flex-grow"
-                                value="Nguyễn Văn Trường"
+                                value={data.full_name || "Không có dữ liệu"}
                             />
                         </div>
                         <div className="flex items-center space-x-3">
@@ -124,7 +142,7 @@ const UserAccount = () => {
                                 disabled
                                 placeholder="Input component"
                                 className="flex-grow"
-                                value="Nguyễn Văn Trường"
+                                value={data.phone || "Không có dữ liệu"}
                             />
                         </div>
                         <div className="flex items-center space-x-3">
@@ -135,7 +153,7 @@ const UserAccount = () => {
                                 disabled
                                 placeholder="Input component"
                                 className="flex-grow"
-                                value="Nguyễn Văn Trường"
+                                value={data.address || "Không có dữ liệu"}
                             />
                         </div>
                         <div className="flex items-center space-x-3">
@@ -175,14 +193,14 @@ const UserAccount = () => {
                                 disabled
                                 placeholder="Input component"
                                 className="flex-grow"
-                                value="Nguyễn Văn Trường"
+                                value={data.birthday || "Không có dữ liệu"}
                             />
                         </div>
                     </div>
                     <div className="border-l-2 border-slate-300">
                         <div className="flex justify-center">
                             <Image
-                                src={Avatar}
+                                src={data.avatar ? data.avatar : AvatarDefault}
                                 radius="sm"
                                 h={200}
                                 w="auto"
