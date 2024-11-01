@@ -1,6 +1,6 @@
-import ListProducts from "@/Components/ListProduct/Listproduct";
 import ProductFilter from "./ProductFilter/ProductFilter";
 import BannerProduct from "./BannerProduct/BannerProduct";
+import ProductList from "./ProductList/ProductList";
 
 const ProductCategory = () => {
     return (
@@ -17,7 +17,7 @@ const ProductCategory = () => {
                         <ProductFilter />
                         {/* end phần lọc sản phẩm */}
                         {/* Phần sản phẩm */}
-                        <ListProducts />
+                        <ProductList />
                         {/* end phần sản phẩm */}
                     </div>
                 </div>

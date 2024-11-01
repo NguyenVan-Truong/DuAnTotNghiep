@@ -108,9 +108,9 @@ const Register = () => {
     const navigate = useNavigate();
     const onSubmit = async (user: any) => {
         try {
-            const { data } = await instance.post(`/users/signup`, user);
+            const { data } = await instance.post(`/auth/register`, user);
             message.success("Đăng Ký Thành Công");
-            navigate("/signin");
+            navigate("/xac-thuc/dang-nhap");
         } catch (error) {
             message.error("Đã có tài khoản này");
             console.error("Error:", error);
