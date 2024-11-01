@@ -1,4 +1,5 @@
 import instance from "@/configs/axios";
+import { NotificationExtension } from "@/extension/NotificationExtension";
 import {
     Button,
     Flex,
@@ -31,11 +32,14 @@ const Login = () => {
     const navigate = useNavigate();
     const onSubmit = async (user: any) => {
         try {
-            const { data } = await instance.post(`/auth/login`, user);
-            localStorage.setItem("token", data.access_token);
-            localStorage.setItem("user", JSON.stringify(user.username));
-            message.success("Đăng Nhập Thành Công");
-            navigate("/");
+            const response = await instance.post(`/auth/login`, user);
+            console.log("response", response);
+            NotificationExtension.Success("Đăng nhập Thành Công");
+
+            // localStorage.setItem("token", data.access_token);
+            // localStorage.setItem("user", JSON.stringify(user.username));
+            // message.success("Đăng Nhập Thành Công");
+            // navigate("/");
         } catch (error) {
             message.error("Tài Khoản hoặc Mật Khẩu không chính xác");
             console.error("Error:", error);

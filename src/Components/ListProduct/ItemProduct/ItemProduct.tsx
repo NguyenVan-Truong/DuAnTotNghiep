@@ -5,7 +5,11 @@ import { useState } from "react";
 import { CiHeart } from "react-icons/ci";
 import style from "../ListProduct.module.scss";
 import { Link } from "react-router-dom";
-const ItemProduct = () => {
+import { Product } from "@/modals/Products";
+type props = {
+    product: Product;
+};
+const ItemProduct = ({ product }: props) => {
     const [tym, setTym] = useState(false);
     const onhandleTymItem = () => {
         setTym(!tym);
@@ -33,7 +37,7 @@ const ItemProduct = () => {
                         <h2
                             className={`${style.listProductsTitle} font-medium`}
                         >
-                            Armchair Doultoun vintage
+                            {product?.name}
                         </h2>
                     </Tooltip>
                     {/* <CiHeart

@@ -20,6 +20,8 @@ import { message } from "antd";
 import { IconX, IconCheck } from "@tabler/icons-react";
 import instance from "@/configs/axios";
 import { useQuery } from "@tanstack/react-query";
+import { AxiosError } from "axios";
+import { NotificationExtension } from "@/extension/NotificationExtension";
 
 const Register = () => {
     const [visibleConfirmPassword, setVisibleConfirmPassword] = useState(false);
@@ -109,9 +111,29 @@ const Register = () => {
     const onSubmit = async (user: any) => {
         try {
             const { data } = await instance.post(`/auth/register`, user);
-            message.success("Đăng Ký Thành Công");
+            NotificationExtension.Success("Đăng Ký Thành Công");
             navigate("/xac-thuc/dang-nhap");
         } catch (error) {
+            // const axiosError = error as AxiosError;
+            // interface ValidationErrorResponse {
+            //     [key: string]: string[];
+            // }
+            // if (axiosError.response) {
+            //     const errorData = axiosError.response
+            //         .data as ValidationErrorResponse;
+
+            //     // Duyệt qua các lỗi và hiển thị
+            //     for (const key in errorData) {
+            //         if (errorData.hasOwnProperty(key)) {
+            //             const messages = errorData[key];
+            //             messages.forEach((errorMessage) => {
+            //                 message.error(`${key}: ${errorMessage}`);
+            //             });
+            //         }
+            //     }
+            // } else {
+            //     message.error("Đã xảy ra lỗi không xác định.");
+            // }
             message.error("Đã có tài khoản này");
             console.error("Error:", error);
         }
@@ -144,6 +166,7 @@ const Register = () => {
                     leftSection={<FaUser />}
                     {...form.getInputProps("username")}
                 />
+
                 <TextInput
                     className="mb-3"
                     withAsterisk
