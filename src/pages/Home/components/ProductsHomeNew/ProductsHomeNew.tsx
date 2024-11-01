@@ -75,7 +75,7 @@ const ProductsHomeNew = () => {
     };
 
     const { data, error, isLoading, isError } = useQuery<Product[]>({
-        queryKey: ["products Home"],
+        queryKey: ["productsHomeNew"],
         queryFn: fetchData,
     });
 

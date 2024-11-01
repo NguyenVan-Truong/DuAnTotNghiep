@@ -19,15 +19,15 @@ const ItemProduct = ({ product }: props) => {
             <div className={style.listProductsItem}>
                 <div className={style.listProductsImageContainer}>
                     <img
-                        src={ban_an_6_cho1}
-                        alt="Armchair Doultoun vintage"
+                        src={product.image_url}
+                        alt={product.name}
                         className={`${style.listProductsImage} ${style.listProductsImagePrimary}`}
                     />
                     {/* <img
-                        src={ban_an_6_cho2}
-                        alt="Armchair Doultoun vintage"
-                        className={`${style.listProductsImage} ${style.listProductsImageSecondary}`}
-                    /> */}
+     src={ban_an_6_cho2}
+     alt="Armchair Doultoun vintage"
+     className={`${style.listProductsImage} ${style.listProductsImageSecondary}`}
+ /> */}
                 </div>
                 <Flex
                     direction="row"
@@ -37,12 +37,12 @@ const ItemProduct = ({ product }: props) => {
                         <h2
                             className={`${style.listProductsTitle} font-medium`}
                         >
-                            {product?.name}
+                            {product.name}
                         </h2>
                     </Tooltip>
                     {/* <CiHeart
-                        className={`${style.listProductsFavoriteIcon} text-[24px]`}
-                    /> */}
+     className={`${style.listProductsFavoriteIcon} text-[24px]`}
+ /> */}
                 </Flex>
                 <Flex
                     direction="row"
@@ -51,23 +51,34 @@ const ItemProduct = ({ product }: props) => {
                     className={style.listProductsPricing}
                 >
                     <p className={`${style.listProductsPriceCurrent} `}>
-                        24,225,000đ
+                        {Math.floor(product.price).toLocaleString("vi-VN", {
+                            style: "currency",
+                            currency: "VND",
+                        })}
                     </p>
                     <p
                         className={`${style.listProductsPriceOriginal} line-through`}
                     >
-                        28,500,000đ
+                        {Math.floor(product.discount_price).toLocaleString(
+                            "vi-VN",
+                            {
+                                style: "currency",
+                                currency: "VND",
+                            },
+                        )}
                     </p>
                 </Flex>
                 <Flex direction="row" justify="space-between">
                     <Flex direction="row">
                         <Rating defaultValue={5} readOnly />
                         <span className="text-[12px] text-yellow-700">
-                            (54)
+                            ({product.ratings_avg})
                         </span>
                     </Flex>
                     <div>
-                        <p className="text-[14px] text-slate-600">Đã bán 999</p>
+                        <p className="text-[14px] text-slate-600">
+                            Kho : {product.stock}
+                        </p>
                     </div>
                 </Flex>
                 <Flex
@@ -114,7 +125,9 @@ const ItemProduct = ({ product }: props) => {
                         }}
                     >
                         <div className={style.discountText}>
-                            <span>15%</span>
+                            <span>
+                                {Math.floor(product.discount_percentage)}%
+                            </span>
                         </div>
                     </div>
                     <div

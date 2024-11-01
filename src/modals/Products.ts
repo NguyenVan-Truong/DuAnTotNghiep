@@ -7,9 +7,9 @@ export interface Product {
     sku: string;
     detailed_description: string;
     image_url: string;
-    price: string;
-    discount_price: string;
-    discount_percentage: string;
+    price: number;
+    discount_price: number;
+    discount_percentage: number;
     stock: number;
     weight: number;
     ratings_avg: number;
