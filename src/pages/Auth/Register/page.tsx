@@ -1,5 +1,7 @@
+import instance from "@/configs/axios";
+import { NotificationExtension } from "@/extension/NotificationExtension";
+import { UserRegister } from "@/modals/User";
 import {
-    Box,
     Button,
     Flex,
     Group,
@@ -12,14 +14,12 @@ import {
     Title,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
+import { IconCheck, IconX } from "@tabler/icons-react";
+import { message } from "antd";
+import { useState } from "react";
 import { FaAt, FaUser } from "react-icons/fa";
 import { FiLock } from "react-icons/fi";
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
-import { message } from "antd";
-import { IconX, IconCheck } from "@tabler/icons-react";
-import instance from "@/configs/axios";
-import { useQuery } from "@tanstack/react-query";
 
 const Register = () => {
     const [visibleConfirmPassword, setVisibleConfirmPassword] = useState(false);
@@ -33,7 +33,6 @@ const Register = () => {
             password_confirmation: "",
             username: "",
         },
-
         validate: {
             username: (value) => {
                 if (!value) return "Tên đăng nhập không được để trống";
@@ -106,12 +105,45 @@ const Register = () => {
     const strength = getStrength(value);
     const color = strength === 100 ? "teal" : strength > 50 ? "yellow" : "red";
     const navigate = useNavigate();
-    const onSubmit = async (user: any) => {
+    const onSubmit = async (user: UserRegister) => {
+        // const isPasswordValid = requirements.every((requirement) =>
+        //     requirement.re.test(user.password),
+        // );
+
+        // // Kiểm tra độ dài mật khẩu
+        // const isLengthValid = user.password.length >= 6;
+
+        // if (!isLengthValid || !isPasswordValid) {
+        //     message.error(
+        //         "Mật khẩu không hợp lệ. Vui lòng đảm bảo mật khẩu của bạn đáp ứng tất cả các yêu cầu.",
+        //     );
+        //     return; // Ngừng thực hiện nếu mật khẩu không hợp lệ
+        // }
         try {
-            const { data } = await instance.post(`/auth/register`, user);
-            message.success("Đăng Ký Thành Công");
+            const response = await instance.post(`/auth/register`, user);
+            NotificationExtension.Success("Đăng Ký Thành Công");
             navigate("/xac-thuc/dang-nhap");
         } catch (error) {
+            // const axiosError = error as AxiosError;
+            // interface ValidationErrorResponse {
+            //     [key: string]: string[];
+            // }
+            // if (axiosError.response) {
+            //     const errorData = axiosError.response
+            //         .data as ValidationErrorResponse;
+
+            //     // Duyệt qua các lỗi và hiển thị
+            //     for (const key in errorData) {
+            //         if (errorData.hasOwnProperty(key)) {
+            //             const messages = errorData[key];
+            //             messages.forEach((errorMessage) => {
+            //                 message.error(`${key}: ${errorMessage}`);
+            //             });
+            //         }
+            //     }
+            // } else {
+            //     message.error("Đã xảy ra lỗi không xác định.");
+            // }
             message.error("Đã có tài khoản này");
             console.error("Error:", error);
         }
@@ -144,6 +176,7 @@ const Register = () => {
                     leftSection={<FaUser />}
                     {...form.getInputProps("username")}
                 />
+
                 <TextInput
                     className="mb-3"
                     withAsterisk
@@ -168,14 +201,17 @@ const Register = () => {
                             >
                                 <PasswordInput
                                     withAsterisk
+                                    // className="mb-1"
                                     label="Mật khẩu"
+                                    size="md"
+                                    radius="md"
                                     leftSection={<FiLock />}
                                     placeholder="Mời bạn nhập mật khẩu"
                                     {...form.getInputProps("password")}
                                     value={value}
                                     onChange={(event) => {
                                         const newPassword =
-                                            event.currentTarget.value;
+                                            event.currentTarget.value.trim();
                                         setValue(newPassword);
                                         form.setFieldValue(
                                             "password",
@@ -190,7 +226,7 @@ const Register = () => {
                                 color={color}
                                 value={strength}
                                 size={5}
-                                mb="xs"
+                                mb="sm"
                             />
                             <PasswordRequirement
                                 label="Bao gồm ít nhất 6 ký tự"
