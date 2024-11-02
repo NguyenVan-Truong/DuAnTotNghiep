@@ -1,4 +1,6 @@
 import instance from "@/configs/axios";
+import { NotificationExtension } from "@/extension/NotificationExtension";
+import { UserLogin } from "@/modals/User";
 import {
     Button,
     Flex,
@@ -10,7 +12,7 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { message } from "antd";
-import { FaAt, FaUser } from "react-icons/fa";
+import { FaUser } from "react-icons/fa";
 import { FiLock } from "react-icons/fi";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -29,10 +31,11 @@ const Login = () => {
         },
     });
     const navigate = useNavigate();
-    const onSubmit = async (user: any) => {
+    const onSubmit = async (user: UserLogin) => {
         try {
-            const { data } = await instance.post(`/auth/login`, user);
-            localStorage.setItem("token", data.access_token);
+            const response = await instance.post(`/auth/login`, user);
+            let resuilt = response.data;
+            localStorage.setItem("token", resuilt.access_token);
             localStorage.setItem("user", JSON.stringify(user.username));
             message.success("Đăng Nhập Thành Công");
             navigate("/");
