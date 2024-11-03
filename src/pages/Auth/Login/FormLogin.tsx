@@ -12,6 +12,7 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { message } from "antd";
+import { BiCookie } from "react-icons/bi";
 import { FaUser } from "react-icons/fa";
 import { FiLock } from "react-icons/fi";
 import { Link, useNavigate } from "react-router-dom";
@@ -27,7 +28,7 @@ const Login = () => {
             username: (value) =>
                 value.length >= 6 ? null : "Tài khoản phải có ít nhất 6 ký tự",
             password: (value) =>
-                value.length >= 6 ? null : "Mật khẩu phải có ít nhất 6 ký tự",
+                value.length >= 5 ? null : "Mật khẩu phải có ít nhất 6 ký tự",
         },
     });
     const navigate = useNavigate();
