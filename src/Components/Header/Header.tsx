@@ -165,6 +165,112 @@ const Header = () => {
                     <div className="block lg-hidden items-center space-x-4">
                         <CartIcon />
                     </div>
+                    <div>
+                        {localStorage.getItem("token") ? (
+                            <Menu
+                                shadow="md"
+                                width={200}
+                                offset={2}
+                                transitionProps={{
+                                    transition: "rotate-right",
+                                    duration: 150,
+                                }}
+                            >
+                                <Menu.Target>
+                                    <Tooltip
+                                        label={`Chào, ${
+                                            userProFile.full_name
+                                                ? userProFile.full_name
+                                                : user
+                                        }`}
+                                    >
+                                        <Avatar
+                                            size="sm"
+                                            src={
+                                                userProFile.avatar ||
+                                                AvatarDefault
+                                            }
+                                        />
+                                    </Tooltip>
+                                </Menu.Target>
+                                <Menu.Dropdown>
+                                    <Menu.Label>
+                                        <Box w={170}>
+                                            <Text truncate="end" size="sm">
+                                                Chào ,{" "}
+                                                {userProFile.full_name
+                                                    ? userProFile.full_name
+                                                    : user}
+                                            </Text>
+                                        </Box>
+                                    </Menu.Label>
+                                    <Menu.Divider />
+                                    <Menu.Item
+                                        leftSection={
+                                            <IconUserCircle
+                                                style={{ fontSize: "14px" }}
+                                            />
+                                        }
+                                        style={{ fontSize: "13px" }}
+                                    >
+                                        <Link
+                                            to={
+                                                "/nguoi-dung/thong-tin-tai-khoan"
+                                            }
+                                        >
+                                            Thông tin của tôi
+                                        </Link>
+                                    </Menu.Item>
+                                    <Menu.Item
+                                        leftSection={
+                                            <IconShoppingCart
+                                                style={{ fontSize: "14px" }}
+                                            />
+                                        }
+                                        style={{ fontSize: "13px" }}
+                                    >
+                                        <Link to={"/nguoi-dung/don-hang"}>
+                                            Đơn hàng
+                                        </Link>
+                                    </Menu.Item>
+                                    <Menu.Item
+                                        leftSection={
+                                            <IconHeartSpark
+                                                style={{ fontSize: "14px" }}
+                                            />
+                                        }
+                                        style={{ fontSize: "13px" }}
+                                    >
+                                        <Link
+                                            to={
+                                                "/nguoi-dung/san-pham-yeu-thich"
+                                            }
+                                        >
+                                            Sản Phẩm Yêu thích
+                                        </Link>
+                                    </Menu.Item>
+                                    <Menu.Divider />
+                                    <Menu.Item
+                                        color="red"
+                                        leftSection={
+                                            <IconLogout
+                                                style={{ fontSize: "14px" }}
+                                            />
+                                        }
+                                        onClick={logout}
+                                    >
+                                        Đăng xuất
+                                    </Menu.Item>
+                                </Menu.Dropdown>
+                            </Menu>
+                        ) : (
+                            <Button className="border-none text-sm">
+                                <Link to={"/xac-thuc/dang-nhap"}>
+                                    Đăng Nhập
+                                </Link>
+                            </Button>
+                        )}
+                    </div>
                 </div>
             </header>
             {/* Header2 */}
@@ -240,12 +346,12 @@ const Header = () => {
                             </li>
                             <li className="flex items-center space-x-5 !lg:space-x-2 whitespace-nowrap">
                                 <NavLink
-                                    to="/abc"
+                                    to="/lien-he"
                                     className={({ isActive }) =>
                                         `relative ${isActive ? "border-b-4 border-red-500" : "hover:border-b-2 hover:text-orange-300"}`
                                     }
                                 >
-                                    Phòng
+                                    Liên Hệ
                                 </NavLink>
                             </li>
                             <li className="flex items-center space-x-5 !lg:space-x-2 whitespace-nowrap">

@@ -69,7 +69,7 @@ const ProductsHomeNew = () => {
         ],
     };
     const fetchData = async () => {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        await new Promise((resolve) => setTimeout(resolve, 500));
         const response = await instance.get("/products");
         return response.data;
     };
