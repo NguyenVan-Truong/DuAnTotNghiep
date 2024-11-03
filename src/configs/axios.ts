@@ -7,7 +7,6 @@ const instance = axios.create({
     },
     timeout: 10000,
 });
-console.log(import.meta.env.VITE_BASE_URL);
 export default instance;
 
 instance.interceptors.request.use(
