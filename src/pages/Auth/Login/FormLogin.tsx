@@ -1,3 +1,6 @@
+import instance from "@/configs/axios";
+import { NotificationExtension } from "@/extension/NotificationExtension";
+import { UserLogin } from "@/modals/User";
 import {
     Button,
     Flex,
@@ -9,9 +12,9 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { message } from "antd";
-import { FaAt, FaUser } from "react-icons/fa";
+import { FaUser } from "react-icons/fa";
 import { FiLock } from "react-icons/fi";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Login = () => {
     const form = useForm({
@@ -27,10 +30,19 @@ const Login = () => {
                 value.length >= 6 ? null : "Mật khẩu phải có ít nhất 6 ký tự",
         },
     });
-
-    const handleSubmit = (values: typeof form.values) => {
-        console.log(values);
-        message.success("Thành công");
+    const navigate = useNavigate();
+    const onSubmit = async (user: UserLogin) => {
+        try {
+            const response = await instance.post(`/auth/login`, user);
+            let resuilt = response.data;
+            localStorage.setItem("token", resuilt.access_token);
+            localStorage.setItem("user", JSON.stringify(user.username));
+            message.success("Đăng Nhập Thành Công");
+            navigate("/");
+        } catch (error) {
+            message.error("Tài Khoản hoặc Mật Khẩu không chính xác");
+            console.error("Error:", error);
+        }
     };
 
     return (
@@ -43,7 +55,7 @@ const Login = () => {
                     Xin hãy đăng nhập vào tài khoản của bạn
                 </Text>
             </Flex>
-            <form className="w-[340px]" onSubmit={form.onSubmit(handleSubmit)}>
+            <form className="w-[340px]" onSubmit={form.onSubmit(onSubmit)}>
                 <TextInput
                     className="mb-3"
                     withAsterisk

@@ -1,5 +1,6 @@
 import { Text, Title } from "@mantine/core";
 import { MdNavigateNext } from "react-icons/md";
+import { Link } from "react-router-dom";
 const TitleNew = () => {
     return (
         <>
@@ -12,7 +13,7 @@ const TitleNew = () => {
                         size="md"
                         className="flex items-center space-x-5 hover:text-red-500"
                     >
-                        xem tất cả
+                        <Link to="/san-pham"> Xem tất cả</Link>
                         <span>
                             <MdNavigateNext className="text-xl" />
                         </span>
