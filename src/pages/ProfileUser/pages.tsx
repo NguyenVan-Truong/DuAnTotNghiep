@@ -5,6 +5,7 @@ import {
     IconCards,
     IconDoorExit,
     IconHeart,
+    IconMail,
     IconMapPin,
     IconPencil,
     IconShoppingCart,
@@ -61,11 +62,11 @@ const ProfileUser = () => {
                             }
                         />
                         <NavLink
-                            leftSection={<IconMapPin size="1.3rem" />}
-                            href="/nguoi-dung/thong-tin-tai-khoan"
+                            leftSection={<IconMail size="1.3rem" />}
+                            href="/nguoi-dung/thu-ho-tro"
                             label={
                                 <span style={{ fontSize: "14.20px" }}>
-                                    Quản lý địa chỉ
+                                    Thư hõ trợ đã gửi
                                 </span>
                             }
                         />
