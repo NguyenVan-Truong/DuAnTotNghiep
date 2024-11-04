@@ -1,20 +1,23 @@
-import { Badge, Button, Flex, Indicator, Rating, Tabs } from "@mantine/core";
+import { NotificationExtension } from "@/extension/NotificationExtension";
+import { Badge, Button, Flex, Rating, Tabs } from "@mantine/core";
 import {
     IconMinus,
     IconPlus,
     IconTableSpark,
     IconTir,
 } from "@tabler/icons-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import "../../ProductDetail.scss";
-import { NotificationExtension } from "@/extension/NotificationExtension";
-
-const RightProduct = () => {
+type Props = {
+    data: any;
+};
+const RightProduct = ({ data }: Props) => {
     const [quantity, setQuantity] = useState(1);
     const [value, setValue] = useState({
         a: "",
         b: "",
     });
+    console.log("data", data);
     const increaseQuantity = () => {
         if (quantity < 5) {
             setQuantity(quantity + 1);
@@ -36,7 +39,7 @@ const RightProduct = () => {
         <div className="product-details">
             <div className="product-header">
                 <h2 className="product-title text-[20px] font-medium">
-                    Giường Ngủ Gỗ Tràm MOHO VLINE 601 Nhiều Kích Thước
+                    {data?.name}
                 </h2>
             </div>
             <Flex direction="row" className="product-interactions">
@@ -63,10 +66,10 @@ const RightProduct = () => {
                         -35%
                     </Badge>
                     <span className="current-price text-[#ef683a] text-[17px] font-bold">
-                        1.200.000đ
+                        {data?.discount_price}
                     </span>
                     <span className="original-price text-[#777a7b] text-[14px] ">
-                        <del>1.500.000đ</del>
+                        <del>{data?.price}</del>
                     </span>
                 </Flex>
             </div>
@@ -309,3 +312,143 @@ const RightProduct = () => {
 };
 
 export default RightProduct;
+
+// const RightProduct = ({ data: product }: any) => {
+//     const [selectedMaterial, setSelectedMaterial] = useState("");
+//     const [selectedColor, setSelectedColor] = useState("");
+//     console.log("data", product);
+//     // Lấy tất cả giá trị unique của "Chất Liệu" và "Màu Sắc" từ dữ liệu
+//     const materials = Array.from(
+//         new Set(
+//             product.variants.flatMap((variant: any) =>
+//                 variant.attributes
+//                     .filter(
+//                         (attr: any) =>
+//                             attr.attribute_value.attributes.name ===
+//                             "Chất Liệu",
+//                     )
+
+//                     .map((attr: any) => attr.attribute_value.name),
+//             ),
+//         ),
+//     );
+//     console.log("materials", materials);
+//     // Tìm các màu khả dụng dựa trên chất liệu đã chọn
+//     const availableColorsForMaterial = selectedMaterial
+//         ? Array.from(
+//               new Set(
+//                   product.variants
+//                       .filter((variant: any) =>
+//                           variant.attributes.some(
+//                               (attr: any) =>
+//                                   attr.attribute_value.attributes.name ===
+//                                       "Chất Liệu" &&
+//                                   attr.attribute_value.name ===
+//                                       selectedMaterial,
+//                           ),
+//                       )
+//                       .flatMap((variant: any) =>
+//                           variant.attributes
+//                               .filter(
+//                                   (attr: any) =>
+//                                       attr.attribute_value.attributes.name ===
+//                                       "Màu Sắc",
+//                               )
+//                               .map((attr: any) => attr.attribute_value.name),
+//                       ),
+//               ),
+//           )
+//         : [];
+//     console.log("availableColorsForMaterial", availableColorsForMaterial);
+//     const colors = Array.from(
+//         new Set(
+//             product.variants.flatMap((variant: any) =>
+//                 variant.attributes
+//                     .filter(
+//                         (attr: any) =>
+//                             attr.attribute_value.attributes.name === "Màu Sắc",
+//                     )
+//                     .map((attr: any) => attr.attribute_value.name),
+//             ),
+//         ),
+//     );
+//     console.log("colors", colors);
+//     // Lọc variant theo lựa chọn của người dùng
+//     const filteredVariant = product.variants.find((variant: any) => {
+//         const material = variant.attributes.find(
+//             (attr: any) => attr.attribute_value.attributes.name === "Chất Liệu",
+//         )?.attribute_value.name;
+//         const color = variant.attributes.find(
+//             (attr: any) => attr.attribute_value.attributes.name === "Màu Sắc",
+//         )?.attribute_value.name;
+
+//         return material === selectedMaterial && color === selectedColor;
+//     });
+//     console.log("filteredVariant", filteredVariant);
+//     return (
+//         <div>
+//             <div>
+//                 <h3>Chọn thuộc tính</h3>
+//                 <div>
+//                     <label>Chất Liệu: </label>
+//                     <select
+//                         value={selectedMaterial}
+//                         onChange={(e) => {
+//                             setSelectedMaterial(e.target.value);
+//                             setSelectedColor(""); // Reset màu sắc khi thay đổi chất liệu
+//                         }}
+//                     >
+//                         <option value="">Chọn Chất Liệu</option>
+//                         {materials.map((material: any) => (
+//                             <option key={material} value={material}>
+//                                 {material}
+//                             </option>
+//                         ))}
+//                     </select>
+//                 </div>
+
+//                 <div>
+//                     <label>Màu Sắc: </label>
+//                     <select
+//                         value={selectedColor}
+//                         onChange={(e) => setSelectedColor(e.target.value)}
+//                     >
+//                         <option value="">Chọn Màu Sắc</option>
+//                         {colors.map((color: any) => (
+//                             <option
+//                                 key={color}
+//                                 value={color}
+//                                 style={{
+//                                     color: availableColorsForMaterial.includes(
+//                                         color,
+//                                     )
+//                                         ? "red"
+//                                         : "black",
+//                                 }}
+//                                 disabled={
+//                                     !availableColorsForMaterial.includes(color)
+//                                 }
+//                             >
+//                                 {color}
+//                             </option>
+//                         ))}
+//                     </select>
+//                 </div>
+
+//                 {filteredVariant ? (
+//                     <div>
+//                         <h4>Thông tin sản phẩm</h4>
+//                         <p>SKU: {filteredVariant.sku}</p>
+//                         <p>Giá: {filteredVariant.price}</p>
+//                         <p>Giảm giá: {filteredVariant.discount_price}</p>
+//                         <p>Tồn kho: {filteredVariant.stock}</p>
+//                     </div>
+//                 ) : (
+//                     <p>Không tìm thấy sản phẩm với cặp thuộc tính đã chọn.</p>
+//                 )}
+//             </div>
+//         </div>
+//     );
+// };
+
+// export default RightProduct;
