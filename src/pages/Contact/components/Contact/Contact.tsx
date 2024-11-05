@@ -9,7 +9,6 @@ const ContactPage = () => {
     const fetchData = async () => {
         try {
             const response = await instance.get("/information");
-            console.log("response", response);
             return response.data.data;
         } catch (error) {
             console.error(error);
@@ -25,7 +24,6 @@ const ContactPage = () => {
     if (isLoading) {
         return <Loader />;
     }
-    console.log("data", data);
     if (isError) {
         return (
             <div>

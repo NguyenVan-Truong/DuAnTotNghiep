@@ -18,13 +18,11 @@ const FormSupport = () => {
 
     const fetchData = async () => {
         await new Promise((resolve) => setTimeout(resolve, 500));
-        const response = await instance.get<{ data: { user: Supports } }>(
-            "/contacts",
-        );
+        const response = await instance.get("/contacts");
         return response?.data?.data?.user || [];
     };
 
-    const { data, error, isLoading, isError } = useQuery({
+    const { data, error, isLoading, isError } = useQuery<Supports>({
         queryKey: ["contacts"],
         queryFn: fetchData,
     });

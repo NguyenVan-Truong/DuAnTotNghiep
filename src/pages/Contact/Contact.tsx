@@ -6,7 +6,7 @@ const Contact = () => {
     return (
         <div className={styles.container}>
             <ContactPage />
-            {/* <FormSupport /> */}
+            <FormSupport />
         </div>
     );
 };

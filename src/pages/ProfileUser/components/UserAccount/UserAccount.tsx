@@ -21,6 +21,7 @@ import {
 import FormUpdate from "./FormUpdate";
 import instance from "@/configs/axios";
 import { useQuery } from "@tanstack/react-query";
+import { UserProfile } from "@/modals/User";
 
 const UserAccount = () => {
     const handleAdd = () => {
@@ -34,14 +35,14 @@ const UserAccount = () => {
     };
     const fetchData = async () => {
         const response = await instance.get("/auth/profile");
-        localStorage.setItem("userProfile", JSON.stringify(response.data));
+        console.log("object", response.data);
         return response.data;
     };
-    const { data, error, isLoading, isError } = useQuery({
+    const { data, error, isLoading, isError } = useQuery<UserProfile>({
         queryKey: ["profile"],
         queryFn: fetchData,
     });
-
+    console.log("data", data);
     if (isLoading) {
         return <div>Loading...</div>;
     }
@@ -49,6 +50,10 @@ const UserAccount = () => {
     if (isError) {
         return <div>Error: {error.message}</div>;
     }
+    if (!data) {
+        return <div>Không có thông tin hồ sơ để hiển thị.</div>;
+    }
+
     return (
         <div className="bg-white !pb-6">
             <div className="px-10 py-2">
