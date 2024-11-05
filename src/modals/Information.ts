@@ -9,3 +9,8 @@ export interface Information {
     updated_at: string | null;
     deleted_at: string | null;
 }
+export interface InformationResponse {
+    data: Information[]; // Mảng chứa thông tin liên hệ
+    message: string; // Thông điệp trả về
+    status: string; // Trạng thái của phản hồi
+}

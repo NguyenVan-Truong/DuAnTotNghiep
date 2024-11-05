@@ -1,18 +1,17 @@
-import { Avatar, AvatarDefault } from "@/assets/img";
+import { AvatarDefault } from "@/assets/img";
 import { Box, Image, NavLink, Text } from "@mantine/core";
-import { Outlet } from "react-router-dom";
 import {
     IconCards,
-    IconDoorExit,
     IconHeart,
     IconMail,
-    IconMapPin,
     IconPencil,
     IconShoppingCart,
     IconUser,
 } from "@tabler/icons-react";
+import { Outlet } from "react-router-dom";
 const ProfileUser = () => {
-    const userProFile = JSON.parse(localStorage.getItem("userProfile") || "{}");
+    const userProFile = JSON.parse(localStorage.getItem("userProFile") || "{}");
+
     return (
         <div className="bg-[#F5F5F5]">
             <div className="container !mt-5">
@@ -30,7 +29,7 @@ const ProfileUser = () => {
                         />{" "}
                         <Box w={160}>
                             <Text truncate="end" size="lg">
-                                Nguyễn Văn Trường
+                                {userProFile.full_name || userProFile.username}
                             </Text>
                             <Text
                                 size="md"

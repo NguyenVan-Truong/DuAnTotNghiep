@@ -158,35 +158,6 @@ const UserAccount = () => {
                         </div>
                         <div className="flex items-center space-x-3">
                             <Text className="w-1/3" size="lg">
-                                Giới tính:
-                            </Text>
-                            <Group>
-                                <Radio
-                                    disabled
-                                    label="Nam"
-                                    name="check"
-                                    value="check"
-                                    variant="outline"
-                                    defaultChecked
-                                />
-                                <Radio
-                                    disabled
-                                    label="Nữ"
-                                    name="check"
-                                    value="check"
-                                    variant="outline"
-                                />
-                                <Radio
-                                    disabled
-                                    label="Khác"
-                                    name="check"
-                                    value="check"
-                                    variant="outline"
-                                />
-                            </Group>
-                        </div>
-                        <div className="flex items-center space-x-3">
-                            <Text className="w-1/3" size="lg">
                                 Ngày sinh:
                             </Text>
                             <TextInput
