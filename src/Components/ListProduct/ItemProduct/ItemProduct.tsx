@@ -4,15 +4,19 @@ import { Button, Flex, Rating, Tooltip } from "@mantine/core";
 import { IconHeartFilled } from "@tabler/icons-react";
 import { useState } from "react";
 import { CiHeart } from "react-icons/ci";
-import { Link } from "react-router-dom";
 import style from "../ListProduct.module.scss";
+import { useNavigate } from "react-router-dom";
 type props = {
     product: Product;
 };
 const ItemProduct = ({ product }: props) => {
+    const navigate = useNavigate();
     const [tym, setTym] = useState(false);
     const onhandleTymItem = () => {
         setTym(!tym);
+    };
+    const onhandleTurnPage = (id: number, slug: string) => {
+        navigate(`/chi-tiet-san-pham/${slug}`, { state: { id: id } });
     };
     return (
         <div className={style.listProductsItemMain}>
@@ -51,7 +55,7 @@ const ItemProduct = ({ product }: props) => {
                     className={style.listProductsPricing}
                 >
                     <p className={`${style.listProductsPriceCurrent} `}>
-                        {Math.floor(product.price).toLocaleString("vi-VN", {
+                        {Math.floor(product?.price).toLocaleString("vi-VN", {
                             style: "currency",
                             currency: "VND",
                         })}
@@ -102,17 +106,17 @@ const ItemProduct = ({ product }: props) => {
                             />
                         </>
                     )}
-                    <Link
-                        to="/chi-tiet-san-pham"
-                        className={`${style.LinkButtonWrapper}`}
-                    >
+                    <div className={`${style.LinkButtonWrapper}`}>
                         <Button
                             variant="light"
                             className={`${style.listProductsButton}`}
+                            onClick={() =>
+                                onhandleTurnPage(product?.id, product?.slug)
+                            }
                         >
                             XEM THÊM
                         </Button>
-                    </Link>
+                    </div>
                 </Flex>
             </div>
             <div className={style.promotionTags}>

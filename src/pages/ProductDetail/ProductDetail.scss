@@ -361,3 +361,11 @@
         }
     }
 }
+.dotCheck {
+    content: "✓";
+    position: absolute;
+    right: 0;
+    bottom: -1px;
+    background-color: #ef683a;
+    border-radius: 100% 0 0 0;
+}
