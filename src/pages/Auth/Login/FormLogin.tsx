@@ -35,8 +35,14 @@ const Login = () => {
     const onSubmit = async (user: UserLogin) => {
         try {
             const response = await instance.post(`/auth/login`, user);
-            let resuilt = response.data;
-            localStorage.setItem("token", resuilt.access_token);
+            console.log("reponse", response);
+            console.log(response.data.user);
+            localStorage.setItem("token", response.data.access_token);
+            localStorage.setItem(
+                "userProFile",
+                JSON.stringify(response.data.user),
+            );
+
             localStorage.setItem("user", JSON.stringify(user.username));
             message.success("Đăng Nhập Thành Công");
             navigate("/");

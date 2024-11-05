@@ -8,7 +8,7 @@ import {
     IconUserCircle,
 } from "@tabler/icons-react";
 import { Button, Dropdown, message, Modal } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FiPhone } from "react-icons/fi";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import Logo from "../logo/logo";
@@ -24,9 +24,7 @@ const Header = () => {
         setVisible(false);
         setDropdownVisible(false);
     };
-
-    const user = JSON.parse(localStorage.getItem("user") || "{}");
-    const userProFile = JSON.parse(localStorage.getItem("userProfile") || "{}");
+    const userProFile = JSON.parse(localStorage.getItem("userProFile") || "{}");
     const navigate = useNavigate();
     const logout = () => {
         Modal.confirm({
@@ -35,7 +33,7 @@ const Header = () => {
             onOk: () => {
                 localStorage.removeItem("user");
                 localStorage.removeItem("token");
-                localStorage.removeItem("userProfile");
+                localStorage.removeItem("userProFile");
                 navigate("/xac-thuc/dang-nhap");
                 message.success("Đăng xuất thành công");
             },
@@ -63,7 +61,7 @@ const Header = () => {
                     <EnvironmentOutlined className="text-xl mb-1" />
                     <Favorite />
                     <CartIcon />
-                    {localStorage.getItem("token") ? (
+                    {localStorage.getItem("userProFile") ? (
                         <Menu
                             shadow="md"
                             width={200}
@@ -75,11 +73,7 @@ const Header = () => {
                         >
                             <Menu.Target>
                                 <Tooltip
-                                    label={`Chào, ${
-                                        userProFile.full_name
-                                            ? userProFile.full_name
-                                            : user
-                                    }`}
+                                    label={`Chào, ${userProFile.full_name || userProFile.username}`}
                                 >
                                     <Avatar
                                         src={
@@ -93,9 +87,8 @@ const Header = () => {
                                     <Box w={170}>
                                         <Text truncate="end" size="sm">
                                             Chào ,{" "}
-                                            {userProFile.full_name
-                                                ? userProFile.full_name
-                                                : user}
+                                            {userProFile.full_name ||
+                                                userProFile.username}
                                         </Text>
                                     </Box>
                                 </Menu.Label>
@@ -178,11 +171,7 @@ const Header = () => {
                             >
                                 <Menu.Target>
                                     <Tooltip
-                                        label={`Chào, ${
-                                            userProFile.full_name
-                                                ? userProFile.full_name
-                                                : user
-                                        }`}
+                                        label={`Chào, ${userProFile.full_name}`}
                                     >
                                         <Avatar
                                             size="sm"
@@ -197,10 +186,7 @@ const Header = () => {
                                     <Menu.Label>
                                         <Box w={170}>
                                             <Text truncate="end" size="sm">
-                                                Chào ,{" "}
-                                                {userProFile.full_name
-                                                    ? userProFile.full_name
-                                                    : user}
+                                                Chào , userProFile.full_name
                                             </Text>
                                         </Box>
                                     </Menu.Label>
