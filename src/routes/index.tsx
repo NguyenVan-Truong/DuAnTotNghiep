@@ -37,7 +37,7 @@ const Index = () => {
                     <Route path="gch" element={<InspirationCorner />} />
                     <Route path="lien-he" element={<Contact />} />
                     <Route
-                        path="chi-tiet-san-pham"
+                        path="chi-tiet-san-pham/:slug"
                         element={<ProductDetail />}
                     />
                     <Route path="/nguoi-dung" element={<ProfileUser />}>

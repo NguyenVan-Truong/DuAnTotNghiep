@@ -1,23 +1,19 @@
 import { NotificationExtension } from "@/extension/NotificationExtension";
-import { Badge, Button, Flex, Rating, Tabs } from "@mantine/core";
-import {
-    IconMinus,
-    IconPlus,
-    IconTableSpark,
-    IconTir,
-} from "@tabler/icons-react";
-import { useState } from "react";
+import { toTitleCase } from "@/model/_base/Text";
+import { Badge, Button, Flex, Rating } from "@mantine/core";
+import { IconCheck, IconMinus, IconPlus } from "@tabler/icons-react";
+import { useEffect, useState } from "react";
 import "../../ProductDetail.scss";
+import WanrrantyTab from "../WarrantyTab/WanrrantyTab";
 type Props = {
-    data: any;
+    data: TypeProductDetail | undefined;
+};
+type AttributeValues = {
+    [key: string]: string[] | any; // Mỗi thuộc tính sẽ có một mảng các giá trị string
 };
 const RightProduct = ({ data }: Props) => {
+    if (!data) return null;
     const [quantity, setQuantity] = useState(1);
-    const [value, setValue] = useState({
-        a: "",
-        b: "",
-    });
-    console.log("data", data);
     const increaseQuantity = () => {
         if (quantity < 5) {
             setQuantity(quantity + 1);
@@ -31,15 +27,88 @@ const RightProduct = ({ data }: Props) => {
             setQuantity(quantity - 1);
         }
     };
+    //#region handleAttribute
+    const [selectedAttributes, setSelectedAttributes] = useState<any>({});
 
-    const handleChangeSearchValue = (value: string, key: string) => {
-        setValue((prevData) => ({ ...prevData, [key]: value }));
+    const attributes = ["Chất Liệu", "Màu Sắc", "Kích Thước"];
+    // Lôi những thuộc tính và value thuộc tính có trong sản phẩm
+    const uniqueAttributes: AttributeValues = attributes.reduce((acc, attr) => {
+        const values = Array.from(
+            new Set(
+                data.variants.flatMap(
+                    (variant: any) =>
+                        variant.attributes
+                            .filter(
+                                (attribute: any) =>
+                                    attribute.attribute === attr,
+                            )
+                            .map((attribute: any) => attribute.value), // Giả sử giá trị thuộc tính lưu trong `value`
+                ),
+            ),
+        );
+        acc[attr] = values;
+        return acc;
+    }, {} as AttributeValues);
+    // xử lý khi chọn thuộc tính
+    const handleAttributeSelect = (attribute: string, value: string) => {
+        // setSelectedAttributes({
+        //     ...selectedAttributes,
+        //     [attribute]: value,
+        // });
+        setSelectedAttributes((prev: any) => {
+            if (prev[attribute] === value) {
+                const updatedAttributes = { ...prev };
+                delete updatedAttributes[attribute];
+                return updatedAttributes;
+            }
+            return {
+                ...prev,
+                [attribute]: value,
+            };
+        });
     };
+    console.log("data", data);
+    console.log("selectedAttributes", selectedAttributes);
+    // xử lý khi chọn thuộc tính , hiển thị những thuộc tính theo cặp
+    // // Giả sử bạn đã có selectedAttributes chứa các thuộc tính đã chọn
+    // const availableVariants = data.variants.filter((variant: any) => {
+    //     return Object.entries(selectedAttributes).every(([key, value]) => {
+    //         return variant.attributes.some((attr: any) => {
+    //             return attr.attribute === key && attr.value === value;
+    //         });
+    //     });
+    // });
+
+    // // Lọc màu sắc khả dụng
+    // const availableColors = Array.from(
+    //     new Set(
+    //         availableVariants.flatMap((variant: any) => {
+    //             return variant.attributes
+    //                 .filter((attr: any) => attr.attribute === "Màu Sắc")
+    //                 .map((attr: any) => attr.value);
+    //         }),
+    //     ),
+    // );
+
+    // // Lọc kích thước khả dụng
+    // const availableSizes = Array.from(
+    //     new Set(
+    //         availableVariants.flatMap((variant: any) => {
+    //             return variant.attributes
+    //                 .filter((attr: any) => attr.attribute === "Kích Thước")
+    //                 .map((attr: any) => attr.value);
+    //         }),
+    //     ),
+    // );
+
+    // // Bây giờ bạn có thể sử dụng availableColors và availableSizes để hiển thị màu sắc và kích thước khả dụng
+    // console.log("Màu sắc khả dụng:", availableColors);
+    // console.log("Kích thước khả dụng:", availableSizes);
     return (
         <div className="product-details">
             <div className="product-header">
                 <h2 className="product-title text-[20px] font-medium">
-                    {data?.name}
+                    {toTitleCase(data?.name)}
                 </h2>
             </div>
             <Flex direction="row" className="product-interactions">
@@ -55,13 +124,8 @@ const RightProduct = ({ data }: Props) => {
                 <Flex direction="row" align="center" gap="lg">
                     <Badge
                         size="lg"
-                        variant="gradient"
-                        gradient={{
-                            from: "blue",
-                            to: "cyan",
-                            deg: 90,
-                        }}
                         radius="sm"
+                        style={{ backgroundColor: "red" }}
                     >
                         -35%
                     </Badge>
@@ -74,85 +138,62 @@ const RightProduct = ({ data }: Props) => {
                 </Flex>
             </div>
             <Flex direction="column" gap="sm" className="product-attributes">
-                <div>
-                    <h4>Chất liệu</h4>
-                    <Flex direction="row" gap="lg">
-                        <Badge
-                            variant="default"
-                            color="rgba(5, 5, 5, 1)"
-                            radius="xs"
-                            size="lg"
-                        >
-                            Gỗ-kim loại
-                        </Badge>{" "}
-                        <Badge
-                            variant="default"
-                            color="rgba(5, 5, 5, 1)"
-                            radius="xs"
-                            size="lg"
-                        >
-                            Gỗ-Nhôm
-                        </Badge>
-                    </Flex>
-                </div>
-                <div>
-                    <h4>Màu sắc</h4>
-                    <Flex direction="row" gap="lg">
-                        <Badge
-                            radius="xs"
-                            size="lg"
-                            color={
-                                value?.a === "go"
-                                    ? "rgba(0, 17, 94, 1)"
-                                    : "rgba(5, 5, 5, 1)"
-                            }
-                            variant={value?.a === "go" ? "filled" : "default"}
-                            onClick={() => handleChangeSearchValue("go", "a")}
-                            style={{ cursor: "pointer" }}
-                        >
-                            Màu gỗ tự nhiên
-                        </Badge>{" "}
-                        <Badge
-                            variant={
-                                value?.a === "gonau" ? "filled" : "default"
-                            }
-                            color={
-                                value?.a === "gonau"
-                                    ? "rgba(0, 17, 94, 1)"
-                                    : "rgba(5, 5, 5, 1)"
-                            }
-                            radius="xs"
-                            size="lg"
-                            onClick={() =>
-                                handleChangeSearchValue("gonau", "a")
-                            }
-                            style={{ cursor: "pointer" }}
-                        >
-                            Màu nâu
-                        </Badge>
-                    </Flex>
-                </div>
-                <div>
-                    <h4>Kích thước</h4>
-                    <Flex direction="row" gap="lg">
-                        <Badge
-                            variant="default"
-                            color="rgba(5, 5, 5, 1)"
-                            radius="xs"
-                            size="lg"
-                        >
-                            1m5
-                        </Badge>
-                        <Badge
-                            variant="default"
-                            color="rgba(5, 5, 5, 1)"
-                            radius="xs"
-                            size="lg"
-                        >
-                            1m8
-                        </Badge>
-                    </Flex>
-                </div>
+                {attributes.map((attribute) => (
+                    <div key={attribute}>
+                        <h4 style={{ fontWeight: "600" }}>{attribute}</h4>
+                        <Flex direction="row" gap="lg">
+                            {uniqueAttributes[attribute]?.map(
+                                (item: string) => (
+                                    <div
+                                        key={item}
+                                        style={{
+                                            position: "relative",
+                                            cursor: "pointer",
+                                            fontWeight: "500",
+                                            minWidth: "80px",
+                                            textAlign: "center",
+                                            border:
+                                                selectedAttributes[
+                                                    attribute
+                                                ] === item
+                                                    ? "1px solid #ef683a"
+                                                    : "1px solid #ccc",
+                                            padding: "8px 10px",
+                                            color:
+                                                selectedAttributes[
+                                                    attribute
+                                                ] === item
+                                                    ? "#ef683a"
+                                                    : "",
+                                        }}
+                                        onClick={() =>
+                                            handleAttributeSelect(
+                                                attribute,
+                                                item,
+                                            )
+                                        }
+                                    >
+                                        {item}
+                                        {selectedAttributes[attribute] ===
+                                            item && (
+                                            <div className="dotCheck">
+                                                <IconCheck
+                                                    stroke={2}
+                                                    style={{
+                                                        width: "14px",
+                                                        height: "auto",
+                                                        color: "#fff",
+                                                        paddingLeft: "2px",
+                                                    }}
+                                                />
+                                            </div>
+                                        )}
+                                    </div>
+                                ),
+                            )}
+                        </Flex>
+                    </div>
+                ))}
             </Flex>
             <div className="mt-[20px]">
                 <Flex direction="row" gap="lg" align="center">
@@ -211,101 +252,7 @@ const RightProduct = ({ data }: Props) => {
                 </Flex>
             </div>
             <div className="my-[10px]">
-                <Tabs defaultValue="gallery">
-                    <Tabs.List>
-                        <Tabs.Tab
-                            value="gallery"
-                            leftSection={<IconTableSpark />}
-                        >
-                            Bảo hành
-                        </Tabs.Tab>
-                        <Tabs.Tab value="messages" leftSection={<IconTir />}>
-                            Vận chuyển
-                        </Tabs.Tab>
-                    </Tabs.List>
-
-                    <Tabs.Panel value="gallery">
-                        <div className="warranty-content">
-                            <ul>
-                                <li>
-                                    Các sản phẩm nội thất tại Mordren Home đa số
-                                    đều được sản xuất tại nhà máy của công ty cổ
-                                    phần xây dựng kiến trúc AA với đội ngũ nhân
-                                    viên và công nhân ưu tú cùng cơ sở vật chất
-                                    hiện đại (http://www.aacorporation.com/).
-                                    Mordren Home đã kiểm tra kỹ lưỡng từ nguồn
-                                    nguyên liệu cho đến sản phẩm hoàn thiện cuối
-                                    cùng.
-                                </li>
-                                <li>
-                                    Mordren Home bảo hành một năm cho các trường
-                                    hợp có lỗi về kỹ thuật trong quá trình sản
-                                    xuất hay lắp đặt.
-                                </li>
-                                <li>
-                                    Quý khách không nên tự sửa chữa mà hãy báo
-                                    ngay cho Nhà Xinh qua hotline: 1800 7200.
-                                </li>
-                                <li>
-                                    Sau thời gian hết hạn bảo hành, nếu quý
-                                    khách có bất kỳ yêu cầu hay thắc mắc thì vui
-                                    lòng liên hệ với Nhà Xinh để được hướng dẫn
-                                    và giải quyết các vấn đề gặp phải.
-                                </li>
-                            </ul>
-                            <p>
-                                TUY NHIÊN Mordren Home KHÔNG BẢO HÀNH CHO CÁC
-                                TRƯỜNG HỢP SAU:
-                            </p>
-                            <ul>
-                                <li>
-                                    Khách hàng tự ý sửa chữa khi sản phẩm bị
-                                    trục trặc mà không báo cho Mordren Home.
-                                </li>
-                                <li>
-                                    Sản phẩm được sử dụng không đúng quy cách
-                                    của sổ bảo hành (được trao gửi khi quý khách
-                                    mua sản phẩm) gây nên trầy xước, móp, dơ bẩn
-                                    hay mất màu.
-                                </li>
-                                <li>
-                                    Sản phẩm bị biến dạng do môi trường bên
-                                    ngoài bất bình thường (quá ẩm, quá khô, mối
-                                    hay do tác động từ các thiết bị điện nước,
-                                    các hóa chất hay dung môi khách hàng sử dụng
-                                    không phù hợp).
-                                </li>
-                                <li>Sản phẩm hết hạn bảo hành.</li>
-                                <li>
-                                    Sản phẩm không có phiếu bảo hành của Mordren
-                                    Home.
-                                </li>
-                                <li>Xem nội dung sổ bảo hành</li>
-                            </ul>
-                        </div>
-                    </Tabs.Panel>
-
-                    <Tabs.Panel value="messages">
-                        <div className="shipping-content">
-                            <ul>
-                                <li>
-                                    Mordren Home cung cấp dịch vụ giao hàng tận
-                                    nơi, lắp ráp và sắp xếp vị trí theo đúng ý
-                                    muốn của quý khách:
-                                </li>
-                                <li>
-                                    MIỄN PHÍ giao hàng trong các Quận nội thành
-                                    Tp.Hồ Chí Minh và Hà Nội, áp dụng cho các
-                                    đơn hàng trị giá trên 10 triệu.
-                                </li>
-                                <li>
-                                    Đối với khu vực các tỉnh lân cận: Tính phí
-                                    hợp lý theo dựa trên quãng đường vận chuyển
-                                </li>
-                            </ul>
-                        </div>
-                    </Tabs.Panel>
-                </Tabs>
+                <WanrrantyTab />
             </div>
         </div>
     );
