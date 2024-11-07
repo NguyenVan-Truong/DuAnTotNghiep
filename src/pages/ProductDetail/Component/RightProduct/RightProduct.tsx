@@ -9,17 +9,35 @@ type Props = {
     data: TypeProductDetail | undefined;
 };
 type AttributeValues = {
-    [key: string]: string[] | any; // Mỗi thuộc tính sẽ có một mảng các giá trị string
+    [key: string]: string[] | any;
+};
+type Attribute = {
+    id: number;
+    attribute: string;
+    value: string;
+};
+type TypeFilteredVariant = {
+    id: number;
+    price: string;
+    discount_price: string;
+    stock: number;
+    weight: string;
+    sku: string;
+    image_url: string;
+    created_at: string;
+    updated_at: string;
+    attributes: Attribute[];
 };
 const RightProduct = ({ data }: Props) => {
     if (!data) return null;
     const [quantity, setQuantity] = useState(1);
     const increaseQuantity = () => {
-        if (quantity < 5) {
+        if (
+            quantity < (filteredVariant ? filteredVariant?.stock : data.stock)
+        ) {
             setQuantity(quantity + 1);
         } else {
-            console.log("không được vượt 5");
-            NotificationExtension.Fails("Không được vượt quá 5 sản phẩm");
+            NotificationExtension.Fails("Không thể vượt quá sản phẩm có sẵn");
         }
     };
     const decreaseQuantity = () => {
@@ -67,43 +85,20 @@ const RightProduct = ({ data }: Props) => {
             };
         });
     };
+    // lọc giá trị variant dựa trên thuộc tính đã chọn
+    const filteredVariant = data.variants.find((variant: any) => {
+        return Object.entries(selectedAttributes).every(
+            ([attribute, value]) => {
+                return variant.attributes.some(
+                    (attr: any) =>
+                        attr.attribute === attribute && attr.value === value,
+                );
+            },
+        );
+    }) as TypeFilteredVariant | undefined;
     console.log("data", data);
     console.log("selectedAttributes", selectedAttributes);
-    // xử lý khi chọn thuộc tính , hiển thị những thuộc tính theo cặp
-    // // Giả sử bạn đã có selectedAttributes chứa các thuộc tính đã chọn
-    // const availableVariants = data.variants.filter((variant: any) => {
-    //     return Object.entries(selectedAttributes).every(([key, value]) => {
-    //         return variant.attributes.some((attr: any) => {
-    //             return attr.attribute === key && attr.value === value;
-    //         });
-    //     });
-    // });
-
-    // // Lọc màu sắc khả dụng
-    // const availableColors = Array.from(
-    //     new Set(
-    //         availableVariants.flatMap((variant: any) => {
-    //             return variant.attributes
-    //                 .filter((attr: any) => attr.attribute === "Màu Sắc")
-    //                 .map((attr: any) => attr.value);
-    //         }),
-    //     ),
-    // );
-
-    // // Lọc kích thước khả dụng
-    // const availableSizes = Array.from(
-    //     new Set(
-    //         availableVariants.flatMap((variant: any) => {
-    //             return variant.attributes
-    //                 .filter((attr: any) => attr.attribute === "Kích Thước")
-    //                 .map((attr: any) => attr.value);
-    //         }),
-    //     ),
-    // );
-
-    // // Bây giờ bạn có thể sử dụng availableColors và availableSizes để hiển thị màu sắc và kích thước khả dụng
-    // console.log("Màu sắc khả dụng:", availableColors);
-    // console.log("Kích thước khả dụng:", availableSizes);
+    console.log("filteredVariant", filteredVariant);
     return (
         <div className="product-details">
             <div className="product-header">
@@ -135,6 +130,18 @@ const RightProduct = ({ data }: Props) => {
                     <span className="original-price text-[#777a7b] text-[14px] ">
                         <del>{data?.price}</del>
                     </span>
+                    {/* <span className="current-price text-[#ef683a] text-[17px] font-bold">
+                        {filteredVariant
+                            ? filteredVariant?.discount_price
+                            : data?.discount_price}
+                    </span>
+                    <span className="original-price text-[#777a7b] text-[14px] ">
+                        <del>
+                            {filteredVariant
+                                ? filteredVariant?.price
+                                : data?.price}
+                        </del>
+                    </span> */}
                 </Flex>
             </div>
             <Flex direction="column" gap="sm" className="product-attributes">
@@ -202,53 +209,106 @@ const RightProduct = ({ data }: Props) => {
                             <Button
                                 variant="default"
                                 onClick={decreaseQuantity}
+                                disabled={
+                                    filteredVariant
+                                        ? filteredVariant.stock < 1
+                                        : data.stock < 1
+                                }
                             >
                                 <IconMinus size={14} />
                             </Button>
                             <Button
                                 variant="default"
                                 className="!w-[60px] text-center"
+                                style={{ color: "red" }}
                             >
                                 {quantity}
                             </Button>
                             <Button
                                 variant="default"
                                 onClick={increaseQuantity}
+                                disabled={
+                                    filteredVariant
+                                        ? filteredVariant.stock < 1
+                                        : data.stock < 1
+                                }
                             >
                                 <IconPlus size={14} />
                             </Button>
                         </Button.Group>
                     </div>
                     <div>
-                        <Badge
-                            size="lg"
-                            variant="gradient"
-                            gradient={{
-                                from: "rgba(3, 0, 207, 1)",
-                                to: "cyan",
-                                deg: 35,
-                            }}
-                            radius="xs"
-                            style={{ padding: "20px ", cursor: "pointer" }}
-                        >
-                            Mua ngay
-                        </Badge>
+                        <span style={{ color: "rgb(1 1 1)", fontSize: "13px" }}>
+                            {filteredVariant
+                                ? filteredVariant?.stock
+                                : data.stock}{" "}
+                            sản phẩm có sẵn
+                        </span>
                     </div>
-                    <div>
-                        <Badge
-                            size="lg"
-                            variant="gradient"
-                            gradient={{
-                                from: "rgba(5, 3, 2, 1)",
-                                to: "rgba(61, 61, 61, 1)",
-                                deg: 35,
-                            }}
-                            style={{ padding: "20px ", cursor: "pointer" }}
-                            radius="xs"
-                        >
-                            Thêm vào giỏ hàng
-                        </Badge>
-                    </div>
+                </Flex>
+                <Flex
+                    direction="row"
+                    w="100%"
+                    style={{ marginTop: "10px" }}
+                    gap="xl"
+                >
+                    {filteredVariant?.stock == 0 || data.stock == 0 ? (
+                        <div style={{ width: "100%" }}>
+                            <Badge
+                                w="100%"
+                                size="lg"
+                                variant="filled"
+                                color="#ccc"
+                                style={{
+                                    padding: "20px ",
+                                }}
+                                radius="xs"
+                            >
+                                Hết hàng
+                            </Badge>
+                        </div>
+                    ) : (
+                        <>
+                            <div style={{ width: "50%" }}>
+                                <Badge
+                                    w="100%"
+                                    size="lg"
+                                    variant="gradient"
+                                    gradient={{
+                                        from: "rgba(5, 3, 2, 1)",
+                                        to: "rgba(61, 61, 61, 1)",
+                                        deg: 35,
+                                    }}
+                                    style={{
+                                        padding: "20px ",
+                                        cursor: "pointer",
+                                    }}
+                                    radius="xs"
+                                >
+                                    Thêm vào giỏ hàng
+                                </Badge>
+                            </div>
+                            <div style={{ width: "50%" }}>
+                                <Badge
+                                    w="100%"
+                                    size="lg"
+                                    variant="gradient"
+                                    gradient={{
+                                        from: "rgba(3, 0, 207, 1)",
+                                        to: "cyan",
+                                        deg: 35,
+                                    }}
+                                    radius="xs"
+                                    style={{
+                                        padding: "20px ",
+                                        cursor: "pointer",
+                                    }}
+                                >
+                                    Mua ngay
+                                </Badge>
+                            </div>
+                        </>
+                    )}
                 </Flex>
             </div>
             <div className="my-[10px]">

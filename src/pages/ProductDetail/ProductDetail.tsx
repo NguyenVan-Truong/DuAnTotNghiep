@@ -38,10 +38,10 @@ const ProductDetail = () => {
                 <div className="Breadcrumbs">
                     <div className="container padding">
                         <div className="menu">
-                            <Link to="#">Trang Chủ</Link> /{" "}
+                            <Link to="#">Trang Chủ</Link> /
                             <Link to="#">
                                 <span className="">Phòng Khách</span>
-                            </Link>{" "}
+                            </Link>
                         </div>
                     </div>
                 </div>
