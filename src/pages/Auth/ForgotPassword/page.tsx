@@ -54,7 +54,7 @@ const ForgotPassword = () => {
                     withAsterisk
                     size="md"
                     radius="md"
-                    label="Tài khoản"
+                    label="Email"
                     placeholder="Mời bạn nhập email"
                     leftSection={<FaAt />}
                     {...form.getInputProps("email")}
@@ -64,7 +64,7 @@ const ForgotPassword = () => {
                     radius="md"
                     size="md"
                     fullWidth
-                    className="!bg-black hover:!bg-gray-900"
+                    className="!bg-black !border-white !text-white hover:!bg-gray-800"
                 >
                     Gửi Mật Khẩu
                 </Button>

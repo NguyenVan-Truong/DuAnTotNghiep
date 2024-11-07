@@ -1,3 +1,6 @@
+import instance from "@/configs/axios";
+import { NotificationExtension } from "@/extension/NotificationExtension";
+import { UserLogin } from "@/model/User";
 import {
     Button,
     Flex,
@@ -9,28 +12,44 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { message } from "antd";
-import { FaAt } from "react-icons/fa";
+import { BiCookie } from "react-icons/bi";
+import { FaUser } from "react-icons/fa";
 import { FiLock } from "react-icons/fi";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Login = () => {
     const form = useForm({
         initialValues: {
-            email: "",
+            username: "",
             password: "",
         },
 
         validate: {
-            email: (value) =>
-                /^\S+@\S+$/.test(value) ? null : "Email không hợp lệ",
+            username: (value) =>
+                value.length >= 6 ? null : "Tài khoản phải có ít nhất 6 ký tự",
             password: (value) =>
-                value.length >= 6 ? null : "Mật khẩu phải có ít nhất 6 ký tự",
+                value.length >= 5 ? null : "Mật khẩu phải có ít nhất 6 ký tự",
         },
     });
+    const navigate = useNavigate();
+    const onSubmit = async (user: UserLogin) => {
+        try {
+            const response = await instance.post(`/auth/login`, user);
+            console.log("reponse", response);
+            console.log(response.data.user);
+            localStorage.setItem("token", response.data.access_token);
+            localStorage.setItem(
+                "userProFile",
+                JSON.stringify(response.data.user),
+            );
 
-    const handleSubmit = (values: typeof form.values) => {
-        console.log(values);
-        message.success("Thành công");
+            localStorage.setItem("user", JSON.stringify(user.username));
+            message.success("Đăng Nhập Thành Công");
+            navigate("/");
+        } catch (error) {
+            message.error("Tài Khoản hoặc Mật Khẩu không chính xác");
+            console.error("Error:", error);
+        }
     };
 
     return (
@@ -43,16 +62,16 @@ const Login = () => {
                     Xin hãy đăng nhập vào tài khoản của bạn
                 </Text>
             </Flex>
-            <form className="w-[340px]" onSubmit={form.onSubmit(handleSubmit)}>
+            <form className="w-[340px]" onSubmit={form.onSubmit(onSubmit)}>
                 <TextInput
                     className="mb-3"
                     withAsterisk
                     size="md"
                     radius="md"
-                    label="Tài khoản"
-                    placeholder="Mời bạn nhập email"
-                    leftSection={<FaAt />}
-                    {...form.getInputProps("email")}
+                    label="Tên đăng nhập"
+                    placeholder="Mời bạn nhập tên đăng nhập"
+                    leftSection={<FaUser />}
+                    {...form.getInputProps("username")}
                 />
                 <PasswordInput
                     className="mb-3"
@@ -85,7 +104,7 @@ const Login = () => {
                     radius="md"
                     size="md"
                     fullWidth
-                    className="!bg-black hover:!bg-gray-900"
+                    className="!bg-black !text-white hover:!bg-gray-800"
                 >
                     Đăng Nhập
                 </Button>

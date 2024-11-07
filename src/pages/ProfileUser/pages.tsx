@@ -1,16 +1,17 @@
-import { Avatar } from "@/assets/img";
+import { AvatarDefault } from "@/assets/img";
 import { Box, Image, NavLink, Text } from "@mantine/core";
-import { Outlet } from "react-router-dom";
 import {
     IconCards,
-    IconDoorExit,
     IconHeart,
-    IconMapPin,
+    IconMail,
     IconPencil,
     IconShoppingCart,
     IconUser,
 } from "@tabler/icons-react";
+import { Outlet } from "react-router-dom";
 const ProfileUser = () => {
+    const userProFile = JSON.parse(localStorage.getItem("userProFile") || "{}");
+
     return (
         <div className="bg-[#F5F5F5]">
             <div className="container !mt-5">
@@ -20,7 +21,7 @@ const ProfileUser = () => {
                 <div className="w-64 border-2 hidden lg:block bg-white">
                     <div className="flex items-center space-x-2 mt-5 justify-center mx-auto py-2">
                         <Image
-                            src={Avatar}
+                            src={userProFile.avatar || AvatarDefault}
                             radius="xl"
                             h={45}
                             w="auto"
@@ -28,7 +29,7 @@ const ProfileUser = () => {
                         />{" "}
                         <Box w={160}>
                             <Text truncate="end" size="lg">
-                                Nguyễn Văn Trường
+                                {userProFile.full_name || userProFile.username}
                             </Text>
                             <Text
                                 size="md"
@@ -60,11 +61,11 @@ const ProfileUser = () => {
                             }
                         />
                         <NavLink
-                            leftSection={<IconMapPin size="1.3rem" />}
-                            href="/nguoi-dung/thong-tin-tai-khoan"
+                            leftSection={<IconMail size="1.3rem" />}
+                            href="/nguoi-dung/thu-ho-tro"
                             label={
                                 <span style={{ fontSize: "14.20px" }}>
-                                    Quản lý địa chỉ
+                                    Thư hõ trợ đã gửi
                                 </span>
                             }
                         />
@@ -83,15 +84,6 @@ const ProfileUser = () => {
                             label={
                                 <span style={{ fontSize: "14.20px" }}>
                                     Danh sách yêu thích
-                                </span>
-                            }
-                        />
-                        <NavLink
-                            leftSection={<IconDoorExit size="1.3rem" />}
-                            href="/nguoi-dung/thong-tin-tai-khoan"
-                            label={
-                                <span style={{ fontSize: "14.20px" }}>
-                                    Đăng Xuất
                                 </span>
                             }
                         />

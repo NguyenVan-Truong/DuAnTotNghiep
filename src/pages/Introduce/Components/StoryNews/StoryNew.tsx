@@ -1,21 +1,50 @@
 import { duong_dai_5_new, duong_dai_6 } from '@/assets/img';
 import styles from './StoryNew.module.scss';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
+
+interface NewsItem {
+    id: number;
+    title: string;
+    meta_description: string;
+    created_at: string;
+    image: string;
+}
 
 const StoryNew = () => {
+
+    const [newsData, setNewsData] = useState<NewsItem[]>([]);
+
+    useEffect(() => {
+        // Gọi API để lấy dữ liệu bài viết
+        const fetchData = async () => {
+            try {
+                const response = await axios.get('http://127.0.0.1:8000/api/posts'); // Đảm bảo thay API_URL_HERE bằng URL của bạn
+                setNewsData(response.data);
+            } catch (error) {
+                console.error('Không Thể Tải Dữ Liệu:', error);
+            }
+        };
+
+        fetchData();
+    }, []);
+
     return (
         <div className={styles.container}>
             <h1 className={styles.pageTitle}>CHUYỆN NHÀ XINH</h1>
             <div className={styles.newsContainer}>
-                <div className={styles.newsItem}>
-                    <img src={duong_dai_5_new} alt="Cùng LG và AKA" className={styles.newsImage} />
-                    <div className={styles.newsDetails}>
-                        <div className={styles.newsDate}>15 Jul</div>
-                        <h2 className={styles.newsTitle}>Cùng LG VÀ AKA “Nâng tầm không gian – Sống sang đẳng cấp”</h2>
-                        <p className={styles.newsDescription}>
-                            Sự kiện hợp tác đặc biệt giữa LG Electronics (LG) và AKA Furniture (AKA), mang đến sự mới mẻ cho không gian sống của người Việt.
-                        </p>
+                {newsData.map((newsItem) => (
+                    <div key={newsItem.id} className={styles.newsItem}>
+                        <img src={newsItem.image} alt={newsItem.title} className={styles.newsImage} />
+                        <div className={styles.newsDetails}>
+                            <div className={styles.newsDate}>{new Date(newsItem.created_at).toLocaleDateString()}</div>
+                            <h2 className={styles.newsTitle}>{newsItem.title}</h2>
+                            <p className={styles.newsDescription}>
+                                {newsItem.meta_description}
+                            </p>
+                        </div>
                     </div>
-                </div>
+                ))}
                 <div className={styles.newsItem}>
                     <img src={duong_dai_6} alt="Tập đoàn AA Corporation" className={styles.newsImage} />
                     <div className={styles.newsDetails}>

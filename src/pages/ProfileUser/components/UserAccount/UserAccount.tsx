@@ -1,4 +1,4 @@
-import { Avatar } from "@/assets/img";
+import { Avatar, AvatarDefault } from "@/assets/img";
 import {
     Button,
     Group,
@@ -19,6 +19,9 @@ import {
     IconUser,
 } from "@tabler/icons-react";
 import FormUpdate from "./FormUpdate";
+import instance from "@/configs/axios";
+import { useQuery } from "@tanstack/react-query";
+import { UserProfile } from "@/model/User";
 
 const UserAccount = () => {
     const handleAdd = () => {
@@ -30,6 +33,26 @@ const UserAccount = () => {
             cancelProps: { display: "none" },
         });
     };
+    const fetchData = async () => {
+        const response = await instance.get("/auth/profile");
+        console.log("object", response.data);
+        return response.data;
+    };
+    const { data, error, isLoading, isError } = useQuery<UserProfile>({
+        queryKey: ["profile"],
+        queryFn: fetchData,
+    });
+    console.log("data", data);
+    if (isLoading) {
+        return <div>Loading...</div>;
+    }
+
+    if (isError) {
+        return <div>Error: {error.message}</div>;
+    }
+    if (!data) {
+        return <div>Không có thông tin hồ sơ để hiển thị.</div>;
+    }
 
     return (
         <div className="bg-white !pb-6">
@@ -102,7 +125,7 @@ const UserAccount = () => {
                                 disabled
                                 placeholder="Input component"
                                 className="flex-grow"
-                                value="Nguyễn Văn Trường"
+                                value={data.email || "Không có dữ liệu"}
                             />
                         </div>
                         <div className="flex items-center space-x-3">
@@ -113,7 +136,7 @@ const UserAccount = () => {
                                 disabled
                                 placeholder="Input component"
                                 className="flex-grow"
-                                value="Nguyễn Văn Trường"
+                                value={data.full_name || "Không có dữ liệu"}
                             />
                         </div>
                         <div className="flex items-center space-x-3">
@@ -124,7 +147,7 @@ const UserAccount = () => {
                                 disabled
                                 placeholder="Input component"
                                 className="flex-grow"
-                                value="Nguyễn Văn Trường"
+                                value={data.phone || "Không có dữ liệu"}
                             />
                         </div>
                         <div className="flex items-center space-x-3">
@@ -135,37 +158,8 @@ const UserAccount = () => {
                                 disabled
                                 placeholder="Input component"
                                 className="flex-grow"
-                                value="Nguyễn Văn Trường"
+                                value={data.address || "Không có dữ liệu"}
                             />
-                        </div>
-                        <div className="flex items-center space-x-3">
-                            <Text className="w-1/3" size="lg">
-                                Giới tính:
-                            </Text>
-                            <Group>
-                                <Radio
-                                    disabled
-                                    label="Nam"
-                                    name="check"
-                                    value="check"
-                                    variant="outline"
-                                    defaultChecked
-                                />
-                                <Radio
-                                    disabled
-                                    label="Nữ"
-                                    name="check"
-                                    value="check"
-                                    variant="outline"
-                                />
-                                <Radio
-                                    disabled
-                                    label="Khác"
-                                    name="check"
-                                    value="check"
-                                    variant="outline"
-                                />
-                            </Group>
                         </div>
                         <div className="flex items-center space-x-3">
                             <Text className="w-1/3" size="lg">
@@ -175,14 +169,14 @@ const UserAccount = () => {
                                 disabled
                                 placeholder="Input component"
                                 className="flex-grow"
-                                value="Nguyễn Văn Trường"
+                                value={data.birthday || "Không có dữ liệu"}
                             />
                         </div>
                     </div>
                     <div className="border-l-2 border-slate-300">
                         <div className="flex justify-center">
                             <Image
-                                src={Avatar}
+                                src={data.avatar ? data.avatar : AvatarDefault}
                                 radius="sm"
                                 h={200}
                                 w="auto"

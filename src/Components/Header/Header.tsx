@@ -1,4 +1,4 @@
-import { bannerh1 } from "@/assets/img";
+import { AvatarDefault, bannerh1 } from "@/assets/img";
 import { EnvironmentOutlined, SearchOutlined } from "@ant-design/icons";
 import { Avatar, Box, Input, Menu, Text, Tooltip } from "@mantine/core";
 import {
@@ -7,10 +7,10 @@ import {
     IconShoppingCart,
     IconUserCircle,
 } from "@tabler/icons-react";
-import { Button, Dropdown } from "antd";
-import { useState } from "react";
+import { Button, Dropdown, message, Modal } from "antd";
+import { useEffect, useState } from "react";
 import { FiPhone } from "react-icons/fi";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import Logo from "../logo/logo";
 import Favorite from "./components/FavoriteCollection";
 import IconMenu from "./components/Menu";
@@ -24,7 +24,24 @@ const Header = () => {
         setVisible(false);
         setDropdownVisible(false);
     };
-
+    const userProFile = JSON.parse(localStorage.getItem("userProFile") || "{}");
+    const navigate = useNavigate();
+    const logout = () => {
+        Modal.confirm({
+            title: "Xác nhận đăng xuất",
+            content: "Bạn có chắc chắn muốn đăng xuất?",
+            onOk: () => {
+                localStorage.removeItem("user");
+                localStorage.removeItem("token");
+                localStorage.removeItem("userProFile");
+                navigate("/xac-thuc/dang-nhap");
+                message.success("Đăng xuất thành công");
+            },
+            onCancel() {
+                console.log("Người dùng đã huỷ đăng xuất");
+            },
+        });
+    };
     return (
         <>
             {/* Header1 */}
@@ -44,77 +61,95 @@ const Header = () => {
                     <EnvironmentOutlined className="text-xl mb-1" />
                     <Favorite />
                     <CartIcon />
-                    <Button className="border-none text-sm">Đăng Nhập</Button>
-                    <Menu
-                        shadow="md"
-                        width={200}
-                        offset={2}
-                        transitionProps={{
-                            transition: "rotate-right",
-                            duration: 150,
-                        }}
-                    >
-                        <Menu.Target>
-                            <Tooltip label="Chào , Trường">
-                                <Avatar src={bannerh1} />
-                            </Tooltip>
-                        </Menu.Target>
-                        <Menu.Dropdown>
-                            <Menu.Label>
-                                <Box w={170}>
-                                    <Text truncate="end" size="sm">
-                                        Chào , Nguyễn Văn Trường
-                                    </Text>
-                                </Box>
-                            </Menu.Label>
-                            <Menu.Divider />
-                            <Menu.Item
-                                leftSection={
-                                    <IconUserCircle
-                                        style={{ fontSize: "14px" }}
+                    {localStorage.getItem("userProFile") ? (
+                        <Menu
+                            shadow="md"
+                            width={200}
+                            offset={2}
+                            transitionProps={{
+                                transition: "rotate-right",
+                                duration: 150,
+                            }}
+                        >
+                            <Menu.Target>
+                                <Tooltip
+                                    label={`Chào, ${userProFile.full_name || userProFile.username}`}
+                                >
+                                    <Avatar
+                                        src={
+                                            userProFile.avatar || AvatarDefault
+                                        }
                                     />
-                                }
-                                style={{ fontSize: "13px" }}
-                            >
-                                <Link to={"/nguoi-dung/thong-tin-tai-khoan"}>
-                                    Thông tin của tôi
-                                </Link>
-                            </Menu.Item>
-                            <Menu.Item
-                                leftSection={
-                                    <IconShoppingCart
-                                        style={{ fontSize: "14px" }}
-                                    />
-                                }
-                                style={{ fontSize: "13px" }}
-                            >
-                                <Link to={"/nguoi-dung/don-hang"}>
-                                    Đơn hàng
-                                </Link>
-                            </Menu.Item>
-                            <Menu.Item
-                                leftSection={
-                                    <IconHeartSpark
-                                        style={{ fontSize: "14px" }}
-                                    />
-                                }
-                                style={{ fontSize: "13px" }}
-                            >
-                                <Link to={"/nguoi-dung/san-pham-yeu-thich"}>
-                                    Sản Phẩm Yêu thích
-                                </Link>
-                            </Menu.Item>
-                            <Menu.Divider />
-                            <Menu.Item
-                                color="red"
-                                leftSection={
-                                    <IconLogout style={{ fontSize: "14px" }} />
-                                }
-                            >
-                                Đăng xuất
-                            </Menu.Item>
-                        </Menu.Dropdown>
-                    </Menu>
+                                </Tooltip>
+                            </Menu.Target>
+                            <Menu.Dropdown>
+                                <Menu.Label>
+                                    <Box w={170}>
+                                        <Text truncate="end" size="sm">
+                                            Chào ,{" "}
+                                            {userProFile.full_name ||
+                                                userProFile.username}
+                                        </Text>
+                                    </Box>
+                                </Menu.Label>
+                                <Menu.Divider />
+                                <Menu.Item
+                                    leftSection={
+                                        <IconUserCircle
+                                            style={{ fontSize: "14px" }}
+                                        />
+                                    }
+                                    style={{ fontSize: "13px" }}
+                                >
+                                    <Link
+                                        to={"/nguoi-dung/thong-tin-tai-khoan"}
+                                    >
+                                        Thông tin của tôi
+                                    </Link>
+                                </Menu.Item>
+                                <Menu.Item
+                                    leftSection={
+                                        <IconShoppingCart
+                                            style={{ fontSize: "14px" }}
+                                        />
+                                    }
+                                    style={{ fontSize: "13px" }}
+                                >
+                                    <Link to={"/nguoi-dung/don-hang"}>
+                                        Đơn hàng
+                                    </Link>
+                                </Menu.Item>
+                                <Menu.Item
+                                    leftSection={
+                                        <IconHeartSpark
+                                            style={{ fontSize: "14px" }}
+                                        />
+                                    }
+                                    style={{ fontSize: "13px" }}
+                                >
+                                    <Link to={"/nguoi-dung/san-pham-yeu-thich"}>
+                                        Sản Phẩm Yêu thích
+                                    </Link>
+                                </Menu.Item>
+                                <Menu.Divider />
+                                <Menu.Item
+                                    color="red"
+                                    leftSection={
+                                        <IconLogout
+                                            style={{ fontSize: "14px" }}
+                                        />
+                                    }
+                                    onClick={logout}
+                                >
+                                    Đăng xuất
+                                </Menu.Item>
+                            </Menu.Dropdown>
+                        </Menu>
+                    ) : (
+                        <Button className="border-none text-sm">
+                            <Link to={"/xac-thuc/dang-nhap"}>Đăng Nhập</Link>
+                        </Button>
+                    )}
                 </div>
                 <div className="lg-hidden flex space-x-5 mr-5">
                     <div className="block lg-hidden">
@@ -122,6 +157,105 @@ const Header = () => {
                     </div>
                     <div className="block lg-hidden items-center space-x-4">
                         <CartIcon />
+                    </div>
+                    <div>
+                        {localStorage.getItem("token") ? (
+                            <Menu
+                                shadow="md"
+                                width={200}
+                                offset={2}
+                                transitionProps={{
+                                    transition: "rotate-right",
+                                    duration: 150,
+                                }}
+                            >
+                                <Menu.Target>
+                                    <Tooltip
+                                        label={`Chào, ${userProFile.full_name}`}
+                                    >
+                                        <Avatar
+                                            size="sm"
+                                            src={
+                                                userProFile.avatar ||
+                                                AvatarDefault
+                                            }
+                                        />
+                                    </Tooltip>
+                                </Menu.Target>
+                                <Menu.Dropdown>
+                                    <Menu.Label>
+                                        <Box w={170}>
+                                            <Text truncate="end" size="sm">
+                                                Chào , userProFile.full_name
+                                            </Text>
+                                        </Box>
+                                    </Menu.Label>
+                                    <Menu.Divider />
+                                    <Menu.Item
+                                        leftSection={
+                                            <IconUserCircle
+                                                style={{ fontSize: "14px" }}
+                                            />
+                                        }
+                                        style={{ fontSize: "13px" }}
+                                    >
+                                        <Link
+                                            to={
+                                                "/nguoi-dung/thong-tin-tai-khoan"
+                                            }
+                                        >
+                                            Thông tin của tôi
+                                        </Link>
+                                    </Menu.Item>
+                                    <Menu.Item
+                                        leftSection={
+                                            <IconShoppingCart
+                                                style={{ fontSize: "14px" }}
+                                            />
+                                        }
+                                        style={{ fontSize: "13px" }}
+                                    >
+                                        <Link to={"/nguoi-dung/don-hang"}>
+                                            Đơn hàng
+                                        </Link>
+                                    </Menu.Item>
+                                    <Menu.Item
+                                        leftSection={
+                                            <IconHeartSpark
+                                                style={{ fontSize: "14px" }}
+                                            />
+                                        }
+                                        style={{ fontSize: "13px" }}
+                                    >
+                                        <Link
+                                            to={
+                                                "/nguoi-dung/san-pham-yeu-thich"
+                                            }
+                                        >
+                                            Sản Phẩm Yêu thích
+                                        </Link>
+                                    </Menu.Item>
+                                    <Menu.Divider />
+                                    <Menu.Item
+                                        color="red"
+                                        leftSection={
+                                            <IconLogout
+                                                style={{ fontSize: "14px" }}
+                                            />
+                                        }
+                                        onClick={logout}
+                                    >
+                                        Đăng xuất
+                                    </Menu.Item>
+                                </Menu.Dropdown>
+                            </Menu>
+                        ) : (
+                            <Button className="border-none text-sm">
+                                <Link to={"/xac-thuc/dang-nhap"}>
+                                    Đăng Nhập
+                                </Link>
+                            </Button>
+                        )}
                     </div>
                 </div>
             </header>
@@ -187,7 +321,7 @@ const Header = () => {
                                     arrow
                                 >
                                     <NavLink
-                                        to="/cua-hang"
+                                        to="/san-pham"
                                         className={({ isActive }) =>
                                             `relative ${isActive ? "border-b-4 border-red-500" : "hover:border-b-2 hover:border-red-500"}`
                                         }
@@ -198,12 +332,12 @@ const Header = () => {
                             </li>
                             <li className="flex items-center space-x-5 !lg:space-x-2 whitespace-nowrap">
                                 <NavLink
-                                    to="/abc"
+                                    to="/lien-he"
                                     className={({ isActive }) =>
                                         `relative ${isActive ? "border-b-4 border-red-500" : "hover:border-b-2 hover:text-orange-300"}`
                                     }
                                 >
-                                    Phòng
+                                    Liên Hệ
                                 </NavLink>
                             </li>
                             <li className="flex items-center space-x-5 !lg:space-x-2 whitespace-nowrap">

@@ -109,18 +109,18 @@
     // position: relative;
 
     .slick-prev {
-        background-color: rgba(129, 126, 126, 0.26);
-        width: 40px;
-        height: 40px;
-        position: absolute;
-        top: 45%;
-        border-top-right-radius: 50%;
-        border-bottom-right-radius: 50%;
-        left: 5px; // Điều chỉnh khoảng cách từ bên trái
-        transform: translateY(-40%);
+        // background-color: rgba(129, 126, 126, 0.26);
+        // width: 40px;
+        // height: 40px;
+        // position: absolute;
+        top: 50%;
+        // border-top-right-radius: 50%;
+        // border-bottom-right-radius: 50%;
+        left: 14px; // Điều chỉnh khoảng cách từ bên trái
+        transform: translateY(-50%);
         z-index: 2;
-        font-size: 30px; // Giảm kích thước font cho phù hợp hơn
-        color: red; // Màu của nút prev
+        // font-size: 30px; // Giảm kích thước font cho phù hợp hơn
+        // color: red; // Màu của nút prev
         cursor: pointer;
         .arrow-icon {
             margin-top: 5px;
@@ -132,17 +132,17 @@
 
     .slick-next {
         position: absolute;
-        background-color: rgba(129, 126, 126, 0.26);
-        width: 40px;
-        height: 40px;
-        border-top-left-radius: 50%;
-        border-bottom-left-radius: 50%;
-        top: 45%;
-        right: 5px; // Điều chỉnh khoảng cách từ bên phải
+        // background-color: rgba(129, 126, 126, 0.26);
+        // width: 40px;
+        // height: 40px;
+        // border-top-left-radius: 50%;
+        // border-bottom-left-radius: 50%;
+        top: 50%;
+        right: 10px; // Điều chỉnh khoảng cách từ bên phải
         transform: translateY(-50%);
         z-index: 2;
-        font-size: 30px; // Giảm kích thước font cho phù hợp hơn
-        color: red; // Màu của nút next
+        // font-size: 30px; // Giảm kích thước font cho phù hợp hơn
+        // color: red; // Màu của nút next
         cursor: pointer;
         .arrow-icon {
             margin-top: 5px;
