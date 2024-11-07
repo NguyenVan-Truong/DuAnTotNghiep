@@ -3,7 +3,7 @@ import styles from "./Contact.module.scss";
 import { AspectRatio, Loader } from "@mantine/core";
 import instance from "@/configs/axios";
 import { useQuery } from "@tanstack/react-query";
-import { Information } from "@/modals/Information";
+import { Information } from "@/model/Information";
 
 const ContactPage = () => {
     const fetchData = async () => {

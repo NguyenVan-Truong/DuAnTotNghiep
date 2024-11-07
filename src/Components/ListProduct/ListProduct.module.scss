@@ -86,13 +86,13 @@
 
 .listProductsImage {
     max-width: 287.5px;
-    min-width: 287.5px;
+    // min-width: 287.5px;
     width: 100%;
     height: 100%;
     object-fit: cover;
     // object-fit: contain;
-    height: 178.58px;
-    max-height: 178.58px;
+    height: 200.58px;
+    max-height: 200.58px;
     display: block;
     transition: opacity 0.3s ease;
 }

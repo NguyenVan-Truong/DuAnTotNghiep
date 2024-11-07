@@ -38,22 +38,22 @@ const ProductDetail = () => {
                 <div className="Breadcrumbs">
                     <div className="container padding">
                         <div className="menu">
-                            <Link to="#">Trang Chủ</Link> /{" "}
+                            <Link to="#">Trang Chủ</Link> /
                             <Link to="#">
                                 <span className="">Phòng Khách</span>
-                            </Link>{" "}
+                            </Link>
                         </div>
                     </div>
                 </div>
                 <div className="container">
                     <div className="product-content padding">
                         <div className="imageMain">
-                            <ProductImageSlider />
+                            <ProductImageSlider data={data} />
                             <div className="rightProductTop">
                                 <RightProduct data={data} />
                             </div>
                             <div className="mt-[30px]">
-                                <DescriptionProduct />
+                                <DescriptionProduct data={data} />
                             </div>
 
                             <div>

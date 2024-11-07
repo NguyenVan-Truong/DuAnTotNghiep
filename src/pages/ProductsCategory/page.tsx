@@ -1,7 +1,7 @@
 import ItemProduct from "@/Components/ListProduct/ItemProduct/ItemProduct";
 import style from "@/Components/ListProduct/ListProduct.module.scss";
 import instance from "@/configs/axios";
-import { Product } from "@/modals/Products";
+import { Product } from "@/model/Products";
 import {
     Box,
     Button,

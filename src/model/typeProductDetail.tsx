@@ -11,6 +11,6 @@ interface TypeProductDetail {
     detailed_description: string;
     image_url: string;
     variants: [];
-    galleries: [];
+    galleries: { image_url: string }[];
 }
 // tạm thời như thế , cần phải sửa lại

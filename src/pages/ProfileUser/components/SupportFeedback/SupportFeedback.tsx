@@ -4,7 +4,7 @@ import instance from "@/configs/axios";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import { message, Popconfirm } from "antd";
-import { Feedback } from "@/modals/Supports";
+import { Feedback } from "@/model/Supports";
 
 const SupportFeedback = () => {
     const queryClient = useQueryClient();

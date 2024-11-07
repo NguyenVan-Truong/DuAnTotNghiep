@@ -9,7 +9,7 @@ import instance from "@/configs/axios";
 import { useDisclosure } from "@mantine/hooks";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { SubmitHandler } from "react-hook-form";
-import { Supports } from "@/modals/Supports";
+import { Supports } from "@/model/Supports";
 import { NotificationExtension } from "@/extension/NotificationExtension";
 
 const FormSupport = () => {
