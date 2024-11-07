@@ -1,13 +1,19 @@
-import { Box, Button, Input, Text } from "@mantine/core";
+import { Box, Button, Input, Menu, Text } from "@mantine/core";
 import { DatePickerInput } from "@mantine/dates";
-import { IconCalendar, IconEye, IconSearch } from "@tabler/icons-react";
+import {
+    IconCalendar,
+    IconEye,
+    IconFileExport,
+    IconSearch,
+} from "@tabler/icons-react";
 import {
     MantineReactTable,
     useMantineReactTable,
     type MRT_ColumnDef,
 } from "mantine-react-table";
 import { useEffect, useMemo, useRef, useState } from "react";
-
+import { toast } from "react-toastify";
+import * as xlsx from "xlsx";
 type Person = {
     name: {
         firstName: string;
@@ -17,7 +23,26 @@ type Person = {
     city: string;
     state: string;
 };
+const handleExport = () => {
+    try {
+        // const exportData = data.map((item) => ({
+        //     fullName: `${item.name.firstName} ${item.name.lastName}`, // Gộp firstName và lastName
+        //     address: item.address,
+        //     city: item.city,
+        //     state: item.state,
+        // }));
 
+        // Tạo worksheet và workbook từ dữ liệu đã chuyển đổi
+        // const worksheet = xlsx.utils.json_to_sheet(exportData);
+        const worksheet = xlsx.utils.json_to_sheet(data);
+        const workbook = xlsx.utils.book_new();
+        xlsx.utils.book_append_sheet(workbook, worksheet, "Data");
+        xlsx.writeFile(workbook, "danh-sach-don-hang.xlsx");
+        toast.success("Export excel thành công", { autoClose: 1500 });
+    } catch (error) {
+        toast.error("Export excel thất bại", { autoClose: 1500 });
+    }
+};
 // Dữ liệu mẫu
 const data: Person[] = [
     {
@@ -223,6 +248,14 @@ const OrderAll = () => {
                     mr={"xs"}
                 >
                     Chi Tiết
+                </Button>
+                <Button
+                    leftSection={<IconFileExport size={20} />}
+                    variant="outline"
+                    mr={"xs"}
+                    onClick={handleExport}
+                >
+                    Export Excel
                 </Button>
             </>
         ),

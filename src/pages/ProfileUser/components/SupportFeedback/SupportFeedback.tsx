@@ -3,7 +3,7 @@ import { Card, Grid, Text, Badge, Button, Loader, Image } from "@mantine/core";
 import instance from "@/configs/axios";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import dayjs from "dayjs";
-import { message } from "antd";
+import { message, Popconfirm } from "antd";
 import { Feedback } from "@/modals/Supports";
 
 const SupportFeedback = () => {
@@ -24,7 +24,7 @@ const SupportFeedback = () => {
 
     // Hàm xóa phản hồi
     const deleteFeedback = async (id: number) => {
-        await instance.delete(`contacts/${id}`); // Gọi API xóa
+        await instance.delete(`contacts/${id}`);
     };
 
     const mutation = useMutation({
@@ -93,7 +93,7 @@ const SupportFeedback = () => {
                                 >
                                     {feedback.status}
                                 </Badge>
-                                <Button
+                                {/* <Button
                                     variant="outline"
                                     color="red"
                                     size="xs"
@@ -101,7 +101,19 @@ const SupportFeedback = () => {
                                     onClick={() => mutation.mutate(feedback.id)} // Gọi hàm xóa khi click
                                 >
                                     Xóa
-                                </Button>
+                                </Button> */}
+                                <Popconfirm
+                                    placement="topRight"
+                                    title={"Bạn có chắc muốn xóa ko ?"}
+                                    // description={description}
+                                    okText="Có"
+                                    cancelText="Ko"
+                                    onConfirm={() => {
+                                        mutation.mutate(feedback.id);
+                                    }}
+                                >
+                                    <Button>Xóa</Button>
+                                </Popconfirm>
                                 <Button
                                     variant="outline"
                                     color="blue"
