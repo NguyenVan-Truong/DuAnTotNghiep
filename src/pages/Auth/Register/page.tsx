@@ -1,6 +1,6 @@
 import instance from "@/configs/axios";
 import { NotificationExtension } from "@/extension/NotificationExtension";
-import { UserRegister } from "@/modals/User";
+import { UserRegister } from "@/model/User";
 import {
     Button,
     Flex,

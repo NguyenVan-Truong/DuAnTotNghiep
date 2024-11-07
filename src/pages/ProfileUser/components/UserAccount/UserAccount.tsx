@@ -21,7 +21,7 @@ import {
 import FormUpdate from "./FormUpdate";
 import instance from "@/configs/axios";
 import { useQuery } from "@tanstack/react-query";
-import { UserProfile } from "@/modals/User";
+import { UserProfile } from "@/model/User";
 
 const UserAccount = () => {
     const handleAdd = () => {
@@ -35,14 +35,13 @@ const UserAccount = () => {
     };
     const fetchData = async () => {
         const response = await instance.get("/auth/profile");
-        console.log("object", response.data);
+        // console.log("object", response.data);
         return response.data;
     };
     const { data, error, isLoading, isError } = useQuery<UserProfile>({
         queryKey: ["profile"],
         queryFn: fetchData,
     });
-    console.log("data", data);
     if (isLoading) {
         return <div>Loading...</div>;
     }

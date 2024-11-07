@@ -48,12 +48,12 @@ const ProductDetail = () => {
                 <div className="container">
                     <div className="product-content padding">
                         <div className="imageMain">
-                            <ProductImageSlider />
+                            <ProductImageSlider data={data} />
                             <div className="rightProductTop">
                                 <RightProduct data={data} />
                             </div>
                             <div className="mt-[30px]">
-                                <DescriptionProduct />
+                                <DescriptionProduct data={data} />
                             </div>
 
                             <div>

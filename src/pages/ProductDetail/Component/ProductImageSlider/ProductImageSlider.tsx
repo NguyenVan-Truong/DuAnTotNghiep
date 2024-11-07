@@ -1,9 +1,14 @@
-import { sanpham1 } from "@/assets/img";
 import { Image } from "antd";
 import { useEffect, useRef, useState } from "react";
 import Slider from "react-slick";
 import "../../ProductDetail.scss";
-const ProductImageSlider = () => {
+
+type Props = {
+    data: TypeProductDetail | undefined;
+};
+
+const ProductImageSlider = ({ data }: Props) => {
+    const images = data?.galleries || [];
     const [nav1, setNav1] = useState<Slider | null>(null);
     const [nav2, setNav2] = useState<Slider | null>(null);
     const [currentSlide, setCurrentSlide] = useState(0);
@@ -17,6 +22,12 @@ const ProductImageSlider = () => {
             setNav2(sliderRef2.current);
         }
     }, []);
+
+    const handleImageClick = (index: number) => {
+        setCurrentSlide(index);
+        nav1?.slickGoTo(index);
+    };
+
     return (
         <div className="slider-container">
             <Image.PreviewGroup>
@@ -30,63 +41,28 @@ const ProductImageSlider = () => {
                         setCurrentSlide(newIndex)
                     }
                 >
-                    <div>
-                        <Image
-                            src={sanpham1}
-                            width="99%"
-                            alt=""
-                            className="featured-photo"
-                            preview={{
-                                src: sanpham1,
-                            }}
-                        />{" "}
-                    </div>
-                    <div>
-                        <Image
-                            src={sanpham1}
-                            alt=""
-                            width="99%"
-                            className="featured-photo"
-                            preview={{
-                                src: sanpham1,
-                            }}
-                        />{" "}
-                    </div>
-                    <div>
-                        <Image
-                            src={sanpham1}
-                            alt=""
-                            width="99%"
-                            className="featured-photo"
-                            preview={{
-                                src: sanpham1,
-                            }}
-                        />{" "}
-                    </div>
-                    <div>
-                        <Image
-                            src={sanpham1}
-                            alt=""
-                            width="99%"
-                            className="featured-photo"
-                            preview={{
-                                src: sanpham1,
-                            }}
-                        />{" "}
-                    </div>
-                    <div>
-                        <Image
-                            src={sanpham1}
-                            alt=""
-                            width="99%"
-                            className="featured-photo"
-                            preview={{
-                                src: sanpham1,
-                            }}
-                        />{" "}
-                    </div>
+                    {images.map((image, index) => (
+                        <div key={index}>
+                            <Image
+                                src={image.image_url}
+                                alt={`Product image ${index + 1}`}
+                                width="100%"
+                                height="100%"
+                                style={{
+                                    maxWidth: "699px",
+                                    maxHeight: "600px",
+                                }}
+                                className="featured-photo"
+                                preview={{
+                                    src: image.image_url,
+                                }}
+                            />
+                        </div>
+                    ))}
                 </Slider>
             </Image.PreviewGroup>
+
+            {/* Secondary slider */}
             <Slider
                 asNavFor={nav1!}
                 ref={sliderRef2}
@@ -97,20 +73,20 @@ const ProductImageSlider = () => {
                 autoplaySpeed={6000}
                 className="secondary-slider"
             >
-                {Array.from({ length: 6 }, (_, idx) => (
-                    <div key={idx}>
+                {images.map((image, index) => (
+                    <div key={index} onClick={() => handleImageClick(index)}>
                         <img
-                            src={sanpham1}
-                            alt=""
-                            className={`secondary-photo`}
+                            src={image.image_url}
+                            alt={`Thumbnail ${index + 1}`}
+                            className="secondary-photo"
                             style={{
                                 border:
-                                    currentSlide === idx
+                                    currentSlide === index
                                         ? "1px solid #4F6F52"
                                         : "none",
-
                                 borderRadius: "5px",
                                 height: "90px",
+                                cursor: "pointer", // Thêm con trỏ để dễ nhận biết khi hover
                             }}
                         />
                     </div>
