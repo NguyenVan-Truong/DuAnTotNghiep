@@ -1,5 +1,5 @@
 import { bg_bage } from "@/assets/img";
-import { Product } from "@/modals/Products";
+import { Product } from "@/model/Products";
 import { Button, Flex, Rating, Tooltip } from "@mantine/core";
 import { IconHeartFilled } from "@tabler/icons-react";
 import { useState } from "react";

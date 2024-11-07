@@ -1,96 +1,69 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import "./Description.scss";
 import { Button } from "@mantine/core";
-const DescriptionProduct = () => {
+import DOMPurify from "dompurify";
+type Props = {
+    data: TypeProductDetail | undefined;
+};
+
+const DescriptionProduct = ({ data }: Props) => {
+    if (!data) return null;
+
     const [isExpanded, setIsExpanded] = useState(false);
+    const [showButton, setShowButton] = useState(false);
+    const contentRef = useRef<HTMLDivElement | null>(null);
+
+    useEffect(() => {
+        if (contentRef.current) {
+            setShowButton(contentRef.current.scrollHeight > 480);
+        }
+    }, [data?.detailed_description]);
 
     const toggleDescription = () => {
         setIsExpanded(!isExpanded);
     };
+
     return (
         <>
             <div className="description-container">
                 <div className={`description ${isExpanded ? "expanded" : ""}`}>
                     <h3 className="description-title">Mô tả sản phẩm</h3>
-                    <div className={`description-content }`}>
-                        <p>
-                            Sau một thời gian sử dụng, chiếc iPhone của bạn bị
-                            tụt pin, máy hao pin một cách nhanh chóng, thậm chí
-                            là tắt nguồn khi pin còn hiển thị 50%? Nhưng chỉ sạc
-                            30 – 45 phút máy đã báo đầy? Những dấu hiệu này cảnh
-                            báo cho bạn điện thoại của bạn đã bị chai pin, phải
-                            thay pin mới thôi.
-                        </p>
-                        <h2>
-                            Vậy vì sao bạn lại cần phải thay pin Bison iPhone ?
-                        </h2>
-                        <p>
-                            Sau một thời gian sử dụng, chiếc iPhone của bạn bị
-                            tụt pin, máy hao pin một cách nhanh chóng, thậm chí
-                            là tắt nguồn khi pin còn hiển thị 50%? Nhưng chỉ sạc
-                            30 – 45 phút máy đã báo đầy? Những dấu hiệu này cảnh
-                            báo cho bạn điện thoại của bạn đã bị chai pin, phải
-                            thay pin mới thôi.
-                        </p>
-                        <p>
-                            Sau một thời gian sử dụng, chiếc iPhone của bạn bị
-                            tụt pin, máy hao pin một cách nhanh chóng, thậm chí
-                            là tắt nguồn khi pin còn hiển thị 50%? Nhưng chỉ sạc
-                            30 – 45 phút máy đã báo đầy? Những dấu hiệu này cảnh
-                            báo cho bạn điện thoại của bạn đã bị chai pin, phải
-                            thay pin mới thôi.
-                        </p>
-                        <h2>
-                            Vậy vì sao bạn lại cần phải thay pin Bison iPhone ?
-                        </h2>
-                        <p>
-                            Sau một thời gian sử dụng, chiếc iPhone của bạn bị
-                            tụt pin, máy hao pin một cách nhanh chóng, thậm chí
-                            là tắt nguồn khi pin còn hiển thị 50%? Nhưng chỉ sạc
-                            30 – 45 phút máy đã báo đầy? Những dấu hiệu này cảnh
-                            báo cho bạn điện thoại của bạn đã bị chai pin, phải
-                            thay pin mới thôi.
-                        </p>
-                        <p>
-                            Sau một thời gian sử dụng, chiếc iPhone của bạn bị
-                            tụt pin, máy hao pin một cách nhanh chóng, thậm chí
-                            là tắt nguồn khi pin còn hiển thị 50%? Nhưng chỉ sạc
-                            30 – 45 phút máy đã báo đầy? Những dấu hiệu này cảnh
-                            báo cho bạn điện thoại của bạn đã bị chai pin, phải
-                            thay pin mới thôi.
-                        </p>
-                        <h2>
-                            Vậy vì sao bạn lại cần phải thay pin Bison iPhone ?
-                        </h2>
-                        <p>
-                            Sau một thời gian sử dụng, chiếc iPhone của bạn bị
-                            tụt pin, máy hao pin một cách nhanh chóng, thậm chí
-                            là tắt nguồn khi pin còn hiển thị 50%? Nhưng chỉ sạc
-                            30 – 45 phút máy đã báo đầy? Những dấu hiệu này cảnh
-                            báo cho bạn điện thoại của bạn đã bị chai pin, phải
-                            thay pin mới thôi.
-                        </p>
+                    <div
+                        className="description-content"
+                        ref={contentRef}
+                        style={{
+                            maxHeight: isExpanded ? "none" : "480px",
+                            overflow: isExpanded ? "visible" : "hidden",
+                        }}
+                        dangerouslySetInnerHTML={{
+                            __html: DOMPurify.sanitize(
+                                data?.detailed_description || "",
+                            ),
+                        }}
+                    />
+                </div>
+
+                {showButton && (
+                    <div className="description-button">
+                        {isExpanded ? (
+                            <Button
+                                variant="default"
+                                className="toggle-button button_description_hiden"
+                                onClick={toggleDescription}
+                            >
+                                Thu gọn
+                            </Button>
+                        ) : (
+                            <Button
+                                variant="default"
+                                className="toggle-button button_description_show"
+                                onClick={toggleDescription}
+                            >
+                                Xem thêm
+                            </Button>
+                        )}
                     </div>
-                </div>
-                <div className="description-button">
-                    {isExpanded ? (
-                        <Button
-                            variant="default"
-                            className="toggle-button button_description_hiden"
-                            onClick={toggleDescription}
-                        >
-                            Thu gọn
-                        </Button>
-                    ) : (
-                        <Button
-                            variant="default"
-                            className="toggle-button button_description_show"
-                            onClick={toggleDescription}
-                        >
-                            Xem thêm
-                        </Button>
-                    )}
-                </div>
+                )}
             </div>
         </>
     );

@@ -1,6 +1,6 @@
 import ItemProduct from "@/Components/ListProduct/ItemProduct/ItemProduct";
 import instance from "@/configs/axios";
-import { Product } from "@/modals/Products";
+import { Product } from "@/model/Products";
 import { Box, LoadingOverlay } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { useQuery } from "@tanstack/react-query";
@@ -9,13 +9,28 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick-theme.css";
 import "slick-carousel/slick/slick.css";
 import "./ProductsHomenew.scss"; // Import SCSS file
+import { IconChevronLeft, IconChevronRight } from "@tabler/icons-react";
 
 // Custom next arrow using FiChevronRight
 const NextArrow = (props: any) => {
     const { className, onClick } = props;
     return (
         <div className={className} onClick={onClick}>
-            <FiChevronRight className="arrow-icon" />
+            {/* <FiChevronRight className="arrow-icon" /> */}
+            <IconChevronRight
+                stroke={3}
+                color="#4A4947"
+                style={{
+                    position: "absolute",
+                    backgroundColor: "#F4F6FF",
+                    width: "29px",
+                    height: "60px",
+                    right: "-10px",
+                    top: "-38px",
+                    borderRadius: " 12px 0 0 12px ",
+                    zIndex: 9999,
+                }}
+            />
         </div>
     );
 };
@@ -25,7 +40,20 @@ const PrevArrow = (props: any) => {
     const { className, onClick } = props;
     return (
         <div className={className} onClick={onClick}>
-            <FiChevronLeft className="arrow-icon" />
+            <IconChevronLeft
+                stroke={3}
+                color="#4A4947"
+                style={{
+                    position: "absolute",
+                    backgroundColor: "#F4F6FF",
+                    width: "29px",
+                    height: "60px",
+                    top: "-38px",
+                    left: "-10px",
+                    borderRadius: "0 12px 12px 0",
+                    zIndex: 9999,
+                }}
+            />
         </div>
     );
 };
