@@ -1,7 +1,9 @@
 import ItemProduct from "@/Components/ListProduct/ItemProduct/ItemProduct";
 import style from "@/Components/ListProduct/ListProduct.module.scss";
 import instance from "@/configs/axios";
+import { Product } from "@/model/Products";
 import {
+    Box,
     Button,
     Checkbox,
     Divider,
@@ -21,8 +23,8 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { FaStar } from "react-icons/fa";
 import BannerProduct from "./BannerProduct/BannerProduct";
-import { Product } from "@/modals/Products";
 const ProductCategory = () => {
+    const [visible, { toggle }] = useDisclosure(false);
     //#region filter
     const initialValues = [
         {
@@ -77,20 +79,6 @@ const ProductCategory = () => {
         queryKey: ["products"],
         queryFn: fetchData,
     });
-
-    const [visible, { toggle }] = useDisclosure(true);
-
-    // Hiện LoadingOverlay khi đang tải dữ liệu
-    if (isLoading) {
-        return (
-            <LoadingOverlay
-                visible={visible}
-                zIndex={1000}
-                overlayProps={{ radius: "sm", blur: 2 }}
-                loaderProps={{ color: "pink", type: "bars" }}
-            />
-        );
-    }
 
     // Kiểm tra lỗi
     if (isError) {
@@ -263,13 +251,25 @@ const ProductCategory = () => {
                         </form>
                     </div>
                     {/*bên phải*/}
-                    <div className={`${style.listProductss} mt-[50px] padding`}>
-                        <Grid className={style.listProductsMain}>
-                            {data?.map((product: any) => (
-                                <ItemProduct product={product} />
-                            ))}
-                        </Grid>
-                    </div>
+                    <Box pos="relative">
+                        <div
+                            className={`${style.listProductss} mt-[50px] padding`}
+                        >
+                            <Grid className={style.listProductsMain}>
+                                <LoadingOverlay
+                                    visible={isLoading || visible}
+                                    zIndex={1000}
+                                    overlayProps={{ radius: "sm", blur: 2 }}
+                                />
+                                {data?.map((product: any) => (
+                                    <ItemProduct
+                                        key={product.id}
+                                        product={product}
+                                    />
+                                ))}
+                            </Grid>
+                        </div>
+                    </Box>
                 </div>
             </div>
         </>

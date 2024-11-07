@@ -1,24 +1,36 @@
-import React from "react";
-import Slider from "react-slick";
-import { Button, Flex, LoadingOverlay } from "@mantine/core";
-import { CiHeart } from "react-icons/ci";
-import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
-import { ban_an_6_cho1, ban_an_6_cho2 } from "@/assets/img";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
-import "./ProductsHomenew.scss"; // Import SCSS file
 import ItemProduct from "@/Components/ListProduct/ItemProduct/ItemProduct";
-import { useQuery } from "@tanstack/react-query";
 import instance from "@/configs/axios";
+import { Product } from "@/model/Products";
+import { Box, LoadingOverlay } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { Product } from "@/modals/Products";
+import { useQuery } from "@tanstack/react-query";
+import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
+import Slider from "react-slick";
+import "slick-carousel/slick/slick-theme.css";
+import "slick-carousel/slick/slick.css";
+import "./ProductsHomenew.scss"; // Import SCSS file
+import { IconChevronLeft, IconChevronRight } from "@tabler/icons-react";
 
 // Custom next arrow using FiChevronRight
 const NextArrow = (props: any) => {
     const { className, onClick } = props;
     return (
         <div className={className} onClick={onClick}>
-            <FiChevronRight className="arrow-icon" />
+            {/* <FiChevronRight className="arrow-icon" /> */}
+            <IconChevronRight
+                stroke={3}
+                color="#4A4947"
+                style={{
+                    position: "absolute",
+                    backgroundColor: "#F4F6FF",
+                    width: "29px",
+                    height: "60px",
+                    right: "-10px",
+                    top: "-38px",
+                    borderRadius: " 12px 0 0 12px ",
+                    zIndex: 9999,
+                }}
+            />
         </div>
     );
 };
@@ -28,12 +40,26 @@ const PrevArrow = (props: any) => {
     const { className, onClick } = props;
     return (
         <div className={className} onClick={onClick}>
-            <FiChevronLeft className="arrow-icon" />
+            <IconChevronLeft
+                stroke={3}
+                color="#4A4947"
+                style={{
+                    position: "absolute",
+                    backgroundColor: "#F4F6FF",
+                    width: "29px",
+                    height: "60px",
+                    top: "-38px",
+                    left: "-10px",
+                    borderRadius: "0 12px 12px 0",
+                    zIndex: 9999,
+                }}
+            />
         </div>
     );
 };
 
 const ProductsHomeNew = () => {
+    const [visible, { toggle }] = useDisclosure(false);
     const settings = {
         dots: false,
         infinite: true,
@@ -69,7 +95,7 @@ const ProductsHomeNew = () => {
         ],
     };
     const fetchData = async () => {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        await new Promise((resolve) => setTimeout(resolve, 500));
         const response = await instance.get("/products");
         return response.data;
     };
@@ -78,36 +104,24 @@ const ProductsHomeNew = () => {
         queryKey: ["productsHomeNew"],
         queryFn: fetchData,
     });
-
-    const [visible, { toggle }] = useDisclosure(true);
-
-    // Hiện LoadingOverlay khi đang tải dữ liệu
-    if (isLoading) {
-        return (
-            <LoadingOverlay
-                visible={visible}
-                zIndex={1000}
-                overlayProps={{ radius: "sm", blur: 2 }}
-                loaderProps={{ color: "pink", type: "bars" }}
-            />
-        );
-    }
-
-    // Kiểm tra lỗi
-    if (isError) {
-        return <div>Error: {error.message}</div>;
-    }
-
+    if (error) return <div>Error: {error.message}</div>;
     return (
-        <div className="container list-products mt-[50px] relative">
-            <Slider {...settings} className="list-products-slider">
-                {data?.map((product, index) => (
-                    <div key={index} className="list-products__item-main">
-                        <ItemProduct product={product} />
-                    </div>
-                ))}
-            </Slider>
-        </div>
+        <Box pos="relative">
+            <div className="container list-products mt-[50px] relative">
+                <LoadingOverlay
+                    visible={visible || isLoading}
+                    zIndex={1000}
+                    overlayProps={{ radius: "sm", blur: 2 }}
+                />
+                <Slider {...settings} className="list-products-slider">
+                    {data?.map((product, index) => (
+                        <div key={index} className="list-products__item-main">
+                            <ItemProduct product={product} />
+                        </div>
+                    ))}
+                </Slider>
+            </div>
+        </Box>
     );
 };
 

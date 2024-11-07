@@ -1,12 +1,11 @@
-import TitleNew from "./components/Title/TitleNew";
-import ProductsHomeNew from "./components/ProductsHomeNew/ProductsHomeNew";
-import TitleProducts from "./components/Title/TitleProducts";
-import ProductsHome from "./components/ProductsHome/ProductsHome";
-import BannerFooter from "./components/Banner/BannerFooter";
-import TitleInspiration from "./components/Title/TitleInspiration";
-import FormSupport from "./components/FormFooter/FormSupport";
 import Banner from "./components/Banner/Banner";
+import BannerFooter from "./components/Banner/BannerFooter";
 import BannerBottom from "./components/BannerBottom/BannerBottom";
+import ProductsHome from "./components/ProductsHome/ProductsHome";
+import ProductsHomeNew from "./components/ProductsHomeNew/ProductsHomeNew";
+import TitleInspiration from "./components/Title/TitleInspiration";
+import TitleNew from "./components/Title/TitleNew";
+import TitleProducts from "./components/Title/TitleProducts";
 
 const Home = () => {
     return (
@@ -25,8 +24,6 @@ const Home = () => {
             <TitleInspiration />
             {/* BannerFooter */}
             <BannerFooter />
-            {/* Form */}
-            <FormSupport />
             {/* BannerBottom */}
             <BannerBottom />
         </>

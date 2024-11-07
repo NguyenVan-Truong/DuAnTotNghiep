@@ -267,7 +267,7 @@ const CommentProductDetail = () => {
                     {/* end-rating-bottom */}
                 </Flex>
             </Flex>
-            <div className="product-detail__feedback-section">
+            {/* <div className="product-detail__feedback-section">
                 <Flex
                     direction="column"
                     gap="sm"
@@ -293,7 +293,7 @@ const CommentProductDetail = () => {
                         </Button>
                     </div>
                 </Flex>
-            </div>
+            </div> */}
         </div>
     );
 };

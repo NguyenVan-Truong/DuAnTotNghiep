@@ -3,17 +3,22 @@
 .description-container {
     position: relative;
     width: 100%;
-    min-height: 300px;
+    min-height: 550px;
     padding: 10px;
     border-radius: 0.325rem;
     box-shadow:
         0 1px 4px rgba(0, 0, 0, 0.16),
         0 1px 4px rgba(0, 0, 0, 0.16);
-    // overflow: hidden; /* Ẩn các phần nội dung vượt quá */
+    max-height: 550px;
+    overflow-y: auto;
+    // cái này để ẩn thanh cuộn trên các trình duyệt
+    scrollbar-width: none;
+    // ẩn trên trên chorme
+    -ms-overflow-style: none;
 }
 
 .description {
-    height: 300px;
+    height: 470px;
     max-height: auto; /* Chiều cao tối đa khi không mở rộng */
     overflow: hidden;
     position: relative;

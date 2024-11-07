@@ -12,6 +12,7 @@ import PageNotFound from "@/pages/NotFound/page";
 import ProductDetail from "@/pages/ProductDetail/ProductDetail";
 import ProductCategory from "@/pages/ProductsCategory/page";
 import OrderCart from "@/pages/ProfileUser/components/OrderCart/OrderCart";
+import SupportFeedback from "@/pages/ProfileUser/components/SupportFeedback/SupportFeedback";
 import UserAccount from "@/pages/ProfileUser/components/UserAccount/UserAccount";
 import WishList from "@/pages/ProfileUser/components/Wishlist/WishList";
 import ProfileUser from "@/pages/ProfileUser/pages";
@@ -32,12 +33,11 @@ const Index = () => {
                     <Route path="san-pham" element={<ProductCategory />} />
                     <Route path="thanh-toan" element={<CheckoutPage />} />
                     <Route path="gio-hang" element={<ShoppingCart />} />
-                    <Route path="san-pham" element={<ProductDetail />} />
                     <Route path="gioi-thieu" element={<Introduce />} />
                     <Route path="gch" element={<InspirationCorner />} />
                     <Route path="lien-he" element={<Contact />} />
                     <Route
-                        path="chi-tiet-san-pham"
+                        path="chi-tiet-san-pham/:slug"
                         element={<ProductDetail />}
                     />
                     <Route path="/nguoi-dung" element={<ProfileUser />}>
@@ -51,6 +51,10 @@ const Index = () => {
                         <Route
                             path="thong-tin-tai-khoan"
                             element={<UserAccount />}
+                        />
+                        <Route
+                            path="thu-ho-tro"
+                            element={<SupportFeedback />}
                         />
                         <Route path="don-hang" element={<OrderCart />} />
                     </Route>

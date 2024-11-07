@@ -1,26 +1,30 @@
-import { ban_an_6_cho1, ban_an_6_cho2, bg_bage } from "@/assets/img";
+import { bg_bage } from "@/assets/img";
+import { Product } from "@/model/Products";
 import { Button, Flex, Rating, Tooltip } from "@mantine/core";
 import { IconHeartFilled } from "@tabler/icons-react";
 import { useState } from "react";
 import { CiHeart } from "react-icons/ci";
 import style from "../ListProduct.module.scss";
-import { Link } from "react-router-dom";
-import { Product } from "@/modals/Products";
+import { useNavigate } from "react-router-dom";
 type props = {
     product: Product;
 };
 const ItemProduct = ({ product }: props) => {
+    const navigate = useNavigate();
     const [tym, setTym] = useState(false);
     const onhandleTymItem = () => {
         setTym(!tym);
+    };
+    const onhandleTurnPage = (id: number, slug: string) => {
+        navigate(`/chi-tiet-san-pham/${slug}`, { state: { id: id } });
     };
     return (
         <div className={style.listProductsItemMain}>
             <div className={style.listProductsItem}>
                 <div className={style.listProductsImageContainer}>
                     <img
-                        src={product.image_url}
-                        alt={product.name}
+                        src={product?.image_url}
+                        alt={product?.name}
                         className={`${style.listProductsImage} ${style.listProductsImagePrimary}`}
                     />
                     {/* <img
@@ -37,7 +41,7 @@ const ItemProduct = ({ product }: props) => {
                         <h2
                             className={`${style.listProductsTitle} font-medium`}
                         >
-                            {product.name}
+                            {product?.name}
                         </h2>
                     </Tooltip>
                     {/* <CiHeart
@@ -51,7 +55,7 @@ const ItemProduct = ({ product }: props) => {
                     className={style.listProductsPricing}
                 >
                     <p className={`${style.listProductsPriceCurrent} `}>
-                        {Math.floor(product.price).toLocaleString("vi-VN", {
+                        {Math.floor(product?.price).toLocaleString("vi-VN", {
                             style: "currency",
                             currency: "VND",
                         })}
@@ -59,7 +63,7 @@ const ItemProduct = ({ product }: props) => {
                     <p
                         className={`${style.listProductsPriceOriginal} line-through`}
                     >
-                        {Math.floor(product.discount_price).toLocaleString(
+                        {Math.floor(product?.discount_price).toLocaleString(
                             "vi-VN",
                             {
                                 style: "currency",
@@ -72,12 +76,12 @@ const ItemProduct = ({ product }: props) => {
                     <Flex direction="row">
                         <Rating defaultValue={5} readOnly />
                         <span className="text-[12px] text-yellow-700">
-                            ({product.ratings_avg})
+                            ({product?.ratings_avg})
                         </span>
                     </Flex>
                     <div>
                         <p className="text-[14px] text-slate-600">
-                            Kho : {product.stock}
+                            Kho : {product?.stock}
                         </p>
                     </div>
                 </Flex>
@@ -102,17 +106,17 @@ const ItemProduct = ({ product }: props) => {
                             />
                         </>
                     )}
-                    <Link
-                        to="/chi-tiet-san-pham"
-                        className={`${style.LinkButtonWrapper}`}
-                    >
+                    <div className={`${style.LinkButtonWrapper}`}>
                         <Button
                             variant="light"
                             className={`${style.listProductsButton}`}
+                            onClick={() =>
+                                onhandleTurnPage(product?.id, product?.slug)
+                            }
                         >
                             XEM THÊM
                         </Button>
-                    </Link>
+                    </div>
                 </Flex>
             </div>
             <div className={style.promotionTags}>
@@ -126,7 +130,7 @@ const ItemProduct = ({ product }: props) => {
                     >
                         <div className={style.discountText}>
                             <span>
-                                {Math.floor(product.discount_percentage)}%
+                                {Math.floor(product?.discount_percentage)}%
                             </span>
                         </div>
                     </div>

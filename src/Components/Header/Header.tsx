@@ -8,7 +8,7 @@ import {
     IconUserCircle,
 } from "@tabler/icons-react";
 import { Button, Dropdown, message, Modal } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FiPhone } from "react-icons/fi";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import Logo from "../logo/logo";
@@ -24,9 +24,7 @@ const Header = () => {
         setVisible(false);
         setDropdownVisible(false);
     };
-
-    const user = JSON.parse(localStorage.getItem("user") || "{}");
-    const userProFile = JSON.parse(localStorage.getItem("userProfile") || "{}");
+    const userProFile = JSON.parse(localStorage.getItem("userProFile") || "{}");
     const navigate = useNavigate();
     const logout = () => {
         Modal.confirm({
@@ -35,7 +33,7 @@ const Header = () => {
             onOk: () => {
                 localStorage.removeItem("user");
                 localStorage.removeItem("token");
-                localStorage.removeItem("userProfile");
+                localStorage.removeItem("userProFile");
                 navigate("/xac-thuc/dang-nhap");
                 message.success("Đăng xuất thành công");
             },
@@ -63,7 +61,7 @@ const Header = () => {
                     <EnvironmentOutlined className="text-xl mb-1" />
                     <Favorite />
                     <CartIcon />
-                    {localStorage.getItem("token") ? (
+                    {localStorage.getItem("userProFile") ? (
                         <Menu
                             shadow="md"
                             width={200}
@@ -75,11 +73,7 @@ const Header = () => {
                         >
                             <Menu.Target>
                                 <Tooltip
-                                    label={`Chào, ${
-                                        userProFile.full_name
-                                            ? userProFile.full_name
-                                            : user
-                                    }`}
+                                    label={`Chào, ${userProFile.full_name || userProFile.username}`}
                                 >
                                     <Avatar
                                         src={
@@ -93,9 +87,8 @@ const Header = () => {
                                     <Box w={170}>
                                         <Text truncate="end" size="sm">
                                             Chào ,{" "}
-                                            {userProFile.full_name
-                                                ? userProFile.full_name
-                                                : user}
+                                            {userProFile.full_name ||
+                                                userProFile.username}
                                         </Text>
                                     </Box>
                                 </Menu.Label>
@@ -165,6 +158,105 @@ const Header = () => {
                     <div className="block lg-hidden items-center space-x-4">
                         <CartIcon />
                     </div>
+                    <div>
+                        {localStorage.getItem("token") ? (
+                            <Menu
+                                shadow="md"
+                                width={200}
+                                offset={2}
+                                transitionProps={{
+                                    transition: "rotate-right",
+                                    duration: 150,
+                                }}
+                            >
+                                <Menu.Target>
+                                    <Tooltip
+                                        label={`Chào, ${userProFile.full_name}`}
+                                    >
+                                        <Avatar
+                                            size="sm"
+                                            src={
+                                                userProFile.avatar ||
+                                                AvatarDefault
+                                            }
+                                        />
+                                    </Tooltip>
+                                </Menu.Target>
+                                <Menu.Dropdown>
+                                    <Menu.Label>
+                                        <Box w={170}>
+                                            <Text truncate="end" size="sm">
+                                                Chào , userProFile.full_name
+                                            </Text>
+                                        </Box>
+                                    </Menu.Label>
+                                    <Menu.Divider />
+                                    <Menu.Item
+                                        leftSection={
+                                            <IconUserCircle
+                                                style={{ fontSize: "14px" }}
+                                            />
+                                        }
+                                        style={{ fontSize: "13px" }}
+                                    >
+                                        <Link
+                                            to={
+                                                "/nguoi-dung/thong-tin-tai-khoan"
+                                            }
+                                        >
+                                            Thông tin của tôi
+                                        </Link>
+                                    </Menu.Item>
+                                    <Menu.Item
+                                        leftSection={
+                                            <IconShoppingCart
+                                                style={{ fontSize: "14px" }}
+                                            />
+                                        }
+                                        style={{ fontSize: "13px" }}
+                                    >
+                                        <Link to={"/nguoi-dung/don-hang"}>
+                                            Đơn hàng
+                                        </Link>
+                                    </Menu.Item>
+                                    <Menu.Item
+                                        leftSection={
+                                            <IconHeartSpark
+                                                style={{ fontSize: "14px" }}
+                                            />
+                                        }
+                                        style={{ fontSize: "13px" }}
+                                    >
+                                        <Link
+                                            to={
+                                                "/nguoi-dung/san-pham-yeu-thich"
+                                            }
+                                        >
+                                            Sản Phẩm Yêu thích
+                                        </Link>
+                                    </Menu.Item>
+                                    <Menu.Divider />
+                                    <Menu.Item
+                                        color="red"
+                                        leftSection={
+                                            <IconLogout
+                                                style={{ fontSize: "14px" }}
+                                            />
+                                        }
+                                        onClick={logout}
+                                    >
+                                        Đăng xuất
+                                    </Menu.Item>
+                                </Menu.Dropdown>
+                            </Menu>
+                        ) : (
+                            <Button className="border-none text-sm">
+                                <Link to={"/xac-thuc/dang-nhap"}>
+                                    Đăng Nhập
+                                </Link>
+                            </Button>
+                        )}
+                    </div>
                 </div>
             </header>
             {/* Header2 */}
@@ -229,7 +321,7 @@ const Header = () => {
                                     arrow
                                 >
                                     <NavLink
-                                        to="/cua-hang"
+                                        to="/san-pham"
                                         className={({ isActive }) =>
                                             `relative ${isActive ? "border-b-4 border-red-500" : "hover:border-b-2 hover:border-red-500"}`
                                         }
@@ -240,12 +332,12 @@ const Header = () => {
                             </li>
                             <li className="flex items-center space-x-5 !lg:space-x-2 whitespace-nowrap">
                                 <NavLink
-                                    to="/abc"
+                                    to="/lien-he"
                                     className={({ isActive }) =>
                                         `relative ${isActive ? "border-b-4 border-red-500" : "hover:border-b-2 hover:text-orange-300"}`
                                     }
                                 >
-                                    Phòng
+                                    Liên Hệ
                                 </NavLink>
                             </li>
                             <li className="flex items-center space-x-5 !lg:space-x-2 whitespace-nowrap">
