@@ -19,7 +19,7 @@ const StoryNew = () => {
         // Gọi API để lấy dữ liệu bài viết
         const fetchData = async () => {
             try {
-                const response = await axios.get('http://127.0.0.1:8000/api/posts'); // Đảm bảo thay API_URL_HERE bằng URL của bạn
+                const response = await axios.get('http://127.0.0.1:8000/api/posts');
                 setNewsData(response.data);
             } catch (error) {
                 console.error('Không Thể Tải Dữ Liệu:', error);
@@ -45,7 +45,7 @@ const StoryNew = () => {
                         </div>
                     </div>
                 ))}
-                <div className={styles.newsItem}>
+                {/* <div className={styles.newsItem}>
                     <img src={duong_dai_6} alt="Tập đoàn AA Corporation" className={styles.newsImage} />
                     <div className={styles.newsDetails}>
                         <div className={styles.newsDate}>11 Jun</div>
@@ -64,7 +64,7 @@ const StoryNew = () => {
                             Là thiết kế Việt đầu tiên đạt giải thưởng danh giá iF Design Award 2024, Bàn làm việc Wing nhận được nhiều sự chú ý từ cộng đồng thiết kế quốc tế.
                         </p>
                     </div>
-                </div>
+                </div> */}
             </div>
         </div>
     );

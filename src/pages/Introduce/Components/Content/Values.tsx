@@ -3,11 +3,20 @@
 import { ghe_ngoi_lam_viec_phu_hop_4 } from '@/assets/img';
 import styles from './Content.module.scss';
 
-const Values = () => {
+interface ValuesProps {
+    data: {
+      image: string;
+      title: string;
+      content: string[];
+    } | null;
+  }
+
+const Values: React.FC<ValuesProps> = ({ data }) => {
+    if (!data) return null;
     return (
         <div className={styles.valuesContainer}>            
             <div className={styles.textSection}>
-                <h2>Giá trị và sự khác biệt</h2>
+                <h2>{data.title}</h2>
                 <p>
                     Với mong muốn phát triển thương hiệu Việt bằng nội lực, Nhà Xinh đã chú trọng vào thiết kế và sản xuất nội thất trong nước.
                     Danh mục sản phẩm của Nhà Xinh thường xuyên được đổi mới và cập nhật, liên tục cung cấp cho khách hàng các dòng sản phẩm theo xu hướng mới nhất.
