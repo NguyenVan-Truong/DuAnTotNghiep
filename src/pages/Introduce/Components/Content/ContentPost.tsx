@@ -4,9 +4,9 @@ import styles from './Content.module.scss';
 
 interface ContentPostProps {
   data: {
-    image: string;
+    image: string | null;
     title: string;
-    history: { year: string; content: string }[];
+    content: string;
   } | null;
 }
 

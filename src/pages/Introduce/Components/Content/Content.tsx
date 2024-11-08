@@ -4,7 +4,7 @@ import styles from './Content.module.scss';
 interface ContentProps {
   data: {
     title: string;
-    content: string[];
+    content: string;
   } | null;
 }
 

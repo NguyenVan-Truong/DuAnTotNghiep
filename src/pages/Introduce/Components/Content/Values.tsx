@@ -5,9 +5,9 @@ import styles from './Content.module.scss';
 
 interface ValuesProps {
     data: {
-      image: string;
-      title: string;
-      content: string[];
+        image: string | null;
+        title: string;
+        content: string;
     } | null;
   }
 
@@ -17,7 +17,8 @@ const Values: React.FC<ValuesProps> = ({ data }) => {
         <div className={styles.valuesContainer}>            
             <div className={styles.textSection}>
                 <h2>{data.title}</h2>
-                <p>
+                <p>{data.content}</p>
+                {/* <p>
                     Với mong muốn phát triển thương hiệu Việt bằng nội lực, Nhà Xinh đã chú trọng vào thiết kế và sản xuất nội thất trong nước.
                     Danh mục sản phẩm của Nhà Xinh thường xuyên được đổi mới và cập nhật, liên tục cung cấp cho khách hàng các dòng sản phẩm theo xu hướng mới nhất.
                 </p>
@@ -28,7 +29,7 @@ const Values: React.FC<ValuesProps> = ({ data }) => {
                     Sự khác biệt của Nhà Xinh chính là sáng tạo nội thất thành phong cách riêng, phù hợp với nhu cầu khách hàng.
                     Không chỉ là sản phẩm nội thất đơn thuần, mà còn là không gian sống theo phong cách riêng với cách bày trí hài hòa từ đồ nội thất kết hợp với đồ trang trí.
                     Giúp khách hàng cảm nhận được một không gian sống thực sự, cảm thấy thoải mái để tận hưởng cuộc sống.
-                </p>
+                </p> */}
             </div>
             <div className={styles.imageSection}>
                 <img src={ghe_ngoi_lam_viec_phu_hop_4} alt="Giá trị của Nhà Xinh" className={styles.image} />

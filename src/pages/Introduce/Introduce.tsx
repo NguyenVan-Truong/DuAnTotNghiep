@@ -9,9 +9,20 @@ import StoryNew from "./Components/StoryNews/StoryNew";
 import ViewAll from "./Components/ViewAll/ViewAll";
 import { useEffect, useState } from "react";
 
-const fetchData = async (id: number | string) => {
+interface Item {
+  id: number;
+  title: string;
+  content: string;
+  status: string;
+  created_at: string | null;
+  updated_at: string | null;
+  deleted_at: string | null;
+  image: string | null;
+}
+
+const fetchData = async () => {
   try {
-    const response = await axios.get(`http://127.0.0.1:8000/api/about/${id}`);
+    const response = await axios.get('http://127.0.0.1:8000/api/about');
     return response.data;
   } catch (error) {
     console.error("Lỗi không lấy được dữ liệu:", error);
@@ -21,16 +32,25 @@ const fetchData = async (id: number | string) => {
 
 const Introduce = () => {
 
-  const [contentData, setContentData] = useState(null);
-  const [contentPostData, setContentPostData] = useState(null);
-  const [valuesData, setValuesData] = useState(null);
-  const [qualityData, setQualityData] = useState(null);
+  const [data, setData] = useState<{ [key: string]: Item | null }>({
+    contentData: null,
+    contentPostData: null,
+    valuesData: null,
+    qualityData: null,
+  });
 
   useEffect(() => {
-    fetchData(1).then(data => setContentData(data));
-    fetchData(2).then(data => setContentPostData(data));
-    fetchData(5).then(data => setValuesData(data));
-    fetchData(4).then(data => setQualityData(data));
+    fetchData().then((apiData) => {
+      if (apiData) {
+        // Lặp qua dữ liệu và gán các mục vào state chung
+        setData({
+          contentData: apiData.find((item: Item) => item.id === 1) || null,
+          contentPostData: apiData.find((item: Item) => item.id === 2) || null,
+          valuesData: apiData.find((item: Item) => item.id === 5) || null,
+          qualityData: apiData.find((item: Item) => item.id === 4) || null,
+        });
+      }
+    });
   }, []);
 
   return (
@@ -38,12 +58,12 @@ const Introduce = () => {
       {/*Banner*/}
       <BannerIntroduce />
       {/*Content*/}
-      <Content data={contentData} />
+      <Content data={data.contentData} />
       {/*ContentPost*/}
-      <ContentPost data={contentPostData} />
+      <ContentPost data={data.contentPostData} />
       {/*<Founder />*/}
-      <Values data={valuesData} />
-      <Quality data={qualityData} />
+      <Values data={data.valuesData} />
+      <Quality data={data.qualityData} />
       <StoryNew />
       <ViewAll />
     </>
