@@ -74,14 +74,14 @@ const ProductsHome = () => {
         prevArrow: <PrevArrow />,
         responsive: [
             {
-                breakpoint: 1024,
+                breakpoint: 1180,
                 settings: {
                     slidesToShow: 3,
                     slidesToScroll: 1,
                 },
             },
             {
-                breakpoint: 768,
+                breakpoint: 927,
                 settings: {
                     slidesToShow: 2,
                     slidesToScroll: 1,

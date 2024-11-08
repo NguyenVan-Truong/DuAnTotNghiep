@@ -70,7 +70,7 @@ const ProductDetail = () => {
                         <div className="product-title-1">
                             <p>Có Thể Bạn Cũng Thích</p>
                         </div>
-                        <ListSimilarProducts />
+                        {/* <ListSimilarProducts /> */}
                     </div>
                 </div>
             </div>

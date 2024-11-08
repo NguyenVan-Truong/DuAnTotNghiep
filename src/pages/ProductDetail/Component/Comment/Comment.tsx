@@ -1,10 +1,47 @@
-import { Box, Button, Flex, Progress, Rating, Textarea } from "@mantine/core";
-// import CommentRating from "./CommentRating/CommentRating";
+import { Box, Flex, Rating } from "@mantine/core";
+import { IconCornerDownRightDouble } from "@tabler/icons-react";
+import { useEffect, useState } from "react";
 import "./Comment.scss";
+import { useLocation } from "react-router-dom";
+import instance from "@/configs/axios";
+
 const CommentProductDetail = () => {
-    const handleRatingChange = (value: number | string) => {
-        console.log("Rating changed to: ", value);
-    };
+    const location = useLocation();
+    const [openCommentIds, setOpenCommentIds] = useState<number[]>([]);
+    const [data, setData] = useState<any>([]); // Initial state for reviews and average rating
+
+    // Hàm lấy dữ liệu từ API
+    // const fetchData = async () => {
+    //     try {
+    //         const response = await instance.get(
+    //             `/products/${location.state.id}/reviews`,
+    //         );
+    //         console.log("API Response:", response.data);
+
+    //         // Set dữ liệu vào state
+    //         setData(response.data);
+    //     } catch (error) {
+    //         console.error("Error fetching reviews:", error);
+    //     }
+    // };
+
+    // Gọi API khi component mount
+    useEffect(() => {
+        (async () => {
+            try {
+                const response = await instance.get(
+                    `/products/${location.state.id}/reviews`,
+                );
+                console.log("API Response:", response.data);
+                setData(response.data);
+            } catch (error) {
+                console.error("Error fetching reviews:", error);
+            }
+        })();
+    }, [location.state.id]);
+
+    console.log("data456", data);
+
     return (
         <div className="rating-container">
             <Flex direction="column" gap="md">
@@ -21,9 +58,12 @@ const CommentProductDetail = () => {
                     <Flex gap="sm" className="rating-summary">
                         <div className="flex">
                             <div className="rating-summary-average">
-                                <p className="rating-average-score">4.6/5</p>
+                                <p className="rating-average-score">
+                                    {/* {averageRating}/5 */}
+                                    {data.average_rating}/5
+                                </p>
                                 <Rating
-                                    defaultValue={5}
+                                    defaultValue={data.average_rating} // Use the actual average rating from the API
                                     size="md"
                                     readOnly
                                     className="average-icon"
@@ -35,16 +75,12 @@ const CommentProductDetail = () => {
                             direction="row"
                             className="rating-summary-breakdown"
                         >
-                            <div
-                                className="rating-summary-breakdown-item"
-                                onClick={() => handleRatingChange("all")}
-                            >
+                            <div className="rating-summary-breakdown-item">
                                 Tất cả
                             </div>
                             <Flex
                                 direction="row"
                                 className="rating-summary-breakdown-item"
-                                onClick={() => handleRatingChange(5)}
                             >
                                 5{" "}
                                 <Rating defaultValue={2} size="sm" count={1} />
@@ -52,7 +88,6 @@ const CommentProductDetail = () => {
                             <Flex
                                 direction="row"
                                 className="rating-summary-breakdown-item"
-                                onClick={() => handleRatingChange(4)}
                             >
                                 4{" "}
                                 <Rating defaultValue={2} size="sm" count={1} />
@@ -60,7 +95,6 @@ const CommentProductDetail = () => {
                             <Flex
                                 direction="row"
                                 className="rating-summary-breakdown-item"
-                                onClick={() => handleRatingChange(3)}
                             >
                                 3{" "}
                                 <Rating defaultValue={2} size="sm" count={1} />
@@ -68,7 +102,6 @@ const CommentProductDetail = () => {
                             <Flex
                                 direction="row"
                                 className="rating-summary-breakdown-item"
-                                onClick={() => handleRatingChange(2)}
                             >
                                 2{" "}
                                 <Rating defaultValue={2} size="sm" count={1} />
@@ -76,7 +109,6 @@ const CommentProductDetail = () => {
                             <Flex
                                 direction="row"
                                 className="rating-summary-breakdown-item"
-                                onClick={() => handleRatingChange(1)}
                             >
                                 1{" "}
                                 <Rating defaultValue={2} size="sm" count={1} />
@@ -88,212 +120,65 @@ const CommentProductDetail = () => {
                     <div className="rating-divider">{/* thanh ngang */}</div>
 
                     {/* start-rating-bottom */}
-
                     <Flex
                         direction="row"
                         className="rating-details"
                         justify="start"
                     >
-                        {/* <Flex align="center" className="rating-details-average">
-                            <p className="rating-average-score">4.6/5</p>
-                            <Rating defaultValue={2} size="xl" count={1} />
-                        </Flex> */}
+                        <div className="mx-auto p-5 border rounded-lg shadow-lg bg-white w-full">
+                            <h2 className="text-2xl font-bold mb-4">
+                                Danh sách đánh giá
+                            </h2>
 
-                        {/* <Flex
-                            direction="column"
-                            className="rating-details-breakdown"
-                        >
-                            <Flex
-                                direction="row"
-                                gap="sm"
-                                className="rating-details-breakdown-item"
-                            >
-                                <Flex
-                                    direction="row"
-                                    className="rating-details-star"
-                                >
-                                    <span>5</span>
-                                    <Rating
-                                        defaultValue={2}
-                                        size="sm"
-                                        count={1}
-                                        className="icon_rating_start"
-                                    />
-                                </Flex>
-                                <Box className="rating-details-progress">
-                                    <Progress value={70} />
-                                </Box>
-                                <div className="rating-details-count">
-                                    <p className="rating-details-count-text">
-                                        9 đánh giá
-                                    </p>
-                                </div>
-                            </Flex>
-                            <Flex
-                                direction="row"
-                                gap="sm"
-                                className="rating-details-breakdown-item"
-                            >
-                                <Flex
-                                    direction="row"
-                                    className="rating-details-star"
-                                >
-                                    <span>5</span>
-                                    <Rating
-                                        defaultValue={2}
-                                        size="sm"
-                                        count={1}
-                                        className="icon_rating_start"
-                                    />
-                                </Flex>
-                                <Box className="rating-details-progress">
-                                    <Progress value={70} />
-                                </Box>
-                                <div className="rating-details-count">
-                                    <p className="rating-details-count-text">
-                                        9 đánh giá
-                                    </p>
-                                </div>
-                            </Flex>{" "}
-                            <Flex
-                                direction="row"
-                                gap="sm"
-                                className="rating-details-breakdown-item"
-                            >
-                                <Flex
-                                    direction="row"
-                                    className="rating-details-star"
-                                >
-                                    <span>5</span>
-                                    <Rating
-                                        defaultValue={2}
-                                        size="sm"
-                                        count={1}
-                                        className="icon_rating_start"
-                                    />
-                                </Flex>
-                                <Box className="rating-details-progress">
-                                    <Progress value={70} />
-                                </Box>
-                                <div className="rating-details-count">
-                                    <p className="rating-details-count-text">
-                                        9 đánh giá
-                                    </p>
-                                </div>
-                            </Flex>{" "}
-                            <Flex
-                                direction="row"
-                                gap="sm"
-                                className="rating-details-breakdown-item"
-                            >
-                                <Flex
-                                    direction="row"
-                                    className="rating-details-star"
-                                >
-                                    <span>5</span>
-                                    <Rating
-                                        defaultValue={2}
-                                        size="sm"
-                                        count={1}
-                                        className="icon_rating_start"
-                                    />
-                                </Flex>
-                                <Box className="rating-details-progress">
-                                    <Progress value={70} />
-                                </Box>
-                                <div className="rating-details-count">
-                                    <p className="rating-details-count-text">
-                                        9 đánh giá
-                                    </p>
-                                </div>
-                            </Flex>{" "}
-                            <Flex
-                                direction="row"
-                                gap="sm"
-                                className="rating-details-breakdown-item"
-                            >
-                                <Flex
-                                    direction="row"
-                                    className="rating-details-star"
-                                >
-                                    <span>5</span>
-                                    <Rating
-                                        defaultValue={2}
-                                        size="sm"
-                                        count={1}
-                                        className="icon_rating_start"
-                                    />
-                                </Flex>
-                                <Box className="rating-details-progress">
-                                    <Progress value={70} />
-                                </Box>
-                                <div className="rating-details-count">
-                                    <p className="rating-details-count-text">
-                                        9 đánh giá
-                                    </p>
-                                </div>
-                            </Flex>{" "}
-                            <Flex
-                                direction="row"
-                                gap="sm"
-                                className="rating-details-breakdown-item"
-                            >
-                                <Flex
-                                    direction="row"
-                                    className="rating-details-star"
-                                >
-                                    <span>5</span>
-                                    <Rating
-                                        defaultValue={2}
-                                        size="sm"
-                                        count={1}
-                                        className="icon_rating_start"
-                                    />
-                                </Flex>
-                                <Box className="rating-details-progress">
-                                    <Progress value={70} />
-                                </Box>
-                                <div className="rating-details-count">
-                                    <p className="rating-details-count-text">
-                                        9 đánh giá
-                                    </p>
-                                </div>
-                            </Flex>
-                        </Flex> */}
-                        <h2>Chỗ list comment</h2>
-                        {/* <CommentRating /> */}
+                            <div>
+                                {data.reviews.map(
+                                    (comment: any) =>
+                                        // <div key={comment.id}>
+                                        //     <div className="border-b py-4 cursor-pointer">
+                                        //         <h4 className="font-bold">
+                                        //             {comment.name}
+                                        //         </h4>
+                                        //         <p>{comment.content}</p>
+
+                                        //         {comment.adminResponse && (
+                                        //             <p
+                                        //                 style={{
+                                        //                     fontSize: "15px",
+                                        //                     fontWeight: "bold",
+                                        //                     color: "#ff4500",
+                                        //                     display: "flex",
+                                        //                     alignItems: "center",
+                                        //                 }}
+                                        //             >
+                                        //                 <IconCornerDownRightDouble
+                                        //                     style={{
+                                        //                         fontSize: "24px",
+                                        //                         marginLeft: "8px",
+                                        //                         color: "#ff4500",
+                                        //                     }}
+                                        //                 />
+                                        //                 Phản hồi của admin
+                                        //             </p>
+                                        //         )}
+                                        //         {comment.adminResponse &&
+                                        //             openCommentIds.includes(
+                                        //                 comment.id,
+                                        //             ) && (
+                                        //                 <Box className="admin-response mt-2 p-2 bg-gray-100 rounded">
+                                        //                     <strong>Admin:</strong>{" "}
+                                        //                     {comment.adminResponse}
+                                        //                 </Box>
+                                        //             )}
+                                        //     </div>
+                                        // </div>
+                                        123,
+                                )}
+                            </div>
+                        </div>
                     </Flex>
-
                     {/* end-rating-bottom */}
                 </Flex>
             </Flex>
-            {/* <div className="product-detail__feedback-section">
-                <Flex
-                    direction="column"
-                    gap="sm"
-                    className="feedback-section__input-wrapper"
-                >
-                    <Textarea
-                        size="sm"
-                        radius="lg"
-                        variant="unstyled"
-                        placeholder="Mời bạn để lại bình luận..."
-                        className="feedback-section__textarea"
-                    />
-
-                    <div className="feedback-section__submit-button">
-                        <Button
-                            variant="filled"
-                            color="#f72429"
-                            size="sm"
-                            radius="md"
-                            className="feedback-button"
-                        >
-                            Gửi bình luận
-                        </Button>
-                    </div>
-                </Flex>
-            </div> */}
         </div>
     );
 };
