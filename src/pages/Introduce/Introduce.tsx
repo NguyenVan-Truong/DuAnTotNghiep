@@ -8,62 +8,47 @@ import Values from "./Components/Content/Values";
 import StoryNew from "./Components/StoryNews/StoryNew";
 import ViewAll from "./Components/ViewAll/ViewAll";
 import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { Loader } from "@mantine/core";
+import { AboutPages } from "@/model/AboutPages";
 
-interface Item {
-  id: number;
-  title: string;
-  content: string;
-  status: string;
-  created_at: string | null;
-  updated_at: string | null;
-  deleted_at: string | null;
-  image: string | null;
-}
 
-const fetchData = async () => {
-  try {
-    const response = await axios.get('http://127.0.0.1:8000/api/about');
-    return response.data;
-  } catch (error) {
-    console.error("Lỗi không lấy được dữ liệu:", error);
-    return null;
-  }
+// Hàm gọi API
+const fetchAboutData = async () => {
+  const response = await axios.get('http://127.0.0.1:8000/api/about');
+  return response.data;
 };
 
 const Introduce = () => {
 
-  const [data, setData] = useState<{ [key: string]: Item | null }>({
-    contentData: null,
-    contentPostData: null,
-    valuesData: null,
-    qualityData: null,
+  // Sử dụng useQuery để gọi API
+  const { data, isLoading, error } = useQuery<AboutPages[]>({
+    queryKey: ["aboutData"],
+    queryFn: fetchAboutData,
   });
 
-  useEffect(() => {
-    fetchData().then((apiData) => {
-      if (apiData) {
-        // Lặp qua dữ liệu và gán các mục vào state chung
-        setData({
-          contentData: apiData.find((item: Item) => item.id === 1) || null,
-          contentPostData: apiData.find((item: Item) => item.id === 2) || null,
-          valuesData: apiData.find((item: Item) => item.id === 5) || null,
-          qualityData: apiData.find((item: Item) => item.id === 4) || null,
-        });
-      }
-    });
-  }, []);
+  // Kiểm tra trạng thái tải dữ liệu
+  if (isLoading) return <Loader />; // Hiển thị loading spinner khi đang tải
+  if (error) return <div>Lỗi khi tải dữ liệu giới thiệu</div>; // Hiển thị thông báo lỗi nếu có lỗi
+
+  // Lọc dữ liệu theo id
+  const contentData = data?.find((item) => item.id === 1) || null;
+  const contentPostData = data?.find((item) => item.id === 2) || null;
+  const valuesData = data?.find((item) => item.id === 5) || null;
+  const qualityData = data?.find((item) => item.id === 4) || null;
+
 
   return (
     <>
       {/*Banner*/}
       <BannerIntroduce />
       {/*Content*/}
-      <Content data={data.contentData} />
+      <Content data={contentData} />
       {/*ContentPost*/}
-      <ContentPost data={data.contentPostData} />
+      <ContentPost data={contentPostData} />
       {/*<Founder />*/}
-      <Values data={data.valuesData} />
-      <Quality data={data.qualityData} />
+      <Values data={valuesData} />
+      <Quality data={qualityData} />
       <StoryNew />
       <ViewAll />
     </>

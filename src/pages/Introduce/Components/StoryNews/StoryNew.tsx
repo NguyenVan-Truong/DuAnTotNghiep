@@ -2,38 +2,34 @@ import { duong_dai_5_new, duong_dai_6 } from '@/assets/img';
 import styles from './StoryNew.module.scss';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { Posts } from '@/model/Posts';
+import { useQuery } from '@tanstack/react-query';
+import { Loader } from '@mantine/core';
 
-interface NewsItem {
-    id: number;
-    title: string;
-    meta_description: string;
-    created_at: string;
-    image: string;
-}
+// Hàm gọi API
+const fetchPostsData = async () => {
+    const response = await axios.get('http://127.0.0.1:8000/api/posts');
+    return response.data;
+  };
+
 
 const StoryNew = () => {
 
-    const [newsData, setNewsData] = useState<NewsItem[]>([]);
+    // Sử dụng useQuery để lấy dữ liệu từ API
+  const { data: newsData, isLoading, error } = useQuery<Posts[]>({
+    queryKey: ['postsData'],
+    queryFn: fetchPostsData,
+  });
 
-    useEffect(() => {
-        // Gọi API để lấy dữ liệu bài viết
-        const fetchData = async () => {
-            try {
-                const response = await axios.get('http://127.0.0.1:8000/api/posts');
-                setNewsData(response.data);
-            } catch (error) {
-                console.error('Không Thể Tải Dữ Liệu:', error);
-            }
-        };
-
-        fetchData();
-    }, []);
+  // Kiểm tra trạng thái tải dữ liệu
+  if (isLoading) return <Loader />; // Hiển thị loading spinner khi đang tải
+  if (error) return <div>Lỗi khi tải dữ liệu bài viết</div>; // Hiển thị thông báo lỗi nếu có lỗi
 
     return (
         <div className={styles.container}>
             <h1 className={styles.pageTitle}>CHUYỆN NHÀ XINH</h1>
             <div className={styles.newsContainer}>
-                {newsData.map((newsItem) => (
+                {newsData?.map((newsItem) => (
                     <div key={newsItem.id} className={styles.newsItem}>
                         <img src={newsItem.image} alt={newsItem.title} className={styles.newsImage} />
                         <div className={styles.newsDetails}>
