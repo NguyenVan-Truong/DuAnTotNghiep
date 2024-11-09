@@ -1,34 +1,42 @@
-import { banner1, bannerh1 } from "@/assets/img";
+import { banner, banner1, bannerh1 } from "@/assets/img";
+import instance from "@/configs/axios";
+import { BannerHome } from "@/model/Banner";
+
+import { useQuery } from "@tanstack/react-query";
 const Banner = () => {
+    const fetchData = async () => {
+        const response = await instance.get("/banners-home");
+        return response.data.data;
+    };
+    const { data, error, isLoading, isError } = useQuery<BannerHome>({
+        queryKey: ["Banner"],
+        queryFn: fetchData,
+    });
+    if (isLoading) {
+        return <div>Loading...</div>;
+    }
+
+    if (isError) {
+        return <div>Error: {error.message}</div>;
+    }
+    if (!data) {
+        return <div>Không có thông tin để hiển thị.</div>;
+    }
     return (
         <>
-            {/* <div className="relative mb-10">
-                <img src={banner} alt="" className="w-full h-auto" />
-                <div className="absolute inset-0 flex flex-col items-center mt-16 md:mt-56 text-center">
-                    <h1 className="text-white text-2xl md:text-6xl font-medium md:mb-2">
-                        TẤT CẢ SẢN PHẨM
-                    </h1>
-                    <p className="text-white text-sm md:text-2xl mb-2 md:mb-4">
-                        TRẢI NGHIỆM MỚI SẢN PHẨM MỚI
-                    </p>
-                    <button className="bg-red-600 text-white hover:bg-red-300 font-medium text-sm py-2 md:py-4 px-3 md:px-6 rounded-lg">
-                        ƯU ĐÃI 15% ++
-                    </button>
-                </div>
-            </div> */}
             <div className="relative mb-10 ">
                 <img
-                    src={bannerh1}
+                    src={data.image}
                     alt=""
                     className="w-full h-auto lg:h-[700px] "
                 />
 
                 <div className="absolute inset-0 flex flex-col items-start justify-center ml-10 text-left pl-4 md:pl-10">
                     <h1 className="text-white text-2xl md:text-5xl font-medium md:mb-2">
-                        SALE UP TO 70%
+                        {data.title}
                     </h1>
                     <p className="text-white text-sm md:text-xl mb-2 md:mb-4">
-                        Áp dụng tại Mordem Home{" "}
+                        {data.content}{" "}
                     </p>
                     <button className="bg-[#ffffff] text-black hover:bg-gray-300 font-medium text-sm py-1 md:py-2 px-3 md:px-6 rounded-md">
                         Xem Chi Tiết

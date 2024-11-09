@@ -2,7 +2,9 @@
 import { duong_dai_6 } from '@/assets/img';
 import styles from './Content.module.scss';
 
+
 const ContentPost = () => {
+ 
   return (
     <div className={styles.historyContainer}>
       <div className={styles.imageSection}>

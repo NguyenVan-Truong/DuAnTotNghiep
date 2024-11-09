@@ -49,7 +49,7 @@ const ListSimilarProducts = () => {
     const [visible, { toggle }] = useDisclosure(false);
     const fetchData = async () => {
         await new Promise((resolve) => setTimeout(resolve, 500));
-        const response = await instance.get("/products");
+        const response = await instance.get("/products/splq");
         return response.data;
     };
 

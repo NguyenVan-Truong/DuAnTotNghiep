@@ -36,7 +36,7 @@ const Register = () => {
         validate: {
             username: (value) => {
                 if (!value) return "Tên đăng nhập không được để trống";
-                if (value.length < 2)
+                if (value.length < 6)
                     return "Tên đăng nhập phải có ít nhất 2 ký tự";
                 return null;
             },

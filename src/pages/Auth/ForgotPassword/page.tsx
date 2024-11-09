@@ -17,7 +17,6 @@ const ForgotPassword = () => {
     });
 
     const handleSubmit = (values: typeof form.values) => {
-        console.log(values);
         message.success("Thành công");
         toast.success("Thành công");
     };
