@@ -1,14 +1,12 @@
-import { duong_dai_5_new, duong_dai_6 } from '@/assets/img';
 import styles from './StoryNew.module.scss';
-import { useEffect, useState } from 'react';
-import axios from 'axios';
 import { Posts } from '@/model/Posts';
 import { useQuery } from '@tanstack/react-query';
 import { Loader } from '@mantine/core';
+import instance from '@/configs/axios';
 
 // Hàm gọi API
 const fetchPostsData = async () => {
-    const response = await axios.get('http://127.0.0.1:8000/api/posts');
+    const response = await instance.get('/posts');
     return response.data;
   };
 

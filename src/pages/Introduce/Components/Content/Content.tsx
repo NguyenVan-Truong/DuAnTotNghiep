@@ -1,21 +1,14 @@
 
 import styles from './Content.module.scss';
 
-interface ContentProps {
-  data: {
-    title: string;
-    content: string;
-  } | null;
-}
+const Content = () => {
 
-const Content: React.FC<ContentProps> = ({ data }) => {
-  if (!data) return null;
   return (
     <div className={styles.container}>     
       <div className={styles.content}>
-        <h2>{data.title}</h2>
+        <h2>LỊCH SỬ HÌNH THÀNH</h2>
         <p>
-          {data.content}
+          Ra đời từ ý tưởng tạo nên sự khác biệt, Nhà Xinh đã giữ vững và phát triển trở thành vị trí hàng đầu trong thị trường nội thất Việt Nam. Đến nay, Nhà Xinh đã có nhiều cửa hàng quy mô và chuyên nghiệp tại các thành phố lớn là Hà Nội và TP.HCM, Bình Dương.
         </p>
       </div>
     </div>
