@@ -137,7 +137,7 @@ const data: Person[] = [
     },
 ];
 
-const OrderAll = () => {
+const WaitForConfirmation = () => {
     const [height, setHeight] = useState(0);
     const headerRef = useRef<HTMLDivElement>(null); // Đặt hooks bên trong component
     // const [rowSelection, setRowSelection] = useState<MRT_RowSelectionState>({});
@@ -155,14 +155,6 @@ const OrderAll = () => {
             },
             {
                 accessorKey: "name.lastName",
-                header: "Tên khách hàng",
-            },
-            {
-                accessorKey: "name.lastName",
-                header: "Tên người nhận",
-            },
-            {
-                accessorKey: "name.lastName",
                 header: "Số lượng ",
             },
             {
@@ -174,27 +166,12 @@ const OrderAll = () => {
                 header: "Ngày nhận (dự kiến)",
             },
             {
-                accessorKey: "city",
-                header: "Phương thức thanh toán",
-                size: 250,
-            },
-            {
-                accessorKey: "city",
-                header: "Trạng thái thanh toán",
-                size: 250,
-            },
-            {
                 accessorKey: "statea", // Thay đổi `accessorKey` cho cột này
                 header: "Tổng tiền",
             },
             {
                 accessorKey: "state",
                 header: "Trạng thái",
-                size: 30,
-            },
-            {
-                accessorKey: "state",
-                header: "Hành động",
                 size: 30,
             },
         ],
@@ -307,4 +284,4 @@ const OrderAll = () => {
     );
 };
 
-export default OrderAll;
+export default WaitForConfirmation;
