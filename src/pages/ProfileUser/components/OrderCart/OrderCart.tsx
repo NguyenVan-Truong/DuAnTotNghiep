@@ -2,6 +2,7 @@ import { Menu, Tabs, Text } from "@mantine/core";
 import {
     IconCards,
     IconClipboardList,
+    IconClock,
     IconDoorExit,
     IconHeart,
     IconLoader,
@@ -18,6 +19,7 @@ import OrderLoader from "./components/OrderLoader/OrderLoader";
 import OrderShipping from "./components/OrderShipping/OrderShipping";
 import OrderSucces from "./components/OrderSuccess/OrderSucces";
 import OrderBack from "./components/OrderBack/OrderBack";
+import WaitForConfirmation from "./components/WaitForConfirmation/WaitForConfirmation";
 
 const OrderCart = () => {
     const iconStyle = { width: 15, height: 15 };
@@ -87,6 +89,13 @@ const OrderCart = () => {
                                 Tất cả đơn hàng
                             </Tabs.Tab>
                             <Tabs.Tab
+                                value="orderWait"
+                                leftSection={<IconClock style={iconStyle} />}
+                                style={{ fontSize: "16px" }} // Tăng cỡ chữ tại đây
+                            >
+                                Chờ xác nhận
+                            </Tabs.Tab>
+                            <Tabs.Tab
                                 value="orderLoader"
                                 leftSection={<IconLoader style={iconStyle} />}
                                 style={{ fontSize: "16px" }} // Tăng cỡ chữ tại đây
@@ -124,6 +133,9 @@ const OrderCart = () => {
                         {/* noi dung */}
                         <Tabs.Panel value="orderAll">
                             <OrderAll />
+                        </Tabs.Panel>
+                        <Tabs.Panel value="orderWait">
+                            <WaitForConfirmation />
                         </Tabs.Panel>
 
                         <Tabs.Panel value="orderLoader">

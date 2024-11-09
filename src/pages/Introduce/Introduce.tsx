@@ -24,9 +24,9 @@ const Introduce = () => {
     queryFn: fetchAboutData,
   });
 
-  // Kiểm tra trạng thái tải dữ liệu
   if (isLoading) return <Loader />; // Hiển thị loading spinner khi đang tải
-  if (error) return <div>Lỗi khi tải dữ liệu giới thiệu</div>; // Hiển thị thông báo lỗi nếu có lỗi
+  if (error) return <div>Lỗi khi tải dữ liệu bài viết</div>; // Hiển thị thông báo lỗi nếu có lỗi
+
 
   return (
     <>

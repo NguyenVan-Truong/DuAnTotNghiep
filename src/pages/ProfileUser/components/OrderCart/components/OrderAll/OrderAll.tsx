@@ -1,4 +1,6 @@
-import { Box, Button, Input, Menu, Text } from "@mantine/core";
+import { AvatarUtils } from "@/common/ColorByName/AvatarUtils";
+import instance from "@/configs/axios";
+import { Badge, Box, Button, Input, Text } from "@mantine/core";
 import { DatePickerInput } from "@mantine/dates";
 import {
     IconCalendar,
@@ -6,6 +8,7 @@ import {
     IconFileExport,
     IconSearch,
 } from "@tabler/icons-react";
+import dayjs from "dayjs";
 import {
     MantineReactTable,
     useMantineReactTable,
@@ -14,165 +17,142 @@ import {
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import * as xlsx from "xlsx";
-type Person = {
-    name: {
-        firstName: string;
-        lastName: string;
-    };
-    address: string;
-    city: string;
-    state: string;
-};
-const handleExport = () => {
-    try {
-        // const exportData = data.map((item) => ({
-        //     fullName: `${item.name.firstName} ${item.name.lastName}`, // Gộp firstName và lastName
-        //     address: item.address,
-        //     city: item.city,
-        //     state: item.state,
-        // }));
-
-        // Tạo worksheet và workbook từ dữ liệu đã chuyển đổi
-        // const worksheet = xlsx.utils.json_to_sheet(exportData);
-        const worksheet = xlsx.utils.json_to_sheet(data);
-        const workbook = xlsx.utils.book_new();
-        xlsx.utils.book_append_sheet(workbook, worksheet, "Data");
-        xlsx.writeFile(workbook, "danh-sach-don-hang.xlsx");
-        toast.success("Export excel thành công", { autoClose: 1500 });
-    } catch (error) {
-        toast.error("Export excel thất bại", { autoClose: 1500 });
-    }
-};
-// Dữ liệu mẫu
-const data: Person[] = [
-    {
-        name: {
-            firstName: "Zachary",
-            lastName: "Davis",
-        },
-        address: "261 Battle Ford",
-        city: "Columbus",
-        state: "Ohio",
-    },
-    {
-        name: {
-            firstName: "Robert",
-            lastName: "Smith",
-        },
-        address: "566 Brakus Inlet",
-        city: "Westerville",
-        state: "West Virginia",
-    },
-    {
-        name: {
-            firstName: "Robert",
-            lastName: "Smith",
-        },
-        address: "566 Brakus Inlet",
-        city: "Westerville",
-        state: "West Virginia",
-    },
-    {
-        name: {
-            firstName: "Robert",
-            lastName: "Smith",
-        },
-        address: "566 Brakus Inlet",
-        city: "Westerville",
-        state: "West Virginia",
-    },
-    {
-        name: {
-            firstName: "Robert",
-            lastName: "Smith",
-        },
-        address: "566 Brakus Inlet",
-        city: "Westerville",
-        state: "West Virginia",
-    },
-    {
-        name: {
-            firstName: "Robert",
-            lastName: "Smith",
-        },
-        address: "566 Brakus Inlet",
-        city: "Westerville",
-        state: "West Virginia",
-    },
-    {
-        name: {
-            firstName: "Robert",
-            lastName: "Smith",
-        },
-        address: "566 Brakus Inlet",
-        city: "Westerville",
-        state: "West Virginia",
-    },
-    {
-        name: {
-            firstName: "Robert",
-            lastName: "Smith",
-        },
-        address: "566 Brakus Inlet",
-        city: "Westerville",
-        state: "West Virginia",
-    },
-    {
-        name: {
-            firstName: "Robert",
-            lastName: "Smith",
-        },
-        address: "566 Brakus Inlet",
-        city: "Westerville",
-        state: "West Virginia",
-    },
-    {
-        name: {
-            firstName: "Robert",
-            lastName: "Smith",
-        },
-        address: "566 Brakus Inlet",
-        city: "Westerville",
-        state: "West Virginia",
-    },
-];
 
 const OrderAll = () => {
+    const [data, setData] = useState([]); // Đặt useState bên trong component
     const [height, setHeight] = useState(0);
     const headerRef = useRef<HTMLDivElement>(null); // Đặt hooks bên trong component
-    // const [rowSelection, setRowSelection] = useState<MRT_RowSelectionState>({});
-    const columns = useMemo<MRT_ColumnDef<Person>[]>(
+
+    const handleExport = () => {
+        try {
+            const worksheet = xlsx.utils.json_to_sheet(data);
+            const workbook = xlsx.utils.book_new();
+            xlsx.utils.book_append_sheet(workbook, worksheet, "Data");
+            xlsx.writeFile(workbook, "danh-sach-don-hang.xlsx");
+            toast.success("Export excel thành công", { autoClose: 1500 });
+        } catch (error) {
+            toast.error("Export excel thất bại", { autoClose: 1500 });
+        }
+    };
+
+    // Lấy dữ liệu từ API
+    const fetchData = async () => {
+        try {
+            const response = await instance.get(`orders`);
+            if (response.status === 200) {
+                let result = response.data.data.data; // Đảm bảo lấy đúng thuộc tính "data" từ response
+                setData(result);
+            }
+        } catch (error) {
+            setData([]);
+            console.error(error);
+        }
+    };
+
+    useEffect(() => {
+        fetchData();
+    }, []);
+    console.log("data", data);
+    const columns = useMemo<MRT_ColumnDef<any>[]>(
         () => [
             {
-                accessorKey: "name.firstName",
+                accessorKey: "id",
                 header: "Mã đơn hàng",
-                size: 30,
-                Cell: ({ renderedCellValue }: any) => (
+                Cell: ({ renderedCellValue, cell }) => (
+                    <Badge
+                        radius="sm"
+                        variant="dot"
+                        size="lg"
+                        color={renderedCellValue === null ? "red" : "#21d01b"}
+                    >
+                        {renderedCellValue === null ? null : renderedCellValue}
+                    </Badge>
+                ),
+            },
+            {
+                accessorKey: "customer.customer_name",
+                header: "Tên khách hàng",
+                Cell: ({ renderedCellValue, row }) => (
                     <>
-                        <Text>{renderedCellValue}</Text>
+                        <AvatarUtils
+                            value={
+                                row.original.customer.customer_name
+                                    ?.toString()
+                                    .split("-")[0]
+                            }
+                        />
                     </>
                 ),
             },
             {
-                accessorKey: "name.lastName",
-                header: "Số lượng ",
+                accessorKey: "customer_name",
+                header: "Tên người nhận",
+                Cell: ({ renderedCellValue, row }) => (
+                    <>
+                        <AvatarUtils
+                            value={
+                                row.original.customer_name
+                                    ?.toString()
+                                    .split("-")[0]
+                            }
+                        />
+                    </>
+                ),
             },
             {
-                accessorKey: "address",
-                header: "Ngày đặt",
-            },
-            {
-                accessorKey: "city",
-                header: "Ngày nhận (dự kiến)",
-            },
-            {
-                accessorKey: "statea", // Thay đổi `accessorKey` cho cột này
+                accessorKey: "total_amount",
                 header: "Tổng tiền",
+                Cell: ({ cell }) => {
+                    const totalAmount = Number(cell.getValue());
+                    if (!isNaN(totalAmount)) {
+                        const roundedAmount = Math.floor(totalAmount);
+                        return roundedAmount.toLocaleString("vi-VN", {
+                            style: "currency",
+                            currency: "VND",
+                        });
+                    }
+                    return "₫0";
+                },
             },
             {
-                accessorKey: "state",
-                header: "Trạng thái",
-                size: 30,
+                accessorKey: "shipping_address",
+                header: "Địa chỉ giao hàng",
+            },
+            {
+                accessorKey: "created_at",
+                header: "Ngày đặt",
+                Cell: ({ cell }: any) =>
+                    dayjs(cell.getValue()).format("DD-MM-YYYY"),
+            },
+            {
+                accessorKey: "payment_method.payment_method_name",
+                header: "Phương thức thanh toán",
+                size: 250,
+            },
+            {
+                accessorKey: "payment_status",
+                header: "Trạng thái thanh toán",
+                size: 250,
+            },
+            {
+                accessorKey: "status",
+                header: "Trạng thái đơn hàng",
+            },
+            {
+                accessorKey: "final_amount",
+                header: "Tổng tiền sau giảm giá",
+                Cell: ({ cell }) => {
+                    const totalAmount = Number(cell.getValue());
+                    if (!isNaN(totalAmount)) {
+                        const roundedAmount = Math.floor(totalAmount);
+                        return roundedAmount.toLocaleString("vi-VN", {
+                            style: "currency",
+                            currency: "VND",
+                        });
+                    }
+                    return "₫0";
+                },
+                size: 250,
             },
         ],
         [],
@@ -185,8 +165,8 @@ const OrderAll = () => {
         initialState: {
             showColumnFilters: false,
             columnPinning: {
-                left: ["mrt-row-select", "name.firstName"], // ghim cột bên phải
-                right: ["state"], // ghim cột bên trái
+                left: ["mrt-row-select", "id"], // ghim cột bên trái
+                right: ["status"], // ghim cột bên phải
             },
             density: "xs",
         },
@@ -195,21 +175,16 @@ const OrderAll = () => {
             style: { maxHeight: height, minHeight: height },
         },
         enableRowSelection: true,
-        manualFiltering: false,
-        manualPagination: true,
-        manualSorting: false,
         mantinePaginationProps: {
             showRowsPerPage: true,
             withEdges: true,
             rowsPerPageOptions: ["10", "50", "100"],
-            // total: rowCount,
         },
         paginationDisplayMode: "pages",
         mantineTableProps: {
             striped: false,
         },
-        // onRowSelectionChange: setRowSelection,
-        renderTopToolbarCustomActions: ({ table }) => (
+        renderTopToolbarCustomActions: () => (
             <div ref={headerRef}>
                 <Box
                     style={{
@@ -240,7 +215,7 @@ const OrderAll = () => {
                 </Box>
             </div>
         ),
-        renderToolbarInternalActions: ({ table }) => (
+        renderToolbarInternalActions: () => (
             <>
                 <Button
                     leftSection={<IconEye size={20} />}
@@ -276,11 +251,9 @@ const OrderAll = () => {
     }, []);
 
     return (
-        <>
-            <div className="mt-5">
-                <MantineReactTable table={table} />
-            </div>
-        </>
+        <div className="mt-5">
+            <MantineReactTable table={table} />
+        </div>
     );
 };
 
