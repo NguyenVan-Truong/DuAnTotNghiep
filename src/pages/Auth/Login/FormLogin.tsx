@@ -35,8 +35,6 @@ const Login = () => {
     const onSubmit = async (user: UserLogin) => {
         try {
             const response = await instance.post(`/auth/login`, user);
-            console.log("reponse", response);
-            console.log(response.data.user);
             localStorage.setItem("token", response.data.access_token);
             localStorage.setItem(
                 "userProFile",

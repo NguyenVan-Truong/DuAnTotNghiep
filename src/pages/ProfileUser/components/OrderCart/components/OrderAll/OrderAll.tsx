@@ -52,7 +52,6 @@ const OrderAll = () => {
     useEffect(() => {
         fetchData();
     }, []);
-    console.log("data", data);
     const columns = useMemo<MRT_ColumnDef<any>[]>(
         () => [
             {

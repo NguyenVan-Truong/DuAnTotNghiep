@@ -50,7 +50,6 @@ const ListSimilarProducts = () => {
     const fetchData = async () => {
         await new Promise((resolve) => setTimeout(resolve, 500));
         const response = await instance.get("/products/splq");
-        console.log("data", response.data);
         return response.data;
     };
 

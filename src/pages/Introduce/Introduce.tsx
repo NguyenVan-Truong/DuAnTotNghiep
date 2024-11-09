@@ -11,12 +11,10 @@ import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Loader } from "@mantine/core";
 import { AboutPages } from "@/model/AboutPages";
-import instance from "@/configs/axios";
 
 // Hàm gọi API
 const fetchAboutData = async () => {
-    // const response = await axios.get('http://127.0.0.1:8000/api/about');
-    const response = await instance.get("/about");
+    const response = await axios.get("http://127.0.0.1:8000/api/about");
     return response.data;
 };
 
