@@ -6,6 +6,13 @@ import ViewAll from "./Components/ViewAll/ViewAll";
 import { useQuery } from "@tanstack/react-query";
 import { Loader } from "@mantine/core";
 import { AboutPages } from "@/model/AboutPages";
+<<<<<<< HEAD
+
+// Hàm gọi API
+const fetchAboutData = async () => {
+    const response = await axios.get("http://127.0.0.1:8000/api/about");
+    return response.data;
+=======
 import instance from "@/configs/axios";
 import Content from "./Components/Content/Content";
 import ContentPost from "./Components/Content/ContentPost";
@@ -15,6 +22,7 @@ import ContentPost from "./Components/Content/ContentPost";
 const fetchAboutData = async () => {
   const response = await instance.get('/about');
   return response.data;
+>>>>>>> 1f2a10fd2acdb992faec07453f19064809270d50
 };
 
 const Introduce = () => {

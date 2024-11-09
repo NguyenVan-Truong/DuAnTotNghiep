@@ -32,15 +32,12 @@ const CommentProductDetail = () => {
                 const response = await instance.get(
                     `/products/${location.state.id}/reviews`,
                 );
-                console.log("API Response:", response.data);
                 setData(response.data);
             } catch (error) {
                 console.error("Error fetching reviews:", error);
             }
         })();
     }, [location.state.id]);
-
-    console.log("data456", data);
 
     return (
         <div className="rating-container">
