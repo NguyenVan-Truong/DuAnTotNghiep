@@ -2,23 +2,16 @@
 import { duong_dai_6 } from '@/assets/img';
 import styles from './Content.module.scss';
 
-interface ContentPostProps {
-  data: {
-    image: string | null;
-    title: string;
-    content: string;
-  } | null;
-}
 
-const ContentPost: React.FC<ContentPostProps> = ({ data }) => {
-  if (!data) return null;
+const ContentPost = () => {
+ 
   return (
     <div className={styles.historyContainer}>
       <div className={styles.imageSection}>
         <img src={duong_dai_6} alt="Lịch sử hình thành" className={styles.image} />
       </div>
       <div className={styles.textSection}>
-        <h2>{data.title}</h2>
+        <h2>LỊCH SỬ HÌNH THÀNH</h2>
         <ul>
           <li>
             <strong>2021:</strong> Khẳng định thương hiệu bền vững với những bước phát triển mới dù đối mặt
