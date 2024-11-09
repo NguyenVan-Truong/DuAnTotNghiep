@@ -1,4 +1,4 @@
-import { banner1, bannerh1 } from "@/assets/img";
+import { banner, banner1, bannerh1 } from "@/assets/img";
 import instance from "@/configs/axios";
 import { BannerHome } from "@/model/Banner";
 
@@ -8,7 +8,7 @@ const Banner = () => {
         const response = await instance.get("/banners-home");
         return response.data.data;
     };
-    const { data, error, isLoading, isError } = useQuery<BannerHome>({
+    const { data, error, isLoading, isError } = useQuery<BannerHome[]>({
         queryKey: ["Banner"],
         queryFn: fetchData,
     });
@@ -22,42 +22,30 @@ const Banner = () => {
     if (!data) {
         return <div>Không có thông tin để hiển thị.</div>;
     }
+    console.log("data", data);
     return (
         <>
-            {/* <div className="relative mb-10">
-                <img src={banner} alt="" className="w-full h-auto" />
-                <div className="absolute inset-0 flex flex-col items-center mt-16 md:mt-56 text-center">
-                    <h1 className="text-white text-2xl md:text-6xl font-medium md:mb-2">
-                        TẤT CẢ SẢN PHẨM
-                    </h1>
-                    <p className="text-white text-sm md:text-2xl mb-2 md:mb-4">
-                        TRẢI NGHIỆM MỚI SẢN PHẨM MỚI
-                    </p>
-                    <button className="bg-red-600 text-white hover:bg-red-300 font-medium text-sm py-2 md:py-4 px-3 md:px-6 rounded-lg">
-                        ƯU ĐÃI 15% ++
-                    </button>
-                </div>
-            </div> */}
+            {data.map((item) => (
+                <div className="relative mb-10 ">
+                    <img
+                        src={banner}
+                        alt=""
+                        className="w-full h-auto lg:h-[700px] "
+                    />
 
-            <div className="relative mb-10 ">
-                <img
-                    src={data.image}
-                    alt=""
-                    className="w-full h-auto lg:h-[700px] "
-                />
-
-                <div className="absolute inset-0 flex flex-col items-start justify-center ml-10 text-left pl-4 md:pl-10">
-                    <h1 className="text-white text-2xl md:text-5xl font-medium md:mb-2">
-                        {data.title}
-                    </h1>
-                    <p className="text-white text-sm md:text-xl mb-2 md:mb-4">
-                        {data.content}{" "}
-                    </p>
-                    <button className="bg-[#ffffff] text-black hover:bg-gray-300 font-medium text-sm py-1 md:py-2 px-3 md:px-6 rounded-md">
-                        Xem Chi Tiết
-                    </button>
+                    <div className="absolute inset-0 flex flex-col items-start justify-center ml-10 text-left pl-4 md:pl-10">
+                        <h1 className="text-white text-2xl md:text-5xl font-medium md:mb-2">
+                            {item.title}
+                        </h1>
+                        <p className="text-white text-sm md:text-xl mb-2 md:mb-4">
+                            {item.content}{" "}
+                        </p>
+                        <button className="bg-[#ffffff] text-black hover:bg-gray-300 font-medium text-sm py-1 md:py-2 px-3 md:px-6 rounded-md">
+                            Xem Chi Tiết
+                        </button>
+                    </div>
                 </div>
-            </div>
+            ))}
 
             <div className="flex flex-col md:flex-row items-center justify-between">
                 <div className="flex-1 text-center mb-5 mx-4">
