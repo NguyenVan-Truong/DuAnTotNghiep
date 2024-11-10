@@ -1,5 +1,4 @@
 import instance from "@/configs/axios";
-import { NotificationExtension } from "@/extension/NotificationExtension";
 import { UserLogin } from "@/model/User";
 import {
     Button,
@@ -12,7 +11,6 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { message } from "antd";
-import { BiCookie } from "react-icons/bi";
 import { FaUser } from "react-icons/fa";
 import { FiLock } from "react-icons/fi";
 import { Link, useNavigate } from "react-router-dom";

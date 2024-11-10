@@ -1,24 +1,22 @@
-import React from "react";
 import ItemProduct from "@/Components/ListProduct/ItemProduct/ItemProduct";
+import instance from "@/configs/axios";
+import { useDisclosure } from "@mantine/hooks";
 import { IconChevronLeft, IconChevronRight } from "@tabler/icons-react";
+import React, { useEffect, useState } from "react";
 import Slider from "react-slick";
 import style from "./ListSimilarProducts.module.scss";
-import instance from "@/configs/axios";
-import { useQuery } from "@tanstack/react-query";
-import { Product } from "@/model/Products";
-import { LoadingOverlay } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
-
-const ListSimilarProducts = () => {
+type Props = {
+    dataCategory: any;
+    productId: number;
+};
+const ListSimilarProducts = ({ dataCategory, productId }: Props) => {
     const settings = {
         className: "center",
         // centerMode: true,
         infinite: true,
         slidesToShow: 4,
         slidesToScroll: 1,
-        autoplay: true,
-        speed: 500,
-        autoplaySpeed: 2000,
+        // autoplay: true,
         // rows: 2,
         arrows: false,
         responsive: [
@@ -47,32 +45,31 @@ const ListSimilarProducts = () => {
     };
     const sliderRef = React.createRef<Slider>();
     const [visible, { toggle }] = useDisclosure(false);
+    const [data, setData] = useState([]);
     const fetchData = async () => {
-        await new Promise((resolve) => setTimeout(resolve, 500));
-        const response = await instance.get("/products/splq");
-        return response.data;
+        try {
+            const response = await instance.get("/products/splq", {
+                params: {
+                    catelogues: dataCategory,
+                    product_id: productId,
+                },
+            });
+            if (response.status === 200) {
+                setData(response.data);
+            }
+        } catch (error) {
+            console.log(error);
+        }
     };
-
-    const { data, error, isLoading, isError } = useQuery<Product[]>({
-        queryKey: ["productsHome"],
-        queryFn: fetchData,
-    });
-
-    // Kiểm tra lỗi
-    if (isError) {
-        return <div>Error: {error.message}</div>;
-    }
+    useEffect(() => {
+        fetchData();
+    }, [dataCategory]);
     return (
         <>
             <div
                 className={`container ${style.sliderProductSimilar}`}
                 style={{ position: "relative", zIndex: 3 }}
             >
-                <LoadingOverlay
-                    visible={isLoading || visible}
-                    zIndex={1000}
-                    overlayProps={{ radius: "sm", blur: 2 }}
-                />
                 <Slider ref={sliderRef} {...settings}>
                     {data?.map((product, index) => (
                         <div key={index}>
