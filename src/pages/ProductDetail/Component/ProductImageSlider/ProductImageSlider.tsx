@@ -50,7 +50,9 @@ const ProductImageSlider = ({ data }: Props) => {
                                 height="100%"
                                 style={{
                                     maxWidth: "699px",
+                                    minWidth: "699px",
                                     maxHeight: "365px",
+                                    minHeight: "365px",
                                     objectFit: "cover",
                                 }}
                                 className="featured-photo"
