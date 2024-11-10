@@ -1,31 +1,14 @@
-<<<<<<< HEAD
-import { duong_dai_5_new, duong_dai_6 } from "@/assets/img";
 import styles from "./StoryNew.module.scss";
-import { useEffect, useState } from "react";
-import axios from "axios";
 import { Posts } from "@/model/Posts";
 import { useQuery } from "@tanstack/react-query";
 import { Loader } from "@mantine/core";
+import instance from "@/configs/axios";
 
 // Hàm gọi API
 const fetchPostsData = async () => {
-    const response = await axios.get("http://127.0.0.1:8000/api/posts");
-    return response.data.data;
-};
-=======
-import styles from './StoryNew.module.scss';
-import { Posts } from '@/model/Posts';
-import { useQuery } from '@tanstack/react-query';
-import { Loader } from '@mantine/core';
-import instance from '@/configs/axios';
-
-// Hàm gọi API
-const fetchPostsData = async () => {
-    const response = await instance.get('/posts');
+    const response = await instance.get("/posts");
     return response.data;
-  };
-
->>>>>>> 1f2a10fd2acdb992faec07453f19064809270d50
+};
 
 const StoryNew = () => {
     // Sử dụng useQuery để lấy dữ liệu từ API
