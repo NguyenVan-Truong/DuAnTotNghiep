@@ -59,14 +59,13 @@
 // ratingbottom
 .rating-details {
     margin-top: 5px;
-
     justify-content: space-between;
     width: 100%;
-    .rating-divider-col {
-        height: 113px;
-        border: 1px solid #e5e7eb;
-        margin: 0 10px;
-    }
+    // .rating-divider-col {
+    //     height: 113px;
+    //     border: 1px solid #e5e7eb;
+    //     margin: 0 10px;
+    // }
 }
 @media (max-width: 600px) {
     .rating-container {

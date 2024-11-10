@@ -11,27 +11,51 @@ import "./ProductDetail.scss";
 
 const ProductDetail = () => {
     const location = useLocation();
-
     const [data, setData] = useState<TypeProductDetail>();
     const [isLiked, setIsLiked] = useState(false);
+    const [dataComment, setDataComment] = useState<{}>();
+    const [valueRating, setValueRating] = useState(0);
+    const [dataCategory, setDataCategory] = useState();
     const handleLike = () => {
         setIsLiked(!isLiked);
     };
     const fetchData = async () => {
         try {
             const response = await instance.get(
-                `/products/${location.state.id}`,
+                `/products/chi-tiet-san-pham/${location.state.id}`,
             );
             if (response.status === 200) {
                 setData(response.data);
+                setDataCategory(response.data.catalogue_id.join(","));
             }
         } catch (error) {
             NotificationExtension.Fails("Đã xảy ra lỗi khi lấy dữ liệu");
         }
     };
+    const fetchDataComment = async () => {
+        let url = "";
+        if (valueRating) {
+            url += `?rating=${valueRating}`;
+        }
+        try {
+            const response = await instance.get(
+                `/products/${location.state.id}/reviews${url}`,
+            );
+            if (response && response.status === 200) {
+                setDataComment(response.data);
+            }
+        } catch (error) {
+            NotificationExtension.Fails(
+                "Đã xảy ra lỗi khi lấy dữ liệu đánh giá",
+            );
+        }
+    };
     useEffect(() => {
-        fetchData();
+        Promise.all([fetchData(), fetchDataComment()]);
     }, [location.state.id]);
+    useEffect(() => {
+        fetchDataComment();
+    }, [valueRating]);
     return (
         <>
             <div className="product-detail-main ">
@@ -57,7 +81,12 @@ const ProductDetail = () => {
                             </div>
 
                             <div>
-                                <CommentProductDetail />
+                                {dataComment !== undefined && (
+                                    <CommentProductDetail
+                                        data={dataComment}
+                                        setValueRating={setValueRating}
+                                    />
+                                )}
                             </div>
                         </div>
                         {/* Phần bên phải: Chi tiết sản phẩm */}
@@ -70,7 +99,10 @@ const ProductDetail = () => {
                         <div className="product-title-1">
                             <p>Có Thể Bạn Cũng Thích</p>
                         </div>
-                        {/* <ListSimilarProducts /> */}
+                        <ListSimilarProducts
+                            dataCategory={dataCategory}
+                            productId={location.state.id}
+                        />
                     </div>
                 </div>
             </div>

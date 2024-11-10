@@ -1,44 +1,14 @@
-import { Box, Flex, Rating } from "@mantine/core";
-import { IconCornerDownRightDouble } from "@tabler/icons-react";
-import { useEffect, useState } from "react";
+import { Box, Flex, Rating, ScrollArea } from "@mantine/core";
 import "./Comment.scss";
-import { useLocation } from "react-router-dom";
-import instance from "@/configs/axios";
-
-const CommentProductDetail = () => {
-    const location = useLocation();
-    const [openCommentIds, setOpenCommentIds] = useState<number[]>([]);
-    const [data, setData] = useState<any>([]); // Initial state for reviews and average rating
-
-    // Hàm lấy dữ liệu từ API
-    // const fetchData = async () => {
-    //     try {
-    //         const response = await instance.get(
-    //             `/products/${location.state.id}/reviews`,
-    //         );
-    //         console.log("API Response:", response.data);
-
-    //         // Set dữ liệu vào state
-    //         setData(response.data);
-    //     } catch (error) {
-    //         console.error("Error fetching reviews:", error);
-    //     }
-    // };
-
-    // Gọi API khi component mount
-    useEffect(() => {
-        (async () => {
-            try {
-                const response = await instance.get(
-                    `/products/${location.state.id}/reviews`,
-                );
-                setData(response.data);
-            } catch (error) {
-                console.error("Error fetching reviews:", error);
-            }
-        })();
-    }, [location.state.id]);
-
+import { IconCornerDownRightDouble } from "@tabler/icons-react";
+import { Image } from "antd";
+import { formatDate } from "@/model/_base/Date";
+type Props = {
+    data: any;
+    setValueRating: any;
+};
+const CommentProductDetail = ({ data, setValueRating }: Props) => {
+    const dataComments = data.reviews.data;
     return (
         <div className="rating-container">
             <Flex direction="column" gap="md">
@@ -60,7 +30,8 @@ const CommentProductDetail = () => {
                                     {data.average_rating}/5
                                 </p>
                                 <Rating
-                                    defaultValue={data.average_rating} // Use the actual average rating from the API
+                                    // Use the actual average rating from the API
+                                    defaultValue={data.average_rating}
                                     size="md"
                                     readOnly
                                     className="average-icon"
@@ -72,12 +43,18 @@ const CommentProductDetail = () => {
                             direction="row"
                             className="rating-summary-breakdown"
                         >
-                            <div className="rating-summary-breakdown-item">
+                            <div
+                                className="rating-summary-breakdown-item"
+                                onClick={() => setValueRating(0)}
+                                style={{ cursor: "pointer" }}
+                            >
                                 Tất cả
                             </div>
                             <Flex
                                 direction="row"
                                 className="rating-summary-breakdown-item"
+                                onClick={() => setValueRating(5)}
+                                style={{ cursor: "pointer" }}
                             >
                                 5{" "}
                                 <Rating defaultValue={2} size="sm" count={1} />
@@ -85,27 +62,35 @@ const CommentProductDetail = () => {
                             <Flex
                                 direction="row"
                                 className="rating-summary-breakdown-item"
+                                onClick={() => setValueRating(4)}
+                                style={{ cursor: "pointer" }}
                             >
                                 4{" "}
                                 <Rating defaultValue={2} size="sm" count={1} />
                             </Flex>
                             <Flex
                                 direction="row"
+                                onClick={() => setValueRating(3)}
                                 className="rating-summary-breakdown-item"
+                                style={{ cursor: "pointer" }}
                             >
                                 3{" "}
                                 <Rating defaultValue={2} size="sm" count={1} />
                             </Flex>
                             <Flex
                                 direction="row"
+                                onClick={() => setValueRating(2)}
                                 className="rating-summary-breakdown-item"
+                                style={{ cursor: "pointer" }}
                             >
                                 2{" "}
                                 <Rating defaultValue={2} size="sm" count={1} />
                             </Flex>
                             <Flex
                                 direction="row"
+                                onClick={() => setValueRating(1)}
                                 className="rating-summary-breakdown-item"
+                                style={{ cursor: "pointer" }}
                             >
                                 1{" "}
                                 <Rating defaultValue={2} size="sm" count={1} />
@@ -121,55 +106,213 @@ const CommentProductDetail = () => {
                         direction="row"
                         className="rating-details"
                         justify="start"
+                        style={{
+                            height: "600px",
+                        }}
                     >
                         <div className="mx-auto p-5 border rounded-lg shadow-lg bg-white w-full">
-                            <h2 className="text-2xl font-bold mb-4">
-                                Danh sách đánh giá
-                            </h2>
-
+                            <Box>
+                                <h2
+                                    className="mb-4"
+                                    style={{
+                                        fontWeight: "500",
+                                        fontSize: "20px",
+                                    }}
+                                >
+                                    Đánh giá sản phẩm
+                                </h2>
+                            </Box>
                             <div>
-                                {data.reviews.map(
-                                    (comment: any) =>
-                                        // <div key={comment.id}>
-                                        //     <div className="border-b py-4 cursor-pointer">
-                                        //         <h4 className="font-bold">
-                                        //             {comment.name}
-                                        //         </h4>
-                                        //         <p>{comment.content}</p>
+                                <ScrollArea h={520}>
+                                    {dataComments &&
+                                    Array.isArray(dataComments) &&
+                                    dataComments.length > 0 ? (
+                                        dataComments.map((item: any) => {
+                                            return (
+                                                <Box
+                                                    key={item.id}
+                                                    style={{
+                                                        padding: "20px 0",
+                                                        borderBottom:
+                                                            "1px solid #E4E0E1",
+                                                        borderTop:
+                                                            "1px solid #E4E0E1",
+                                                        width: "100%",
+                                                    }}
+                                                >
+                                                    <Flex
+                                                        direction="row"
+                                                        gap="sm"
+                                                        align={"start"}
+                                                        justify={"start"}
+                                                    >
+                                                        <div
+                                                            style={{
+                                                                width: "80px",
+                                                            }}
+                                                        >
+                                                            {item.user
+                                                                .avatar !==
+                                                            null ? (
+                                                                <>
+                                                                    <img
+                                                                        src={
+                                                                            item
+                                                                                .user
+                                                                                .avatar
+                                                                        }
+                                                                        alt=""
+                                                                        style={{
+                                                                            height: "60px",
+                                                                            width: "60px",
+                                                                            objectFit:
+                                                                                "cover",
+                                                                            borderRadius:
+                                                                                "50%",
+                                                                        }}
+                                                                    />
+                                                                </>
+                                                            ) : (
+                                                                <>
+                                                                    <img
+                                                                        src="https://cellphones.com.vn/sforum/wp-content/uploads/2023/10/avatar-trang-4.jpg"
+                                                                        alt=""
+                                                                        style={{
+                                                                            height: "60px",
+                                                                            width: "60px",
+                                                                            objectFit:
+                                                                                "cover",
+                                                                            borderRadius:
+                                                                                "50%",
+                                                                        }}
+                                                                    />
+                                                                </>
+                                                            )}
+                                                        </div>
+                                                        <div
+                                                            style={{
+                                                                width: "100%",
+                                                            }}
+                                                        >
+                                                            <div>
+                                                                <h5>
+                                                                    {
+                                                                        item
+                                                                            .user
+                                                                            .username
+                                                                    }
+                                                                </h5>
+                                                                <Rating
+                                                                    value={
+                                                                        item.rating
+                                                                    }
+                                                                    fractions={
+                                                                        2
+                                                                    }
+                                                                    readOnly
+                                                                />
+                                                                <p
+                                                                    style={{
+                                                                        color: "#333",
+                                                                        fontSize:
+                                                                            "12px",
+                                                                    }}
+                                                                >
+                                                                    {formatDate(
+                                                                        item.created_at,
+                                                                    )}
+                                                                </p>
+                                                            </div>
+                                                            <div
+                                                                style={{
+                                                                    margin: "7px",
+                                                                }}
+                                                            >
+                                                                <p>
+                                                                    {
+                                                                        item.review
+                                                                    }
+                                                                </p>
+                                                            </div>
+                                                            <div>
+                                                                {item.images && (
+                                                                    <Image
+                                                                        width={
+                                                                            100
+                                                                        }
+                                                                        src={
+                                                                            item.images
+                                                                        }
+                                                                        style={{
+                                                                            objectFit:
+                                                                                "cover",
+                                                                            height: "100px",
+                                                                        }}
+                                                                    />
+                                                                )}
+                                                            </div>
+                                                            <Flex
+                                                                direction={
+                                                                    "row"
+                                                                }
+                                                                gap={"sm"}
+                                                                style={{
+                                                                    padding:
+                                                                        "10px",
+                                                                    background:
+                                                                        "rgb(246 244 244)",
+                                                                    marginTop:
+                                                                        "3px",
+                                                                }}
+                                                            >
+                                                                <div>
+                                                                    <IconCornerDownRightDouble color="#c3c3c3" />
+                                                                </div>
 
-                                        //         {comment.adminResponse && (
-                                        //             <p
-                                        //                 style={{
-                                        //                     fontSize: "15px",
-                                        //                     fontWeight: "bold",
-                                        //                     color: "#ff4500",
-                                        //                     display: "flex",
-                                        //                     alignItems: "center",
-                                        //                 }}
-                                        //             >
-                                        //                 <IconCornerDownRightDouble
-                                        //                     style={{
-                                        //                         fontSize: "24px",
-                                        //                         marginLeft: "8px",
-                                        //                         color: "#ff4500",
-                                        //                     }}
-                                        //                 />
-                                        //                 Phản hồi của admin
-                                        //             </p>
-                                        //         )}
-                                        //         {comment.adminResponse &&
-                                        //             openCommentIds.includes(
-                                        //                 comment.id,
-                                        //             ) && (
-                                        //                 <Box className="admin-response mt-2 p-2 bg-gray-100 rounded">
-                                        //                     <strong>Admin:</strong>{" "}
-                                        //                     {comment.adminResponse}
-                                        //                 </Box>
-                                        //             )}
-                                        //     </div>
-                                        // </div>
-                                        123,
-                                )}
+                                                                <div>
+                                                                    <p
+                                                                        style={{
+                                                                            // width: "200px",
+                                                                            fontWeight:
+                                                                                "500",
+                                                                        }}
+                                                                    >
+                                                                        phản hồi
+                                                                        của
+                                                                        Người
+                                                                        Bán
+                                                                    </p>
+
+                                                                    {item.comments.map(
+                                                                        (
+                                                                            comment: any,
+                                                                        ) => {
+                                                                            return (
+                                                                                <p
+                                                                                    style={{
+                                                                                        fontSize:
+                                                                                            "12px",
+                                                                                        color: "#333",
+                                                                                    }}
+                                                                                >
+                                                                                    {
+                                                                                        comment.comment
+                                                                                    }
+                                                                                </p>
+                                                                            );
+                                                                        },
+                                                                    )}
+                                                                </div>
+                                                            </Flex>
+                                                        </div>
+                                                    </Flex>
+                                                </Box>
+                                            );
+                                        })
+                                    ) : (
+                                        <p>No data available</p>
+                                    )}
+                                </ScrollArea>
                             </div>
                         </div>
                     </Flex>
