@@ -284,7 +284,7 @@ const Header = () => {
                                         `relative ${isActive ? "border-b-4 border-red-500" : "hover:border-b-2 hover:border-red-500"}`
                                     }
                                 >
-                                    Home
+                                    Trang chủ
                                 </NavLink>
                             </li>
                             <li className="flex items-center space-x-5 !lg:space-x-2 whitespace-nowrap">
@@ -326,7 +326,7 @@ const Header = () => {
                                             `relative ${isActive ? "border-b-4 border-red-500" : "hover:border-b-2 hover:border-red-500"}`
                                         }
                                     >
-                                        Shop
+                                        Sản phẩm
                                     </NavLink>
                                 </Dropdown>
                             </li>
@@ -342,15 +342,15 @@ const Header = () => {
                             </li>
                             <li className="flex items-center space-x-5 !lg:space-x-2 whitespace-nowrap">
                                 <NavLink
-                                    to="/xyz"
+                                    to="/gioi-thieu"
                                     className={({ isActive }) =>
                                         `relative ${isActive ? "border-b-4 border-red-500" : "hover:border-b-2 hover:text-orange-300"}`
                                     }
                                 >
-                                    Bộ sưu tập
+                                    Giới thiệu
                                 </NavLink>
                             </li>
-                            <li className="flex items-center space-x-5 !lg:space-x-2 whitespace-nowrap">
+                            {/* <li className="flex items-center space-x-5 !lg:space-x-2 whitespace-nowrap">
                                 <NavLink
                                     to="/123"
                                     className={({ isActive }) =>
@@ -359,8 +359,8 @@ const Header = () => {
                                 >
                                     Góc cảm hứng
                                 </NavLink>
-                            </li>
-                            <li className="flex items-center space-x-5 !lg:space-x-2 whitespace-nowrap">
+                            </li> */}
+                            {/* <li className="flex items-center space-x-5 !lg:space-x-2 whitespace-nowrap">
                                 <NavLink
                                     to="/123"
                                     className={({ isActive }) =>
@@ -369,7 +369,7 @@ const Header = () => {
                                 >
                                     Cửa hàng 360 độ
                                 </NavLink>
-                            </li>
+                            </li> */}
                         </ul>
                     </div>
 

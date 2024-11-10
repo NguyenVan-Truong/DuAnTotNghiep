@@ -24,7 +24,6 @@ const FormUpdate = () => {
             try {
                 const response = await instance.get("/auth/profile");
                 const data = response.data;
-                console.log("data", data);
 
                 // Cập nhật dữ liệu lên form
                 form.setFieldsValue({
@@ -57,18 +56,17 @@ const FormUpdate = () => {
     }, []);
 
     const onChange = (info: any) => {
-        console.log("info", info);
         setFileList(info.fileList);
         // const avatar =
         //     info.fileList.length > 0 ? info.fileList[0].thumbUrl : "dswdw";
         // console.log("info.fileList[0].thumbUrl", info.fileList[0].thumbUrl);
 
         // console.log("avatar", avatar);
-        if (info.fileList.length > 0) {
-            console.log("aaa", info.fileList[0]?.thumbUrl);
-        } else {
-            console.log("bbb", info.fileList[0]);
-        }
+        // if (info.fileList.length > 0) {
+        //     console.log("aaa", info.fileList[0]?.thumbUrl);
+        // } else {
+        //     console.log("bbb", info.fileList[0]);
+        // }
         // form.setFieldsValue({ avatar });
     };
 
@@ -88,8 +86,6 @@ const FormUpdate = () => {
     };
 
     const onFinish = async (values: any) => {
-        console.log("Submitted values:", values);
-
         // Tạo FormData để gửi file cùng với các trường dữ liệu khác
         const formData = new FormData();
         formData.append("full_name", values.full_name);
