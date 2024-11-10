@@ -22,3 +22,24 @@ export interface Product {
     meta_description: string | null;
     meta_keywords: string | null;
 }
+// CommentProductDetail.tsx
+// export interface Reviews {
+//     current_page: number;
+//     data: [];
+//     first_page_url: string;
+//     from: number;
+//     last_page: number;
+//     last_page_url: string;
+//     links: [];
+//     next_page_url: string | null;
+//     path: string;
+//     per_page: number;
+//     prev_page_url: string | null;
+//     to: number;
+//     total: number;
+// }
+
+// export interface ProductReviews {
+//     average_rating: number;
+//     reviews: Reviews | object;
+// }
