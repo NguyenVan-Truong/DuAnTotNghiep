@@ -6,13 +6,30 @@ import { useState } from "react";
 import { CiHeart } from "react-icons/ci";
 import style from "../ListProduct.module.scss";
 import { useNavigate } from "react-router-dom";
+import instance from "@/configs/axios";
+import { useQueryClient } from "@tanstack/react-query";
 type props = {
     product: Product;
 };
 const ItemProduct = ({ product }: props) => {
     const navigate = useNavigate();
     const [tym, setTym] = useState(false);
-    const onhandleTymItem = () => {
+    const queryClient = useQueryClient();
+    const onhandleTymItem = async () => {
+        try {
+            const response = await instance.post("/favorites/toggle", {
+              product_id: product.id,
+            });
+            
+            if (response.status === 200) {
+                setTym(!tym); // Thay đổi trạng thái nếu thành công
+                queryClient.invalidateQueries({ queryKey: ['favoritesData'] });
+            } else {
+              console.error("Error toggling favorite status:", response.data);
+            }
+          } catch (error) {
+            console.error("Có lỗi xảy", error);
+          }
         setTym(!tym);
     };
     const onhandleTurnPage = (id: number, slug: string) => {
@@ -94,14 +111,14 @@ const ItemProduct = ({ product }: props) => {
                         <>
                             <IconHeartFilled
                                 color="red"
-                                onClick={() => setTym(false)}
+                                onClick={onhandleTymItem}
                             />
                         </>
                     ) : (
                         <>
                             <CiHeart
                                 className={`${style.listProductsFavoriteIcon} text-[24px]`}
-                                onClick={() => onhandleTymItem()}
+                                onClick={onhandleTymItem}
                                 style={{ cursor: "pointer" }}
                             />
                         </>
