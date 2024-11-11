@@ -310,7 +310,7 @@ const CommentProductDetail = ({ data, setValueRating }: Props) => {
                                             );
                                         })
                                     ) : (
-                                        <p>No data available</p>
+                                        <p>Chưa có đánh giá</p>
                                     )}
                                 </ScrollArea>
                             </div>

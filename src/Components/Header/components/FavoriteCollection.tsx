@@ -8,23 +8,23 @@ import { useState } from "react";
 import { sanpham1 } from "@/assets/img";
 import instance from "@/configs/axios";
 import { useQuery } from "@tanstack/react-query";
-import { Loader } from "@mantine/core";
+import { Box, Loader, Text } from "@mantine/core";
 import { Favorites } from "@/model/Favorite";
+import { min } from "lodash";
 
 const fetchFavoritesData = async () => {
-    const response = await instance.get('/favorites', {
-        headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`, // Lấy token từ localStorage
-        },
-    });
+    const response = await instance.get("/favorites");
     return response.data;
 };
 
 const MiniFavorite = () => {
-
     // Sử dụng useQuery để lấy dữ liệu từ API
-    const { data: products, isLoading, error } = useQuery<Favorites[]>({
-        queryKey: ['favoritesData'],
+    const {
+        data: products,
+        isLoading,
+        error,
+    } = useQuery<Favorites[]>({
+        queryKey: ["favoritesData"],
         queryFn: fetchFavoritesData,
     });
 
@@ -42,16 +42,35 @@ const MiniFavorite = () => {
             <div className="max-h-[80%] overflow-auto custom-scrollbar">
                 {products && products.length > 0 ? (
                     products.map((favorite, index) => (
-                        <div key={index} className="flex space-x-4 mb-2">
+                        <div
+                            key={index}
+                            className="flex space-x-4 mb-2 items-center"
+                        >
                             <div>
-                                <img src={favorite.product.image || '/default-image.jpg'} alt={favorite.product.name} width={100} />
+                                <img
+                                    src={favorite.product.image_url}
+                                    alt={favorite.product.name}
+                                    width={100}
+                                    height={10}
+                                    style={{ minWidth: 100 }}
+                                />
                             </div>
-                            <div>
-                                <h1 className="font-medium text-lg">{favorite.product.name}</h1>
-                                <p className="text-base">{favorite.product.quantity} × {favorite.product.price}</p>
+                            <div className="flex-1">
+                                <h1 className="font-medium text-lg">
+                                    <Box w={290}>
+                                        <Text truncate="end" size="lg">
+                                            {favorite.product.name}
+                                        </Text>
+                                    </Box>
+                                </h1>
+                                <p className="text-base">
+                                    {favorite.product.price}
+                                </p>
                             </div>
-                            <div>
-                                <CloseCircleOutlined style={{ fontSize: '24px', color: 'red' }} />
+                            <div className="flex items-center">
+                                <CloseCircleOutlined
+                                    style={{ fontSize: "24px", color: "red" }}
+                                />
                             </div>
                         </div>
                     ))
@@ -59,7 +78,8 @@ const MiniFavorite = () => {
                     <p>Không có sản phẩm yêu thích nào !</p>
                 )}
             </div>
-            <div className="border-t border-t-gray-300 p-3 h-[20%] flex flex-col justify-between">
+
+            <div className="border-t border-t-gray-300 p-3 h-[10%] flex flex-col justify-between">
                 {/* <div className="flex justify-between">
                     <h1>Thành tiền :</h1>
                     <h3>37,451,000₫</h3>
@@ -91,7 +111,7 @@ const Favorite = () => {
     return (
         <>
             <div className="items-center space-x-4">
-                <Badge count={1} className="relative">
+                <Badge count={5} className="relative">
                     <HeartOutlined
                         className="text-xl cursor-pointer"
                         onClick={showDrawer}

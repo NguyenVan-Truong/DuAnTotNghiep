@@ -1,6 +1,6 @@
 import { AvatarUtils } from "@/common/ColorByName/AvatarUtils";
 import instance from "@/configs/axios";
-import { Badge, Box, Button, Input, Text } from "@mantine/core";
+import { Badge, Box, Button, Input } from "@mantine/core";
 import { DatePickerInput } from "@mantine/dates";
 import {
     IconCalendar,
@@ -8,7 +8,6 @@ import {
     IconFileExport,
     IconSearch,
 } from "@tabler/icons-react";
-import dayjs from "dayjs";
 import {
     MantineReactTable,
     useMantineReactTable,
@@ -19,10 +18,15 @@ import { toast } from "react-toastify";
 import * as xlsx from "xlsx";
 
 const OrderAll = () => {
-    const [data, setData] = useState([]); // Đặt useState bên trong component
+    const [data, setData] = useState<any[]>([]); // Cập nhật kiểu dữ liệu
     const [height, setHeight] = useState(0);
-    const headerRef = useRef<HTMLDivElement>(null); // Đặt hooks bên trong component
+    const headerRef = useRef<HTMLDivElement>(null);
+    const [pagination, setPagination] = useState({
+        pageIndex: 0,
+        pageSize: 10,
+    });
 
+    // Hàm xuất file Excel
     const handleExport = () => {
         try {
             const worksheet = xlsx.utils.json_to_sheet(data);
@@ -37,10 +41,12 @@ const OrderAll = () => {
 
     // Lấy dữ liệu từ API
     const fetchData = async () => {
+        let url = `?page=${pagination.pageIndex}`;
+        console.log("url", url);
         try {
-            const response = await instance.get(`orders`);
+            const response = await instance.get(`orders${url}`);
             if (response.status === 200) {
-                let result = response.data.data.data; // Đảm bảo lấy đúng thuộc tính "data" từ response
+                const result = response.data.data.data;
                 setData(result);
             }
         } catch (error) {
@@ -49,69 +55,66 @@ const OrderAll = () => {
         }
     };
 
+    // Hook gọi fetchData khi pagination thay đổi
     useEffect(() => {
         fetchData();
-    }, []);
+    }, [pagination]);
+
+    // Hàm lấy màu cho trạng thái đơn hàng
+    function getColorStatus(text: any) {
+        switch (text) {
+            case "Chờ xử lý":
+                return "#FFE082";
+            case "Đang xử lý":
+                return "#FFB74D";
+            case "Đang giao hàng":
+                return "#64B5F6";
+            default:
+                return "#81C784";
+        }
+    }
+
+    // Hàm lấy màu cho trạng thái thanh toán
+    function getColorStatusPayment(text: any) {
+        return text === "Đã thanh toán" ? "green" : "red";
+    }
+
+    // Cấu hình các cột của bảng
     const columns = useMemo<MRT_ColumnDef<any>[]>(
         () => [
             {
-                accessorKey: "id",
+                accessorKey: "order_code",
                 header: "Mã đơn hàng",
-                Cell: ({ renderedCellValue, cell }) => (
+                Cell: ({ renderedCellValue }) => (
                     <Badge
                         radius="sm"
                         variant="dot"
                         size="lg"
                         color={renderedCellValue === null ? "red" : "#21d01b"}
                     >
-                        {renderedCellValue === null ? null : renderedCellValue}
+                        {renderedCellValue || null}
                     </Badge>
                 ),
             },
             {
                 accessorKey: "customer.customer_name",
                 header: "Tên khách hàng",
-                Cell: ({ renderedCellValue, row }) => (
-                    <>
-                        <AvatarUtils
-                            value={
-                                row.original.customer.customer_name
-                                    ?.toString()
-                                    .split("-")[0]
-                            }
-                        />
-                    </>
+                Cell: ({ row }) => (
+                    <AvatarUtils
+                        value={
+                            row.original.customer.customer_name?.split("-")[0]
+                        }
+                    />
                 ),
             },
             {
                 accessorKey: "customer_name",
                 header: "Tên người nhận",
-                Cell: ({ renderedCellValue, row }) => (
-                    <>
-                        <AvatarUtils
-                            value={
-                                row.original.customer_name
-                                    ?.toString()
-                                    .split("-")[0]
-                            }
-                        />
-                    </>
+                Cell: ({ row }) => (
+                    <AvatarUtils
+                        value={row.original.customer_name?.split("-")[0]}
+                    />
                 ),
-            },
-            {
-                accessorKey: "total_amount",
-                header: "Tổng tiền",
-                Cell: ({ cell }) => {
-                    const totalAmount = Number(cell.getValue());
-                    if (!isNaN(totalAmount)) {
-                        const roundedAmount = Math.floor(totalAmount);
-                        return roundedAmount.toLocaleString("vi-VN", {
-                            style: "currency",
-                            currency: "VND",
-                        });
-                    }
-                    return "₫0";
-                },
             },
             {
                 accessorKey: "shipping_address",
@@ -120,8 +123,6 @@ const OrderAll = () => {
             {
                 accessorKey: "created_at",
                 header: "Ngày đặt",
-                Cell: ({ cell }: any) =>
-                    dayjs(cell.getValue()).format("DD-MM-YYYY"),
             },
             {
                 accessorKey: "payment_method.payment_method_name",
@@ -131,58 +132,48 @@ const OrderAll = () => {
             {
                 accessorKey: "payment_status",
                 header: "Trạng thái thanh toán",
-                size: 250,
+                size: 230,
+                Cell: ({ renderedCellValue }) => (
+                    <Badge color={getColorStatusPayment(renderedCellValue)}>
+                        {renderedCellValue === "Đã thanh toán"
+                            ? "Đã thanh toán"
+                            : "Chưa thanh toán"}
+                    </Badge>
+                ),
             },
             {
                 accessorKey: "status",
                 header: "Trạng thái đơn hàng",
+                Cell: ({ renderedCellValue }) => (
+                    <Badge color={getColorStatus(renderedCellValue)}>
+                        {renderedCellValue || "Không có"}
+                    </Badge>
+                ),
             },
             {
                 accessorKey: "final_amount",
-                header: "Tổng tiền sau giảm giá",
+                header: "Tổng tiền",
                 Cell: ({ cell }) => {
                     const totalAmount = Number(cell.getValue());
-                    if (!isNaN(totalAmount)) {
-                        const roundedAmount = Math.floor(totalAmount);
-                        return roundedAmount.toLocaleString("vi-VN", {
-                            style: "currency",
-                            currency: "VND",
-                        });
-                    }
-                    return "₫0";
+                    return !isNaN(totalAmount)
+                        ? totalAmount.toLocaleString("vi-VN", {
+                              style: "currency",
+                              currency: "VND",
+                          })
+                        : "₫0";
                 },
-                size: 250,
             },
         ],
         [],
     );
 
+    // Tạo bảng Mantine React Table
     const table = useMantineReactTable({
         columns,
         data,
-        enableColumnPinning: true, // Kích hoạt ghim cột
-        initialState: {
-            showColumnFilters: false,
-            columnPinning: {
-                left: ["mrt-row-select", "id"], // ghim cột bên trái
-                right: ["status"], // ghim cột bên phải
-            },
-            density: "xs",
-        },
-        positionToolbarAlertBanner: "bottom",
-        mantineTableContainerProps: {
-            style: { maxHeight: height, minHeight: height },
-        },
-        enableRowSelection: true,
-        mantinePaginationProps: {
-            showRowsPerPage: true,
-            withEdges: true,
-            rowsPerPageOptions: ["10", "50", "100"],
-        },
-        paginationDisplayMode: "pages",
-        mantineTableProps: {
-            striped: false,
-        },
+        enableColumnFilters: true,
+        enableSorting: true,
+        enableColumnActions: true,
         renderTopToolbarCustomActions: () => (
             <div ref={headerRef}>
                 <Box
@@ -195,7 +186,6 @@ const OrderAll = () => {
                     <Input
                         style={{ flex: 1, maxWidth: "180px" }}
                         placeholder="Nhập tìm kiếm"
-                        type="text"
                         leftSection={<IconSearch size={"20"} color="#15aabf" />}
                     />
                     <DatePickerInput
@@ -219,34 +209,46 @@ const OrderAll = () => {
                 <Button
                     leftSection={<IconEye size={20} />}
                     variant="outline"
-                    mr={"xs"}
+                    mr="xs"
                 >
                     Chi Tiết
                 </Button>
                 <Button
                     leftSection={<IconFileExport size={20} />}
                     variant="outline"
-                    mr={"xs"}
+                    mr="xs"
                     onClick={handleExport}
                 >
                     Export Excel
                 </Button>
             </>
         ),
+        mantineTableContainerProps: {
+            style: { maxHeight: height, minHeight: height },
+        },
+        enableStickyHeader: true,
+        manualPagination: true,
+        onPaginationChange: setPagination,
+        mantineTableBodyCellProps: () => ({
+            style: { fontSize: "11.5px", padding: "4px 12px" },
+        }),
+        mantinePaginationProps: {
+            showRowsPerPage: true,
+            withEdges: true,
+            rowsPerPageOptions: ["10", "50", "100"],
+        },
     });
 
+    // Thiết lập chiều cao động cho bảng
     useEffect(() => {
-        const headerHeight = headerRef.current?.offsetHeight || 0;
         const handleResize = () => {
+            const headerHeight = headerRef.current?.offsetHeight || 0;
             setHeight(window.innerHeight - (210 + headerHeight));
         };
-
         handleResize(); // Set initial height
         window.addEventListener("resize", handleResize);
 
-        return () => {
-            window.removeEventListener("resize", handleResize);
-        };
+        return () => window.removeEventListener("resize", handleResize);
     }, []);
 
     return (
