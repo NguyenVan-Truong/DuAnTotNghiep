@@ -12,7 +12,7 @@ import { Loader } from "@mantine/core";
 import { Favorites } from "@/model/Favorite";
 
 const fetchFavoritesData = async () => {
-    const response = await instance.get('/api/favorites', {
+    const response = await instance.get('/favorites', {
         headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`, // Lấy token từ localStorage
         },
@@ -41,14 +41,14 @@ const MiniFavorite = () => {
             </div>
             <div className="max-h-[80%] overflow-auto custom-scrollbar">
                 {products && products.length > 0 ? (
-                    products.map((product: Favorites, index: number) => (
+                    products.map((favorite, index) => (
                         <div key={index} className="flex space-x-4 mb-2">
                             <div>
-                                <img src={product.image || '/default-image.jpg'} alt={product.name} width={100} />
+                                <img src={favorite.product.image || '/default-image.jpg'} alt={favorite.product.name} width={100} />
                             </div>
                             <div>
-                                <h1 className="font-medium text-lg">{product.name}</h1>
-                                <p className="text-base">{product.quantity} × {product.price}</p>
+                                <h1 className="font-medium text-lg">{favorite.product.name}</h1>
+                                <p className="text-base">{favorite.product.quantity} × {favorite.product.price}</p>
                             </div>
                             <div>
                                 <CloseCircleOutlined style={{ fontSize: '24px', color: 'red' }} />
@@ -56,7 +56,7 @@ const MiniFavorite = () => {
                         </div>
                     ))
                 ) : (
-                    <p>Không có sản phẩm yêu thích nào.</p>
+                    <p>Không có sản phẩm yêu thích nào !</p>
                 )}
             </div>
             <div className="border-t border-t-gray-300 p-3 h-[20%] flex flex-col justify-between">
