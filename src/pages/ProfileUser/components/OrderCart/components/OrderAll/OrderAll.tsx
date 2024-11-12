@@ -1,28 +1,51 @@
 import { AvatarUtils } from "@/common/ColorByName/AvatarUtils";
 import instance from "@/configs/axios";
-import { Badge, Box, Button, Input, Text } from "@mantine/core";
-import { DatePickerInput } from "@mantine/dates";
+import { Badge, Box, Button, Input, Select } from "@mantine/core";
+import { DateInput } from "@mantine/dates";
+import { modals } from "@mantine/modals";
 import {
     IconCalendar,
     IconEye,
     IconFileExport,
     IconSearch,
+    IconSwitch,
 } from "@tabler/icons-react";
-import dayjs from "dayjs";
 import {
     MantineReactTable,
+    MRT_RowSelectionState,
     useMantineReactTable,
     type MRT_ColumnDef,
 } from "mantine-react-table";
+
+import { formatDateNotTimeZone } from "@/model/_base/Date";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import * as xlsx from "xlsx";
+import DetailOrder from "../DetailOrder";
+import { Order } from "@/model/Order";
 
 const OrderAll = () => {
-    const [data, setData] = useState([]); // Đặt useState bên trong component
+    const [data, setData] = useState<Order[]>([]); // Cập nhật kiểu dữ liệu
     const [height, setHeight] = useState(0);
-    const headerRef = useRef<HTMLDivElement>(null); // Đặt hooks bên trong component
-
+    const headerRef = useRef<HTMLDivElement>(null);
+    const [pagination, setPagination] = useState({
+        pageIndex: 0,
+        pageSize: 10,
+    });
+    const [rowSelection, setRowSelection] = useState<MRT_RowSelectionState>({});
+    const [selectId, setSelectId] = useState<string | undefined>(undefined);
+    const [search, setSearch] = useState({
+        search: "",
+        order_date: "",
+        status: "",
+    });
+    const handleChangeSearchValue = (value: string | null, key: string) => {
+        setSearch((prevData) => ({
+            ...prevData,
+            [key]: value ? value : 0,
+        }));
+    };
+    // Hàm xuất file Excel
     const handleExport = () => {
         try {
             const worksheet = xlsx.utils.json_to_sheet(data);
@@ -37,10 +60,20 @@ const OrderAll = () => {
 
     // Lấy dữ liệu từ API
     const fetchData = async () => {
+        let url = `?page=${pagination.pageIndex}`;
+        if (search.status) {
+            url += `&status=${search.status}`;
+        }
+        if (search.order_date) {
+            url += `&order_date=${search.order_date}`;
+        }
+        if (search.search) {
+            url += `&search=${search.search}`;
+        }
         try {
-            const response = await instance.get(`orders`);
+            const response = await instance.get(`orders${url}`);
             if (response.status === 200) {
-                let result = response.data.data.data; // Đảm bảo lấy đúng thuộc tính "data" từ response
+                const result = response.data.data.data;
                 setData(result);
             }
         } catch (error) {
@@ -49,69 +82,63 @@ const OrderAll = () => {
         }
     };
 
-    useEffect(() => {
-        fetchData();
-    }, []);
+    // Hook gọi fetchData khi pagination thay đổi
+
+    // Hàm lấy màu cho trạng thái đơn hàng
+    function getColorStatus(text: any) {
+        switch (text) {
+            case "Chờ xử lý":
+                return "#FFE082";
+            case "Đang xử lý":
+                return "#FFB74D";
+            case "Đang giao hàng":
+                return "#64B5F6";
+            default:
+                return "#81C784";
+        }
+    }
+
+    // Hàm lấy màu cho trạng thái thanh toán
+    function getColorStatusPayment(text: any) {
+        return text === "Đã thanh toán" ? "green" : "red";
+    }
+
+    // Cấu hình các cột của bảng
     const columns = useMemo<MRT_ColumnDef<any>[]>(
         () => [
             {
-                accessorKey: "id",
+                accessorKey: "order_code",
                 header: "Mã đơn hàng",
-                Cell: ({ renderedCellValue, cell }) => (
+                Cell: ({ renderedCellValue }) => (
                     <Badge
                         radius="sm"
                         variant="dot"
                         size="lg"
                         color={renderedCellValue === null ? "red" : "#21d01b"}
                     >
-                        {renderedCellValue === null ? null : renderedCellValue}
+                        {renderedCellValue || null}
                     </Badge>
                 ),
             },
             {
                 accessorKey: "customer.customer_name",
                 header: "Tên khách hàng",
-                Cell: ({ renderedCellValue, row }) => (
-                    <>
-                        <AvatarUtils
-                            value={
-                                row.original.customer.customer_name
-                                    ?.toString()
-                                    .split("-")[0]
-                            }
-                        />
-                    </>
+                Cell: ({ row }) => (
+                    <AvatarUtils
+                        value={
+                            row.original.customer.customer_name?.split("-")[0]
+                        }
+                    />
                 ),
             },
             {
                 accessorKey: "customer_name",
                 header: "Tên người nhận",
-                Cell: ({ renderedCellValue, row }) => (
-                    <>
-                        <AvatarUtils
-                            value={
-                                row.original.customer_name
-                                    ?.toString()
-                                    .split("-")[0]
-                            }
-                        />
-                    </>
+                Cell: ({ row }) => (
+                    <AvatarUtils
+                        value={row.original.customer_name?.split("-")[0]}
+                    />
                 ),
-            },
-            {
-                accessorKey: "total_amount",
-                header: "Tổng tiền",
-                Cell: ({ cell }) => {
-                    const totalAmount = Number(cell.getValue());
-                    if (!isNaN(totalAmount)) {
-                        const roundedAmount = Math.floor(totalAmount);
-                        return roundedAmount.toLocaleString("vi-VN", {
-                            style: "currency",
-                            currency: "VND",
-                        });
-                    }
-                    return "₫0";
-                },
             },
             {
                 accessorKey: "shipping_address",
@@ -120,8 +147,6 @@ const OrderAll = () => {
             {
                 accessorKey: "created_at",
                 header: "Ngày đặt",
-                Cell: ({ cell }: any) =>
-                    dayjs(cell.getValue()).format("DD-MM-YYYY"),
             },
             {
                 accessorKey: "payment_method.payment_method_name",
@@ -131,58 +156,91 @@ const OrderAll = () => {
             {
                 accessorKey: "payment_status",
                 header: "Trạng thái thanh toán",
-                size: 250,
+                size: 230,
+                Cell: ({ renderedCellValue }) => (
+                    <Badge color={getColorStatusPayment(renderedCellValue)}>
+                        {renderedCellValue === "Đã thanh toán"
+                            ? "Đã thanh toán"
+                            : "Chưa thanh toán"}
+                    </Badge>
+                ),
             },
             {
                 accessorKey: "status",
                 header: "Trạng thái đơn hàng",
+                Cell: ({ renderedCellValue }) => (
+                    <Badge color={getColorStatus(renderedCellValue)}>
+                        {renderedCellValue || "Không có"}
+                    </Badge>
+                ),
             },
             {
                 accessorKey: "final_amount",
-                header: "Tổng tiền sau giảm giá",
+                header: "Tổng tiền",
                 Cell: ({ cell }) => {
                     const totalAmount = Number(cell.getValue());
-                    if (!isNaN(totalAmount)) {
-                        const roundedAmount = Math.floor(totalAmount);
-                        return roundedAmount.toLocaleString("vi-VN", {
-                            style: "currency",
-                            currency: "VND",
-                        });
-                    }
-                    return "₫0";
+                    return !isNaN(totalAmount)
+                        ? totalAmount.toLocaleString("vi-VN", {
+                              style: "currency",
+                              currency: "VND",
+                          })
+                        : "₫0";
                 },
-                size: 250,
             },
         ],
         [],
     );
 
+    // Xử lý khi chỉ lấy 1 ID từ rowSelection
+    useEffect(() => {
+        const valuesList = Object.keys(rowSelection);
+        if (valuesList.length === 1) {
+            setSelectId(valuesList[0]);
+        } else {
+            setSelectId(undefined);
+        }
+    }, [rowSelection]);
+
+    const callApiGetData = async (id: string | undefined) => {
+        try {
+            const response = await instance.get(`/orders/${id}`);
+            if (response?.data?.data) {
+                modals.openConfirmModal({
+                    title: "Chi tiết đơn hàng",
+                    size: "1000px",
+                    children: <DetailOrder data={response.data.data} />,
+                    confirmProps: { display: "none" },
+                    cancelProps: { display: "none" },
+                });
+            }
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    };
+
     const table = useMantineReactTable({
         columns,
         data,
-        enableColumnPinning: true, // Kích hoạt ghim cột
+        enableColumnFilters: true,
+        enableSorting: true,
+        enableColumnActions: true,
+        enableColumnPinning: true,
+        enableRowSelection: true,
+        onRowSelectionChange: setRowSelection,
         initialState: {
             showColumnFilters: false,
             columnPinning: {
-                left: ["mrt-row-select", "id"], // ghim cột bên trái
-                right: ["status"], // ghim cột bên phải
+                left: ["mrt-row-select", "order_code"],
+                right: ["status"],
             },
             density: "xs",
         },
+        state: {
+            pagination,
+            rowSelection,
+        },
+        getRowId: (row) => row.id,
         positionToolbarAlertBanner: "bottom",
-        mantineTableContainerProps: {
-            style: { maxHeight: height, minHeight: height },
-        },
-        enableRowSelection: true,
-        mantinePaginationProps: {
-            showRowsPerPage: true,
-            withEdges: true,
-            rowsPerPageOptions: ["10", "50", "100"],
-        },
-        paginationDisplayMode: "pages",
-        mantineTableProps: {
-            striped: false,
-        },
         renderTopToolbarCustomActions: () => (
             <div ref={headerRef}>
                 <Box
@@ -195,20 +253,62 @@ const OrderAll = () => {
                     <Input
                         style={{ flex: 1, maxWidth: "180px" }}
                         placeholder="Nhập tìm kiếm"
-                        type="text"
                         leftSection={<IconSearch size={"20"} color="#15aabf" />}
+                        onChange={(e) => {
+                            handleChangeSearchValue(
+                                e.target.value ?? "",
+                                "search",
+                            );
+                        }}
                     />
-                    <DatePickerInput
-                        type="range"
+                    <Select
                         size="sm"
-                        placeholder="Từ ngày - Đến ngày"
+                        placeholder="Trạng thái"
+                        searchable
+                        clearable
+                        data={[
+                            { value: "completed", label: "Hoàn thành" },
+                            {
+                                value: "shipping",
+                                label: "Đang giao hàng",
+                            },
+                            {
+                                value: "processing",
+                                label: "Đang Xử lý",
+                            },
+                            {
+                                value: "pending",
+                                label: "Chờ Xử lý",
+                            },
+                        ]}
+                        style={{ flex: 1, maxWidth: "180px" }}
+                        leftSection={<IconSwitch size={20} color="#15aabf" />}
+                        onChange={(value) =>
+                            handleChangeSearchValue(value ?? "", "status")
+                        }
+                    />
+                    <DateInput
+                        size="sm"
+                        placeholder="Ngày đặt"
                         locale="vi"
                         valueFormat="DD/MM/YYYY"
                         leftSection={<IconCalendar color="#15aabf" />}
-                        w={250}
+                        w={180}
                         clearable
+                        onChange={(e) => {
+                            handleChangeSearchValue(
+                                formatDateNotTimeZone(e) ?? "",
+                                "order_date",
+                            );
+                        }}
                     />
-                    <Button color="blue" variant="outline">
+                    <Button
+                        color="blue"
+                        variant="outline"
+                        onClick={async () => {
+                            await fetchData();
+                        }}
+                    >
                         Tìm kiếm
                     </Button>
                 </Box>
@@ -219,41 +319,53 @@ const OrderAll = () => {
                 <Button
                     leftSection={<IconEye size={20} />}
                     variant="outline"
-                    mr={"xs"}
+                    mr="xs"
+                    onClick={() => selectId && callApiGetData(selectId)}
+                    disabled={!selectId}
                 >
                     Chi Tiết
                 </Button>
                 <Button
                     leftSection={<IconFileExport size={20} />}
                     variant="outline"
-                    mr={"xs"}
+                    mr="xs"
                     onClick={handleExport}
                 >
                     Export Excel
                 </Button>
             </>
         ),
+        mantineTableContainerProps: {
+            style: { maxHeight: height, minHeight: height },
+        },
+        enableStickyHeader: true,
+        manualPagination: true,
+        onPaginationChange: setPagination,
+        mantineTableBodyCellProps: () => ({
+            style: { fontSize: "11.5px", padding: "4px 12px" },
+        }),
+        mantinePaginationProps: {
+            showRowsPerPage: true,
+            withEdges: true,
+            rowsPerPageOptions: ["10", "50", "100"],
+        },
     });
 
     useEffect(() => {
-        const headerHeight = headerRef.current?.offsetHeight || 0;
         const handleResize = () => {
-            setHeight(window.innerHeight - (210 + headerHeight));
+            const height = headerRef.current?.clientHeight ?? 0;
+            setHeight(window.innerHeight - height - 24);
         };
-
-        handleResize(); // Set initial height
         window.addEventListener("resize", handleResize);
-
+        handleResize();
         return () => {
             window.removeEventListener("resize", handleResize);
         };
     }, []);
-
-    return (
-        <div className="mt-5">
-            <MantineReactTable table={table} />
-        </div>
-    );
+    useEffect(() => {
+        fetchData();
+    }, [pagination]);
+    return <MantineReactTable table={table} />;
 };
 
 export default OrderAll;

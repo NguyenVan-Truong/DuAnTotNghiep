@@ -50,7 +50,10 @@ const ProductImageSlider = ({ data }: Props) => {
                                 height="100%"
                                 style={{
                                     maxWidth: "699px",
-                                    maxHeight: "600px",
+                                    minWidth: "699px",
+                                    maxHeight: "365px",
+                                    minHeight: "365px",
+                                    objectFit: "cover",
                                 }}
                                 className="featured-photo"
                                 preview={{
@@ -87,6 +90,7 @@ const ProductImageSlider = ({ data }: Props) => {
                                 borderRadius: "5px",
                                 height: "90px",
                                 cursor: "pointer", // Thêm con trỏ để dễ nhận biết khi hover
+                                padding: "5px ",
                             }}
                         />
                     </div>
