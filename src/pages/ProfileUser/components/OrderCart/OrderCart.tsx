@@ -18,9 +18,11 @@ import OrderLoader from "./components/OrderLoader/OrderLoader";
 import OrderShipping from "./components/OrderShipping/OrderShipping";
 import OrderSucces from "./components/OrderSuccess/OrderSucces";
 import WaitForConfirmation from "./components/WaitForConfirmation/WaitForConfirmation";
+import { useState } from "react";
 
 const OrderCart = () => {
     const iconStyle = { width: 15, height: 15 };
+    const [activeTab, setActiveTab] = useState<string | null>("orderAll");
     return (
         <div className="bg-white !pb-6">
             <div className="px-10 py-2">
@@ -75,7 +77,11 @@ const OrderCart = () => {
                     </div>
                 </div>
                 <div>
-                    <Tabs defaultValue="orderAll">
+                    <Tabs
+                        defaultValue="orderAll"
+                        value={activeTab}
+                        onChange={setActiveTab}
+                    >
                         <Tabs.List>
                             <Tabs.Tab
                                 value="orderAll"
@@ -121,21 +127,37 @@ const OrderCart = () => {
                         </Tabs.List>
                         {/* noi dung */}
                         <Tabs.Panel value="orderAll">
-                            <OrderAll />
+                            {activeTab === "orderAll" ? <OrderAll /> : <></>}
                         </Tabs.Panel>
                         <Tabs.Panel value="orderWait">
-                            <WaitForConfirmation />
+                            {activeTab === "orderWait" ? (
+                                <WaitForConfirmation />
+                            ) : (
+                                <></>
+                            )}
                         </Tabs.Panel>
 
                         <Tabs.Panel value="orderLoader">
-                            <OrderLoader />
+                            {activeTab === "orderLoader" ? (
+                                <OrderLoader />
+                            ) : (
+                                <></>
+                            )}
                         </Tabs.Panel>
 
                         <Tabs.Panel value="orderShipping">
-                            <OrderShipping />
+                            {activeTab === "orderShipping" ? (
+                                <OrderShipping />
+                            ) : (
+                                <></>
+                            )}
                         </Tabs.Panel>
                         <Tabs.Panel value="orderDone">
-                            <OrderSucces />
+                            {activeTab === "orderDone" ? (
+                                <OrderSucces />
+                            ) : (
+                                <></>
+                            )}
                         </Tabs.Panel>
                     </Tabs>
                 </div>

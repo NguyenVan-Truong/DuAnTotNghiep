@@ -22,9 +22,10 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import * as xlsx from "xlsx";
 import DetailOrder from "../DetailOrder";
+import { Order } from "@/model/Order";
 
 const WaitForConfirmation = () => {
-    const [data, setData] = useState<any[]>([]); // Cập nhật kiểu dữ liệu
+    const [data, setData] = useState<Order[]>([]); // Cập nhật kiểu dữ liệu
     const [height, setHeight] = useState(0);
     const headerRef = useRef<HTMLDivElement>(null);
     const [pagination, setPagination] = useState({
