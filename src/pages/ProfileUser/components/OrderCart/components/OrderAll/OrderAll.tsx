@@ -1,21 +1,27 @@
 import { AvatarUtils } from "@/common/ColorByName/AvatarUtils";
 import instance from "@/configs/axios";
-import { Badge, Box, Button, Input } from "@mantine/core";
-import { DatePickerInput } from "@mantine/dates";
+import { Badge, Box, Button, Input, Select } from "@mantine/core";
+import { DateInput } from "@mantine/dates";
+import { modals } from "@mantine/modals";
 import {
     IconCalendar,
     IconEye,
     IconFileExport,
     IconSearch,
+    IconSwitch,
 } from "@tabler/icons-react";
 import {
     MantineReactTable,
+    MRT_RowSelectionState,
     useMantineReactTable,
     type MRT_ColumnDef,
 } from "mantine-react-table";
+
+import { formatDateNotTimeZone } from "@/model/_base/Date";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import * as xlsx from "xlsx";
+import DetailOrder from "../DetailOrder";
 
 const OrderAll = () => {
     const [data, setData] = useState<any[]>([]); // Cập nhật kiểu dữ liệu
@@ -25,7 +31,19 @@ const OrderAll = () => {
         pageIndex: 0,
         pageSize: 10,
     });
-
+    const [rowSelection, setRowSelection] = useState<MRT_RowSelectionState>({});
+    const [selectId, setSelectId] = useState<string | undefined>(undefined);
+    const [search, setSearch] = useState({
+        search: "",
+        order_date: "",
+        status: "",
+    });
+    const handleChangeSearchValue = (value: string | null, key: string) => {
+        setSearch((prevData) => ({
+            ...prevData,
+            [key]: value ? value : 0,
+        }));
+    };
     // Hàm xuất file Excel
     const handleExport = () => {
         try {
@@ -42,7 +60,15 @@ const OrderAll = () => {
     // Lấy dữ liệu từ API
     const fetchData = async () => {
         let url = `?page=${pagination.pageIndex}`;
-        console.log("url", url);
+        if (search.status) {
+            url += `&status=${search.status}`;
+        }
+        if (search.order_date) {
+            url += `&order_date=${search.order_date}`;
+        }
+        if (search.search) {
+            url += `&search=${search.search}`;
+        }
         try {
             const response = await instance.get(`orders${url}`);
             if (response.status === 200) {
@@ -56,9 +82,6 @@ const OrderAll = () => {
     };
 
     // Hook gọi fetchData khi pagination thay đổi
-    useEffect(() => {
-        fetchData();
-    }, [pagination]);
 
     // Hàm lấy màu cho trạng thái đơn hàng
     function getColorStatus(text: any) {
@@ -167,13 +190,56 @@ const OrderAll = () => {
         [],
     );
 
-    // Tạo bảng Mantine React Table
+    // Xử lý khi chỉ lấy 1 ID từ rowSelection
+    useEffect(() => {
+        const valuesList = Object.keys(rowSelection);
+        if (valuesList.length === 1) {
+            setSelectId(valuesList[0]);
+        } else {
+            setSelectId(undefined);
+        }
+    }, [rowSelection]);
+
+    const callApiGetData = async (id: string | undefined) => {
+        try {
+            const response = await instance.get(`/orders/${id}`);
+            if (response?.data?.data) {
+                modals.openConfirmModal({
+                    title: "Chi tiết đơn hàng",
+                    size: "1000px",
+                    children: <DetailOrder data={response.data.data} />,
+                    confirmProps: { display: "none" },
+                    cancelProps: { display: "none" },
+                });
+            }
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    };
+
     const table = useMantineReactTable({
         columns,
         data,
         enableColumnFilters: true,
         enableSorting: true,
         enableColumnActions: true,
+        enableColumnPinning: true,
+        enableRowSelection: true,
+        onRowSelectionChange: setRowSelection,
+        initialState: {
+            showColumnFilters: false,
+            columnPinning: {
+                left: ["mrt-row-select", "order_code"],
+                right: ["status"],
+            },
+            density: "xs",
+        },
+        state: {
+            pagination,
+            rowSelection,
+        },
+        getRowId: (row) => row.id,
+        positionToolbarAlertBanner: "bottom",
         renderTopToolbarCustomActions: () => (
             <div ref={headerRef}>
                 <Box
@@ -187,18 +253,61 @@ const OrderAll = () => {
                         style={{ flex: 1, maxWidth: "180px" }}
                         placeholder="Nhập tìm kiếm"
                         leftSection={<IconSearch size={"20"} color="#15aabf" />}
+                        onChange={(e) => {
+                            handleChangeSearchValue(
+                                e.target.value ?? "",
+                                "search",
+                            );
+                        }}
                     />
-                    <DatePickerInput
-                        type="range"
+                    <Select
                         size="sm"
-                        placeholder="Từ ngày - Đến ngày"
+                        placeholder="Trạng thái"
+                        searchable
+                        clearable
+                        data={[
+                            { value: "completed", label: "Hoàn thành" },
+                            {
+                                value: "shipping",
+                                label: "Đang giao hàng",
+                            },
+                            {
+                                value: "processing",
+                                label: "Đang Xử lý",
+                            },
+                            {
+                                value: "pending",
+                                label: "Chờ Xử lý",
+                            },
+                        ]}
+                        style={{ flex: 1, maxWidth: "180px" }}
+                        leftSection={<IconSwitch size={20} color="#15aabf" />}
+                        onChange={(value) =>
+                            handleChangeSearchValue(value ?? "", "status")
+                        }
+                    />
+                    <DateInput
+                        size="sm"
+                        placeholder="Ngày đặt"
                         locale="vi"
                         valueFormat="DD/MM/YYYY"
                         leftSection={<IconCalendar color="#15aabf" />}
-                        w={250}
+                        w={180}
                         clearable
+                        onChange={(e) => {
+                            handleChangeSearchValue(
+                                formatDateNotTimeZone(e) ?? "",
+                                "order_date",
+                            );
+                        }}
                     />
-                    <Button color="blue" variant="outline">
+                    <Button
+                        color="blue"
+                        variant="outline"
+                        onClick={async () => {
+                            await fetchData();
+                        }}
+                    >
                         Tìm kiếm
                     </Button>
                 </Box>
@@ -210,6 +319,8 @@ const OrderAll = () => {
                     leftSection={<IconEye size={20} />}
                     variant="outline"
                     mr="xs"
+                    onClick={() => selectId && callApiGetData(selectId)}
+                    disabled={!selectId}
                 >
                     Chi Tiết
                 </Button>
@@ -239,23 +350,21 @@ const OrderAll = () => {
         },
     });
 
-    // Thiết lập chiều cao động cho bảng
     useEffect(() => {
         const handleResize = () => {
-            const headerHeight = headerRef.current?.offsetHeight || 0;
-            setHeight(window.innerHeight - (210 + headerHeight));
+            const height = headerRef.current?.clientHeight ?? 0;
+            setHeight(window.innerHeight - height - 24);
         };
-        handleResize(); // Set initial height
         window.addEventListener("resize", handleResize);
-
-        return () => window.removeEventListener("resize", handleResize);
+        handleResize();
+        return () => {
+            window.removeEventListener("resize", handleResize);
+        };
     }, []);
-
-    return (
-        <div className="mt-5">
-            <MantineReactTable table={table} />
-        </div>
-    );
+    useEffect(() => {
+        fetchData();
+    }, [pagination]);
+    return <MantineReactTable table={table} />;
 };
 
 export default OrderAll;
