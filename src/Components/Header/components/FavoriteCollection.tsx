@@ -7,7 +7,7 @@ import { Badge, Drawer } from "antd";
 import { useState } from "react";
 import { sanpham1 } from "@/assets/img";
 import instance from "@/configs/axios";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Box, Loader, Text } from "@mantine/core";
 import { Favorites } from "@/model/Favorite";
 import { min } from "lodash";
@@ -17,7 +17,13 @@ const fetchFavoritesData = async () => {
     return response.data;
 };
 
+const removeFavorite = async (productId: number) => {
+    const response = await instance.post("/favorites/toggle", { product_id: productId });
+    return response.data;
+};
+
 const MiniFavorite = () => {
+    const queryClient = useQueryClient();
     // Sử dụng useQuery để lấy dữ liệu từ API
     const {
         data: products,
@@ -26,7 +32,27 @@ const MiniFavorite = () => {
     } = useQuery<Favorites[]>({
         queryKey: ["favoritesData"],
         queryFn: fetchFavoritesData,
+        refetchInterval: 1000,
     });
+
+    const handleRemoveFavorite = async (productId: number) => {
+        queryClient.setQueryData(['favoritesData'], (oldData: Favorites[] | undefined) => {
+            const newData = oldData?.filter(favorite => favorite.product.id !== productId);
+            return newData;
+        }); try {
+            const response = await removeFavorite(productId);
+
+            console.log("Xóa thành công sản phẩm yêu thích", response);
+        } catch (error) {
+            console.error("Có lỗi khi xóa sản phẩm yêu thích", error);
+
+            // Hoàn tác lại thay đổi trong cache nếu có lỗi từ API
+            queryClient.setQueryData(['favoritesData'], (oldData: Favorites[] | undefined) => {
+                const currentData = oldData ?? [];
+                return [...currentData, { product: { id: productId } }];
+            });
+        }
+    };
 
     // Kiểm tra trạng thái tải dữ liệu
     if (isLoading) return <Loader />;
@@ -69,6 +95,7 @@ const MiniFavorite = () => {
                             </div>
                             <div className="flex items-center">
                                 <CloseCircleOutlined
+                                    onClick={() => handleRemoveFavorite(favorite.product.id)}
                                     style={{ fontSize: "24px", color: "red" }}
                                 />
                             </div>
@@ -100,6 +127,12 @@ const MiniFavorite = () => {
 const Favorite = () => {
     const [drawerVisible, setDrawerVisible] = useState(false);
 
+    const { data: products } = useQuery<Favorites[]>({
+        queryKey: ["favoritesData"],
+        queryFn: fetchFavoritesData,
+        refetchInterval: 1000,
+    });
+
     const showDrawer = () => {
         setDrawerVisible(true);
     };
@@ -111,7 +144,7 @@ const Favorite = () => {
     return (
         <>
             <div className="items-center space-x-4">
-                <Badge count={5} className="relative">
+                <Badge count={products?.length || 0} className="relative">
                     <HeartOutlined
                         className="text-xl cursor-pointer"
                         onClick={showDrawer}

@@ -8,22 +8,34 @@ import style from "../ListProduct.module.scss";
 import { useNavigate } from "react-router-dom";
 import instance from "@/configs/axios";
 import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "react-toastify";
 type props = {
     product: Product;
 };
+type FavoritesData = number[];
 const ItemProduct = ({ product }: props) => {
     const navigate = useNavigate();
     const [tym, setTym] = useState(false);
     const queryClient = useQueryClient();
     const onhandleTymItem = async () => {
+        setTym(!tym);
         try {
             const response = await instance.post("/favorites/toggle", {
               product_id: product.id,
             });
             
             if (response.status === 200) {
-                setTym(!tym); // Thay đổi trạng thái nếu thành công
-                queryClient.invalidateQueries({ queryKey: ['favoritesData'] });
+                queryClient.setQueryData<FavoritesData>(['favoritesData'], (oldData) => {
+                    // Nếu oldData là undefined, sử dụng mảng rỗng làm giá trị mặc định
+                    const currentData = oldData ?? [];
+                    
+                    // Cập nhật dữ liệu yêu thích trong cache
+                    const updatedData = tym
+                        ? currentData.filter((id) => id !== product.id) // Xoá ID nếu yêu thích
+                        : [...currentData, product.id]; // Thêm ID vào mảng nếu chưa yêu thích
+
+                    return updatedData;
+                  });
             } else {
               console.error("Error toggling favorite status:", response.data);
             }
