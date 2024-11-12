@@ -11,8 +11,8 @@ import {
 } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import ImgCrop from "antd-img-crop";
-import axios from "axios";
 import instance from "@/configs/axios"; // Giả sử bạn có instance axios đã cấu hình sẵn
+import moment from "moment";
 
 const FormUpdate = () => {
     const [fileList, setFileList] = useState<any[]>([]);
@@ -30,7 +30,7 @@ const FormUpdate = () => {
                     full_name: data.full_name,
                     phone: data.phone,
                     address: data.address,
-                    birthday: data.birthday ? new Date(data.birthday) : null,
+                    birthday: data.birthday ? moment(data.birthday) : null,
                     avatar: data.avatar,
                 });
 
@@ -38,10 +38,10 @@ const FormUpdate = () => {
                 if (data.avatar) {
                     setFileList([
                         {
-                            uid: "-1", // UID của file
-                            name: "avatar", // Tên ảnh
-                            status: "done", // Trạng thái tải lên
-                            url: data.avatar, // Đường dẫn avatar
+                            uid: "-1",
+                            name: "avatar",
+                            status: "done",
+                            url: data.avatar,
                         },
                     ]);
                 } else {
@@ -57,17 +57,6 @@ const FormUpdate = () => {
 
     const onChange = (info: any) => {
         setFileList(info.fileList);
-        // const avatar =
-        //     info.fileList.length > 0 ? info.fileList[0].thumbUrl : "dswdw";
-        // console.log("info.fileList[0].thumbUrl", info.fileList[0].thumbUrl);
-
-        // console.log("avatar", avatar);
-        // if (info.fileList.length > 0) {
-        //     console.log("aaa", info.fileList[0]?.thumbUrl);
-        // } else {
-        //     console.log("bbb", info.fileList[0]);
-        // }
-        // form.setFieldsValue({ avatar });
     };
 
     const onPreview = async (file: any) => {
@@ -86,36 +75,36 @@ const FormUpdate = () => {
     };
 
     const onFinish = async (values: any) => {
-        // Tạo FormData để gửi file cùng với các trường dữ liệu khác
-        const formData = new FormData();
-        formData.append("full_name", values.full_name);
-        formData.append("phone", values.phone);
-        formData.append("address", values.address);
-        formData.append(
-            "birthday",
-            values.birthday ? values.birthday.format("YYYY-MM-DD") : "",
-        );
+        try {
+            const formData = new FormData();
+            formData.append("full_name", values.full_name);
+            formData.append("phone", values.phone);
+            formData.append("address", values.address);
+            formData.append(
+                "birthday",
+                values.birthday ? values.birthday.dayjs("DD-MM-YYYY") : "",
+            );
 
-        // Kiểm tra xem có avatar không và thêm nó vào FormData
-        if (fileList.length > 0) {
-            formData.append("avatar", fileList[0].originFileObj); // Gửi file gốc
+            if (fileList.length > 0) {
+                formData.append("avatar", fileList[0].originFileObj);
+            }
+
+            const response = await instance.post(
+                "/auth/update-profile",
+                formData,
+                {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    },
+                },
+            );
+
+            message.success("Cập nhật thông tin thành công!");
+            console.log("Profile updated successfully", response.data);
+        } catch (error) {
+            console.error("Error updating profile", error);
+            message.error("Cập nhật thông tin thất bại!");
         }
-
-        // try {
-        //     // Gửi dữ liệu lên API
-        //     const response = await axios.post("/auth/updateProfile", formData, {
-        //         headers: {
-        //             "Content-Type": "multipart/form-data",
-        //         },
-        //     });
-
-        //     // Xử lý response của API sau khi gửi thành công
-        //     console.log("Profile updated successfully", response.data);
-        //     message.success("Cập nhật thông tin thành công!");
-        // } catch (error) {
-        //     console.error("Error updating profile", error);
-        //     message.error("Cập nhật thông tin thất bại!");
-        // }
     };
 
     return (
@@ -180,7 +169,7 @@ const FormUpdate = () => {
                 <Col span={24}>
                     <Form.Item label="Ngày sinh" name="birthday">
                         <DatePicker
-                            format="YYYY-MM-DD"
+                            format="DD-MM-YYYY"
                             placeholder="Ngày sinh"
                             style={{ width: "100%" }}
                         />

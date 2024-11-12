@@ -1,28 +1,40 @@
 import { AvatarUtils } from "@/common/ColorByName/AvatarUtils";
 import instance from "@/configs/axios";
-import { Badge, Box, Button, Input, Select } from "@mantine/core";
+import {
+    ActionIcon,
+    Badge,
+    Box,
+    Button,
+    Input,
+    Select,
+    Tooltip,
+} from "@mantine/core";
 import { DateInput } from "@mantine/dates";
 import { modals } from "@mantine/modals";
 import {
     IconCalendar,
+    IconCheck,
     IconEye,
     IconFileExport,
     IconSearch,
     IconSwitch,
+    IconX,
 } from "@tabler/icons-react";
 import {
     MantineReactTable,
+    MRT_Row,
     MRT_RowSelectionState,
     useMantineReactTable,
     type MRT_ColumnDef,
 } from "mantine-react-table";
 
 import { formatDateNotTimeZone } from "@/model/_base/Date";
+import { Order } from "@/model/Order";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import * as xlsx from "xlsx";
 import DetailOrder from "../DetailOrder";
-import { Order } from "@/model/Order";
+import { message } from "antd";
 
 const OrderAll = () => {
     const [data, setData] = useState<Order[]>([]); // Cập nhật kiểu dữ liệu
@@ -187,10 +199,74 @@ const OrderAll = () => {
                         : "₫0";
                 },
             },
+            {
+                accessorKey: "action",
+                header: "Thao tác",
+                size: 10,
+                Cell: ({ row }) => (
+                    <Box
+                        style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "4px",
+                        }}
+                    >
+                        {processTaskActionMenu(row)}
+                    </Box>
+                ),
+            },
         ],
         [],
     );
+    function processTaskActionMenu(row: MRT_Row<any>): any {
+        return (
+            <>
+                <Tooltip label="Xác nhận đã nhận hàng">
+                    <ActionIcon
+                        variant="light"
+                        aria-label="Settings"
+                        color="green"
+                        disabled={row.original.status !== "Đã giao hàng"}
+                    >
+                        <IconCheck
+                            size={20}
+                            onClick={() => handleCheck(row?.original.id)}
+                        />
+                    </ActionIcon>
+                </Tooltip>
+                <Tooltip label="Hủy đặt hàng">
+                    <ActionIcon
+                        variant="light"
+                        aria-label="Settings"
+                        color="red"
+                        disabled={row.original.status !== "Chờ xử lý"}
+                    >
+                        <IconX
+                            size={20}
+                            onClick={() => handleCancel(row?.original.id)}
+                        />
+                    </ActionIcon>
+                </Tooltip>
+            </>
+        );
+    }
 
+    const handleCheck = async (id: string) => {
+        try {
+            await instance.put(`orders?confirm_order_id=${id}`);
+            message.success("Xác nhận đã nhận hàng thành công");
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    };
+
+    const handleCancel = async (id: string) => {
+        try {
+            message.success("Hủy đặt hàng thành công");
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    };
     // Xử lý khi chỉ lấy 1 ID từ rowSelection
     useEffect(() => {
         const valuesList = Object.keys(rowSelection);
@@ -231,7 +307,7 @@ const OrderAll = () => {
             showColumnFilters: false,
             columnPinning: {
                 left: ["mrt-row-select", "order_code"],
-                right: ["status"],
+                right: ["action"],
             },
             density: "xs",
         },

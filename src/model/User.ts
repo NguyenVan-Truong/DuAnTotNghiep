@@ -20,7 +20,7 @@ export interface UserProfile {
     ward_id: number | null; // ID xã (có thể là null)
     address: string | null; // Địa chỉ (có thể là null)
     birthday: string | null; // Ngày sinh (có thể là null)
-    avatar: string | null; // Đường dẫn tới ảnh đại diện (có thể là null)
+    avatar: string; // Đường dẫn tới ảnh đại diện (có thể là null)
     description: string | null; // Mô tả (có thể là null)
     user_agent: string | null; // Thông tin về user agent (có thể là null)
     created_at: string; // Thời gian tạo
