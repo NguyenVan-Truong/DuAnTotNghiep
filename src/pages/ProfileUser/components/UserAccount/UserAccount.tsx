@@ -52,7 +52,6 @@ const UserAccount = () => {
     if (!data) {
         return <div>Không có thông tin hồ sơ để hiển thị.</div>;
     }
-
     return (
         <div className="bg-white !pb-6">
             <div className="px-10 py-2">
@@ -175,7 +174,7 @@ const UserAccount = () => {
                     <div className="border-l-2 border-slate-300">
                         <div className="flex justify-center">
                             <Image
-                                src={data.avatar ? data.avatar : AvatarDefault}
+                                src={data.avatar}
                                 radius="sm"
                                 h={200}
                                 w="auto"
