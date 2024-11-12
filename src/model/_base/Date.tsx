@@ -1,3 +1,5 @@
+import moment from "moment";
+import dayjs from "dayjs";
 export const formatDate = (dateString: string) => {
     const date = new Date(dateString); // Chuyển đổi chuỗi thời gian thành đối tượng Date
 
@@ -11,3 +13,11 @@ export const formatDate = (dateString: string) => {
     // Trả về định dạng mong muốn
     return `${year}-${month}-${day} ${hours}:${minutes}`;
 };
+export function formatDateNotTimeZone(
+    date: Date | string | null | undefined,
+): string {
+    if (date === null || date === undefined) {
+        return "";
+    }
+    return moment(date).format("DD-MM-YYYY");
+}
