@@ -253,7 +253,7 @@ const OrderAll = () => {
 
     const handleCheck = async (id: string) => {
         try {
-            await instance.put(`orders?confirm_order_id=${id}`);
+            await instance.put(`/orders/${id}/complete-status`);
             message.success("Xác nhận đã nhận hàng thành công");
         } catch (error) {
             console.error("Error fetching data:", error);

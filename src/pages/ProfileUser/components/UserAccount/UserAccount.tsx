@@ -22,7 +22,6 @@ import FormUpdate from "./FormUpdate";
 import instance from "@/configs/axios";
 import { useQuery } from "@tanstack/react-query";
 import { UserProfile } from "@/model/User";
-
 const UserAccount = () => {
     const handleAdd = () => {
         modals.openConfirmModal({

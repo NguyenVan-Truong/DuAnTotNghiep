@@ -82,7 +82,9 @@ const FormUpdate = () => {
             formData.append("address", values.address);
             formData.append(
                 "birthday",
-                values.birthday ? values.birthday.dayjs("DD-MM-YYYY") : "",
+                values.birthday
+                    ? moment(values.birthday).format("YYYY-MM-DD")
+                    : "",
             );
 
             if (fileList.length > 0) {
@@ -100,6 +102,10 @@ const FormUpdate = () => {
             );
 
             message.success("Cập nhật thông tin thành công!");
+            localStorage.setItem(
+                "userProFile",
+                JSON.stringify(response.data.user),
+            );
             console.log("Profile updated successfully", response.data);
         } catch (error) {
             console.error("Error updating profile", error);

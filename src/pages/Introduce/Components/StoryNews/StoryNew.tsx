@@ -7,7 +7,7 @@ import instance from "@/configs/axios";
 // Hàm gọi API
 const fetchPostsData = async () => {
     const response = await instance.get("/posts");
-    return response.data;
+    return response.data.data;
 };
 
 const StoryNew = () => {
