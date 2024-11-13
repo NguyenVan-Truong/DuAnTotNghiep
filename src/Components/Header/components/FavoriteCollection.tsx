@@ -32,7 +32,7 @@ const MiniFavorite = () => {
     } = useQuery<Favorites[]>({
         queryKey: ["favoritesData"],
         queryFn: fetchFavoritesData,
-        refetchInterval: 1000,
+        // refetchInterval: 1000,
     });
 
     const handleRemoveFavorite = async (productId: number) => {
@@ -127,14 +127,14 @@ const MiniFavorite = () => {
 const Favorite = () => {
     const [drawerVisible, setDrawerVisible] = useState(false);
 
-    const { data: products } = useQuery<Favorites[]>({
+    const { data: products,  refetch} = useQuery<Favorites[]>({
         queryKey: ["favoritesData"],
         queryFn: fetchFavoritesData,
-        refetchInterval: 1000,
+        // refetchInterval: 1000,    
     });
-
     const showDrawer = () => {
         setDrawerVisible(true);
+        refetch();
     };
 
     const onClose = () => {

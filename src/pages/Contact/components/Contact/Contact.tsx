@@ -1,4 +1,3 @@
-import { dia_chi } from "@/assets/img";
 import styles from "./Contact.module.scss";
 import { AspectRatio, Loader } from "@mantine/core";
 import instance from "@/configs/axios";
@@ -37,9 +36,11 @@ const ContactPage = () => {
     }
 
     return (
+        <>
         <div className={styles.contactPage}>
             <h1 className={styles.title}>Trang Liên Hệ</h1>
             {data.map((item) => (
+                <>
                 <div className={styles.infoSection} key={item.id}>
                     <div className={styles.contactInfo}>
                         <h2>Thông tin người hỗ trợ</h2>
@@ -81,19 +82,21 @@ const ContactPage = () => {
                         />
                     </div>
 
-                    <div className={styles.mapSection}>
-                        <h2>Bản Đồ</h2>
-                        <AspectRatio ratio={16 / 9}>
-                            <iframe
-                                src={item.map}
-                                className="map"
-                                allowFullScreen
-                            />
-                        </AspectRatio>
-                    </div>
                 </div>
+                <div className={styles.mapSection} key={item.id}>
+                    <h2>Bản Đồ</h2>
+                    <AspectRatio ratio={16 / 9}>
+                        <iframe
+                            src={item.map}
+                            className="map"
+                            allowFullScreen
+                        />
+                    </AspectRatio>
+                </div>
+                </>
             ))}
         </div>
+        </>
     );
 };
 
