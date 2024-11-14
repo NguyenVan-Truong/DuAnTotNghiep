@@ -69,7 +69,7 @@ const ProfileUser = () => {
                                 </span>
                             }
                         />
-                        <NavLink
+                        {/* <NavLink
                             leftSection={<IconCards size="1.3rem" />}
                             href="/nguoi-dung/thong-tin-tai-khoan"
                             label={
@@ -77,8 +77,8 @@ const ProfileUser = () => {
                                     Danh sách thẻ tín dụng
                                 </span>
                             }
-                        />
-                        <NavLink
+                        /> */}
+                        {/* <NavLink
                             leftSection={<IconHeart size="1.3rem" />}
                             href="/nguoi-dung/yeu-thich"
                             label={
@@ -86,7 +86,7 @@ const ProfileUser = () => {
                                     Danh sách yêu thích
                                 </span>
                             }
-                        />
+                        /> */}
                     </ul>
                 </div>
 

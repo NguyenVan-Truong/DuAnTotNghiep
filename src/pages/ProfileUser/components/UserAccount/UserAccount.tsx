@@ -52,7 +52,7 @@ const UserAccount = () => {
         return <div>Không có thông tin hồ sơ để hiển thị.</div>;
     }
     return (
-        <div className="bg-white !pb-6">
+        <div className="bg-white !pb-6 h-[610px]">
             <div className="px-10 py-2">
                 <div className="flex items-center justify-between">
                     <div className="mt-4">

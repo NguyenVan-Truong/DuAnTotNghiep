@@ -141,13 +141,14 @@ const MiniFavorite = () => {
 const Favorite = () => {
     const [drawerVisible, setDrawerVisible] = useState(false);
 
-    const { data: products } = useQuery<Favorites[]>({
+    const { data: products, refetch } = useQuery<Favorites[]>({
         queryKey: ["favoritesData"],
         queryFn: fetchFavoritesData,
     });
 
     const showDrawer = () => {
         setDrawerVisible(true);
+        refetch();
     };
 
     const onClose = () => {

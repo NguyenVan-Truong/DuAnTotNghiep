@@ -18,6 +18,7 @@ import {
     IconFileExport,
     IconSearch,
     IconSwitch,
+    IconTrash,
     IconX,
 } from "@tabler/icons-react";
 import {
@@ -34,7 +35,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import * as xlsx from "xlsx";
 import DetailOrder from "../DetailOrder";
-import { message } from "antd";
+import { message, Popconfirm } from "antd";
 
 const OrderAll = () => {
     const [data, setData] = useState<Order[]>([]); // Cập nhật kiểu dữ liệu
@@ -234,19 +235,26 @@ const OrderAll = () => {
                         />
                     </ActionIcon>
                 </Tooltip>
-                <Tooltip label="Hủy đặt hàng">
-                    <ActionIcon
-                        variant="light"
-                        aria-label="Settings"
-                        color="red"
-                        disabled={row.original.status !== "Chờ xử lý"}
-                    >
-                        <IconX
-                            size={20}
-                            onClick={() => handleCancel(row?.original.id)}
-                        />
-                    </ActionIcon>
-                </Tooltip>
+                <Popconfirm
+                    placement="topRight"
+                    title={"Bạn có chắc muốn xóa ko ?"}
+                    okText="Có"
+                    cancelText="Ko"
+                    className="mx-auto"
+                    onConfirm={() => handleCancel(row?.original.id)}
+                >
+                    <Tooltip label="Xóa">
+                        <ActionIcon
+                            color="red"
+                            variant="light"
+                            size="md"
+                            aria-label="Settings"
+                            disabled={row.original.status !== "Chờ xử lý"}
+                        >
+                            <IconX />
+                        </ActionIcon>
+                    </Tooltip>
+                </Popconfirm>
             </>
         );
     }
@@ -255,6 +263,7 @@ const OrderAll = () => {
         try {
             await instance.put(`/orders/${id}/complete-status`);
             message.success("Xác nhận đã nhận hàng thành công");
+            fetchData();
         } catch (error) {
             console.error("Error fetching data:", error);
         }
@@ -262,7 +271,9 @@ const OrderAll = () => {
 
     const handleCancel = async (id: string) => {
         try {
+            await instance.put(`/orders/${id}/cancel-status`);
             message.success("Hủy đặt hàng thành công");
+            fetchData();
         } catch (error) {
             console.error("Error fetching data:", error);
         }
@@ -421,19 +432,21 @@ const OrderAll = () => {
             style: { fontSize: "11.5px", padding: "4px 12px" },
         }),
         mantinePaginationProps: {
-            showRowsPerPage: true,
+            showRowsPerPage: false,
             withEdges: true,
             rowsPerPageOptions: ["10", "50", "100"],
         },
     });
 
     useEffect(() => {
+        const headerHeight = headerRef.current?.offsetHeight || 0;
         const handleResize = () => {
-            const height = headerRef.current?.clientHeight ?? 0;
-            setHeight(window.innerHeight - height - 24);
+            setHeight(window.innerHeight - (240 + headerHeight));
         };
+
+        handleResize(); // Set initial height
         window.addEventListener("resize", handleResize);
-        handleResize();
+
         return () => {
             window.removeEventListener("resize", handleResize);
         };

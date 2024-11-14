@@ -49,6 +49,7 @@ const ContactPage = () => {
                                 type="text"
                                 id="name"
                                 value={item.name}
+                                width={200}
                                 readOnly
                             />
                         </div>
@@ -58,6 +59,7 @@ const ContactPage = () => {
                                 type="text"
                                 id="phone"
                                 value={item.phone}
+                                width={200}
                                 readOnly
                             />
                         </div>
@@ -66,6 +68,7 @@ const ContactPage = () => {
                             <input
                                 type="text"
                                 id="address"
+                                width={250}
                                 value={item.address}
                                 readOnly
                             />
@@ -77,6 +80,8 @@ const ContactPage = () => {
                         <img
                             src={item.image}
                             alt="Địa chỉ 1"
+                            width={150}
+                            height={150}
                             className={styles.addressImage}
                         />
                     </div>
