@@ -9,6 +9,7 @@ import { AboutPages } from "@/model/AboutPages";
 import instance from "@/configs/axios";
 import Content from "./Components/Content/Content";
 import ContentPost from "./Components/Content/ContentPost";
+import Loading from "@/extension/Loading";
 
 // Hàm gọi API
 const fetchAboutData = async () => {
@@ -23,7 +24,9 @@ const Introduce = () => {
         queryFn: fetchAboutData,
     });
 
-    if (isLoading) return <Loader />; // Hiển thị loading spinner khi đang tải
+    if (isLoading) {
+        return <Loading />;
+    } // Hiển thị loading spinner khi đang tải
     if (error) return <div>Lỗi khi tải dữ liệu bài viết</div>; // Hiển thị thông báo lỗi nếu có lỗi
 
     return (

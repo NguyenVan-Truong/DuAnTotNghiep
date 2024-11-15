@@ -24,6 +24,7 @@ import instance from "@/configs/axios";
 import { useQuery } from "@tanstack/react-query";
 import { UserProfile } from "@/model/User";
 import { formatDateNotTimeZone } from "@/model/_base/Date";
+import Loading from "@/extension/Loading";
 
 // Khai báo fetchData trước khi sử dụng trong useQuery
 const fetchData = async () => {
@@ -45,8 +46,9 @@ const UserAccount = () => {
             children: (
                 <FormUpdate
                     onSuccess={() => {
-                        refetch(); // Fetch lại dữ liệu mới
+                        refetch();
                     }}
+                    modals={modals}
                 />
             ),
             confirmProps: { display: "none" },
@@ -55,7 +57,7 @@ const UserAccount = () => {
     };
 
     if (isLoading) {
-        return <div>Loading...</div>;
+        return <Loading />;
     }
 
     if (isError) {

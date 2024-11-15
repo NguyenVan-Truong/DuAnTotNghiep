@@ -18,6 +18,7 @@ import { Feedback } from "@/model/Supports";
 import { IconTrash } from "@tabler/icons-react";
 import { modals } from "@mantine/modals";
 import FeedbackDetail from "./FeedbackDetail";
+import Loading from "@/extension/Loading";
 
 const SupportFeedback = () => {
     const queryClient = useQueryClient();
@@ -54,7 +55,7 @@ const SupportFeedback = () => {
 
     // Hiển thị khi đang tải dữ liệu
     if (isLoading) {
-        return <Loader />;
+        return <Loading />;
     }
 
     // Hiển thị thông báo lỗi nếu có

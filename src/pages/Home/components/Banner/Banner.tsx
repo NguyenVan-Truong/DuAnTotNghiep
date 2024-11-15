@@ -1,8 +1,11 @@
 import { banner, banner1, bannerh1 } from "@/assets/img";
 import instance from "@/configs/axios";
 import { BannerHome } from "@/model/Banner";
+import { Loader } from "@mantine/core";
 
 import { useQuery } from "@tanstack/react-query";
+import { Link } from "react-router-dom";
+import Loading from "./../../../../extension/Loading";
 const Banner = () => {
     const fetchData = async () => {
         const response = await instance.get("/banners-home");
@@ -13,7 +16,11 @@ const Banner = () => {
         queryFn: fetchData,
     });
     if (isLoading) {
-        return <div>Loading...</div>;
+        return (
+            <>
+                <Loading />
+            </>
+        );
     }
 
     if (isError) {
@@ -38,9 +45,11 @@ const Banner = () => {
                     <p className="text-white text-sm md:text-xl mb-2 md:mb-4">
                         {data.content}{" "}
                     </p>
-                    <button className="bg-[#ffffff] text-black hover:bg-gray-300 font-medium text-sm py-1 md:py-2 px-3 md:px-6 rounded-md">
-                        Xem Chi Tiết
-                    </button>
+                    <Link to={"/gioi-thieu"}>
+                        <button className="bg-[#ffffff] text-black hover:bg-gray-300 font-medium text-sm py-1 md:py-2 px-3 md:px-6 rounded-md">
+                            Xem Chi Tiết
+                        </button>
+                    </Link>
                 </div>
             </div>
 
@@ -56,9 +65,11 @@ const Banner = () => {
                         hữu đội ngũ chuyên nghiệp và hệ thống 10 cửa hàng, Nhà
                         Xinh là lựa chọn cho không gian tinh tế và hiện đại.
                     </p>
-                    <button className="border border-[#7a9c59] text-[#7a9c59] px-2 md:px-4 py-1 md:py-2 rounded hover:bg-[#7a9c59] hover:text-white transition">
-                        Xem Thêm
-                    </button>
+                    <Link to={"/gioi-thieu"}>
+                        <button className="border border-[#7a9c59] text-[#7a9c59] px-2 md:px-4 py-1 md:py-2 rounded hover:bg-[#7a9c59] hover:text-white transition">
+                            Xem Thêm
+                        </button>
+                    </Link>
                 </div>
                 <div className="flex-1 mb-5">
                     <img

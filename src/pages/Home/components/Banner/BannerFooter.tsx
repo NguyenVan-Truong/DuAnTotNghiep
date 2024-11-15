@@ -9,6 +9,7 @@ import {
 } from "@/assets/img";
 import { Button } from "antd";
 import Style from "./BannerFooter.module.scss";
+import { Link } from "react-router-dom";
 const BannerFooter = () => {
     const [activeIndex, setActiveIndex] = useState(0);
 
@@ -153,7 +154,9 @@ const BannerFooter = () => {
                         thiết kế độc đáo, hợp thời và chất lượng. Nhà Xinh hiện
                         đã mở 10 cửa hàng tại Việt Nam.
                     </Text>
-                    <Button>Về Mordem Home</Button>
+                    <Link to={"/gioi-thieu"}>
+                        <Button>Về Mordem Home</Button>
+                    </Link>
                 </div>
                 <div className={Style.banner_right}>
                     <Image src={banner_footer2} />

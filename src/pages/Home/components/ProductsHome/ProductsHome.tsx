@@ -10,6 +10,7 @@ import "slick-carousel/slick/slick-theme.css";
 import "slick-carousel/slick/slick.css";
 import "./ProductsHome.scss";
 import { IconChevronLeft, IconChevronRight } from "@tabler/icons-react";
+import Loading from "@/extension/Loading";
 
 // Custom next arrow using FiChevronRight
 const NextArrow = (props: any) => {
@@ -106,7 +107,9 @@ const ProductsHome = () => {
         queryKey: ["productsHome"],
         queryFn: fetchData,
     });
-
+    if (isLoading) {
+        return <Loading />;
+    }
     // Kiểm tra lỗi
     if (isError) {
         return <div>Error: {error.message}</div>;
@@ -115,11 +118,6 @@ const ProductsHome = () => {
     return (
         <Box pos="relative">
             <div className="container list-products mt-[50px] relative">
-                <LoadingOverlay
-                    visible={isLoading || visible}
-                    zIndex={1000}
-                    overlayProps={{ radius: "sm", blur: 2 }}
-                />
                 <Slider {...settings} className="list-products-slider">
                     {data?.map((product, index) => (
                         <div key={index} className="list-products__item-main">

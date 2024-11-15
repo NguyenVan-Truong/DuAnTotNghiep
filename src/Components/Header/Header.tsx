@@ -1,4 +1,5 @@
-import { AvatarDefault, bannerh1 } from "@/assets/img";
+import { AvatarDefault } from "@/assets/img";
+import instance from "@/configs/axios";
 import { EnvironmentOutlined, SearchOutlined } from "@ant-design/icons";
 import { Avatar, Box, Input, Menu, Text, Tooltip } from "@mantine/core";
 import {
@@ -7,6 +8,7 @@ import {
     IconShoppingCart,
     IconUserCircle,
 } from "@tabler/icons-react";
+import { useQuery } from "@tanstack/react-query";
 import { Button, Dropdown, message, Modal } from "antd";
 import { useEffect, useState } from "react";
 import { FiPhone } from "react-icons/fi";
@@ -25,7 +27,7 @@ const Header = () => {
         setDropdownVisible(false);
     };
 
-    // Lấy thông tin người dùng từ localStorage
+    // Lấy thông tin người dùng từ localStorageO
     const [userProfile, setUserProfile] = useState(() => {
         const storedUserProfile = localStorage.getItem("userProFile");
         return storedUserProfile ? JSON.parse(storedUserProfile) : {};
@@ -65,6 +67,17 @@ const Header = () => {
         });
     };
 
+    const fetchFavoritesData = async () => {
+        const response = await instance.get("/favorites");
+        return response.data;
+    };
+    const { data } = useQuery({
+        queryKey: ["favoritesData"],
+        queryFn: fetchFavoritesData,
+        staleTime: 0,
+        enabled: true,
+    });
+
     return (
         <>
             {/* Header1 */}
@@ -82,7 +95,7 @@ const Header = () => {
                 </div>
                 <div className="hidden lg:flex items-center mr-10 space-x-3">
                     <EnvironmentOutlined className="text-xl mb-1" />
-                    <Favorite />
+                    <Favorite data={data} />
                     <CartIcon />
                     {localStorage.getItem("userProFile") ? (
                         <Menu
