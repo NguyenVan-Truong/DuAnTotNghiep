@@ -5,8 +5,11 @@ import { IconCheck, IconMinus, IconPlus } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import "../../ProductDetail.scss";
 import WanrrantyTab from "../WarrantyTab/WanrrantyTab";
+import instance from "@/configs/axios";
+import { formatCurrencyVN } from "@/model/_base/Number";
 type Props = {
     data: TypeProductDetail | undefined;
+    id: number;
 };
 type AttributeValues = {
     [key: string]: string[] | any;
@@ -28,9 +31,10 @@ type TypeFilteredVariant = {
     updated_at: string;
     attributes: Attribute[];
 };
-const RightProduct = ({ data }: Props) => {
+const RightProduct = ({ data, id }: Props) => {
     if (!data) return null;
     const [quantity, setQuantity] = useState(1);
+
     const increaseQuantity = () => {
         if (
             quantity < (filteredVariant ? filteredVariant?.stock : data.stock)
@@ -96,9 +100,25 @@ const RightProduct = ({ data }: Props) => {
             },
         );
     }) as TypeFilteredVariant | undefined;
-    console.log("data", data);
-    console.log("selectedAttributes", selectedAttributes);
-    console.log("filteredVariant", filteredVariant);
+    // console.log("data", data);
+    // console.log("selectedAttributes", selectedAttributes);
+    // console.log("filteredVariant", filteredVariant);
+
+    const onhandleAddToCart = async () => {
+        const dataAddToCart = {
+            product_id: id,
+            product_variant_id: filteredVariant?.id,
+            quantity: quantity,
+        };
+        try {
+            const response = await instance.post("/cart", dataAddToCart);
+            if (response.status === 201) {
+                NotificationExtension.Success("Thêm vào giỏ hàng thành công");
+            }
+        } catch (error) {
+            NotificationExtension.Fails("Đã xảy ra lỗi khi thêm vào giỏ hàng");
+        }
+    };
     return (
         <div className="product-details">
             <div className="product-header">
@@ -117,7 +137,7 @@ const RightProduct = ({ data }: Props) => {
             </Flex>
             <div className="product-pricing my-[5px] py-[5px] ">
                 <Flex direction="row" align="center" gap="lg">
-                    <Badge
+                    {/* <Badge
                         size="lg"
                         radius="sm"
                         style={{ backgroundColor: "red" }}
@@ -129,19 +149,23 @@ const RightProduct = ({ data }: Props) => {
                     </span>
                     <span className="original-price text-[#777a7b] text-[14px] ">
                         <del>{data?.price}</del>
-                    </span>
-                    {/* <span className="current-price text-[#ef683a] text-[17px] font-bold">
-                        {filteredVariant
-                            ? filteredVariant?.discount_price
-                            : data?.discount_price}
+                    </span> */}
+                    <span className="current-price text-[#ef683a] text-[17px] font-bold">
+                        {formatCurrencyVN(
+                            filteredVariant
+                                ? filteredVariant?.discount_price
+                                : data?.discount_price,
+                        )}
                     </span>
                     <span className="original-price text-[#777a7b] text-[14px] ">
                         <del>
-                            {filteredVariant
-                                ? filteredVariant?.price
-                                : data?.price}
+                            {formatCurrencyVN(
+                                filteredVariant
+                                    ? filteredVariant?.price
+                                    : data?.price,
+                            )}
                         </del>
-                    </span> */}
+                    </span>
                 </Flex>
             </div>
             <Flex direction="column" gap="sm" className="product-attributes">
@@ -284,6 +308,7 @@ const RightProduct = ({ data }: Props) => {
                                         cursor: "pointer",
                                     }}
                                     radius="xs"
+                                    onClick={() => onhandleAddToCart()}
                                 >
                                     Thêm vào giỏ hàng
                                 </Badge>

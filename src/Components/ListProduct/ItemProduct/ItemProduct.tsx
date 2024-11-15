@@ -1,6 +1,6 @@
 import { bg_bage } from "@/assets/img";
 import { Product } from "@/model/Products";
-import { Button, Flex, Rating, Tooltip } from "@mantine/core";
+import { Box, Button, Flex, Rating, Text, Tooltip } from "@mantine/core";
 import { IconHeartFilled } from "@tabler/icons-react";
 import { useState } from "react";
 import { CiHeart } from "react-icons/ci";
@@ -8,30 +8,48 @@ import style from "../ListProduct.module.scss";
 import { useNavigate } from "react-router-dom";
 import instance from "@/configs/axios";
 import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "react-toastify";
 type props = {
     product: Product;
 };
+type FavoritesData = number[];
 const ItemProduct = ({ product }: props) => {
     const navigate = useNavigate();
     const [tym, setTym] = useState(false);
     const queryClient = useQueryClient();
     const onhandleTymItem = async () => {
+        setTym(!tym);
         try {
             const response = await instance.post("/favorites/toggle", {
-              product_id: product.id,
+                product_id: product.id,
             });
-            
+            queryClient.invalidateQueries({
+                queryKey: ["favoritesData"],
+            });
             if (response.status === 200) {
-                setTym(!tym); // Thay đổi trạng thái nếu thành công
-                queryClient.invalidateQueries({ queryKey: ['favoritesData'] });
+                // Cập nhật dữ liệu trong cache của react-query
+                queryClient.setQueryData<FavoritesData>(
+                    ["favoritesData"],
+                    (oldData) => {
+                        const currentData = oldData ?? [];
+                        const updatedData = tym
+                            ? currentData.filter((id) => id !== product.id)
+                            : [...currentData, product.id];
+
+                        return updatedData;
+                    },
+                );
+
+                // Yêu cầu fetch lại dữ liệu yêu thích
             } else {
-              console.error("Error toggling favorite status:", response.data);
+                console.error("Error toggling favorite status:", response.data);
             }
-          } catch (error) {
-            console.error("Có lỗi xảy", error);
-          }
+        } catch (error) {
+            console.error("Có lỗi xảy ra", error);
+        }
         setTym(!tym);
     };
+
     const onhandleTurnPage = (id: number, slug: string) => {
         navigate(`/chi-tiet-san-pham/${slug}`, { state: { id: id } });
     };
@@ -44,11 +62,6 @@ const ItemProduct = ({ product }: props) => {
                         alt={product?.name}
                         className={`${style.listProductsImage} ${style.listProductsImagePrimary}`}
                     />
-                    {/* <img
-     src={ban_an_6_cho2}
-     alt="Armchair Doultoun vintage"
-     className={`${style.listProductsImage} ${style.listProductsImageSecondary}`}
- /> */}
                 </div>
                 <Flex
                     direction="row"
@@ -58,12 +71,11 @@ const ItemProduct = ({ product }: props) => {
                         <h2
                             className={`${style.listProductsTitle} font-medium`}
                         >
-                            {product?.name}
+                            <Box w={300}>
+                                <Text truncate="end">{product?.name}</Text>
+                            </Box>
                         </h2>
                     </Tooltip>
-                    {/* <CiHeart
-     className={`${style.listProductsFavoriteIcon} text-[24px]`}
- /> */}
                 </Flex>
                 <Flex
                     direction="row"

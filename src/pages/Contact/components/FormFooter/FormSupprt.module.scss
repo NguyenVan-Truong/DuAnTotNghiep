@@ -1,11 +1,10 @@
 .container {
-    max-width: 1300px;
+    // max-width: 1300px;
     margin: 0 auto;
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    margin-top: 50px;
+    // grid-template-columns: 1fr 1fr;
     border-radius: 10px;
-    background-color: #f6f7f8;
+    background-color: #f2f2f2;
 
     @media screen and (max-width: 1150px) {
         grid-template-columns: 1fr;
@@ -14,9 +13,7 @@
     .bannerLeft {
         margin: 0 auto;
         position: relative;
-        width: 550px;
-        padding: 100px 10px;
-
+        padding-bottom: 50px;
         @media screen and (max-width: 1024px) {
             width: 100%;
             padding: 50px 10px;
@@ -42,14 +39,16 @@
         }
 
         .title {
+            margin-top: 15px;
+            // margin-left: 10px;
             h1 {
                 font-size: 30px;
                 font-weight: 600;
                 color: #0a0a0b;
                 line-height: 56px;
+
                 font-style: normal;
                 margin-bottom: 0.5em;
-
                 @media screen and (max-width: 768px) {
                     font-size: 24px;
                     line-height: 40px;
@@ -66,55 +65,60 @@
                 }
             }
         }
-
-        form {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-
-            @media screen and (max-width: 768px) {
-                align-items: flex-start;
-            }
-
-            .input {
-                width: 250px;
-                margin-bottom: 10px;
-
-                @media screen and (max-width: 1024px) {
-                    width: 250px;
-                }
+        .content {
+            margin-left: 10px;
+            form {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
 
                 @media screen and (max-width: 768px) {
-                    width: 100%;
+                    align-items: flex-start;
                 }
-                @media screen and (max-width: 450px) {
-                    width: 375px;
-                }
-            }
-            .inputEmail {
-                width: 520px;
-                margin-bottom: 10px;
 
-                @media screen and (max-width: 1024px) {
+                .input {
+                    width: 300px;
+                    margin-bottom: 10px;
+
+                    @media screen and (max-width: 1024px) {
+                        width: 300px;
+                        margin-bottom: 10px;
+                    }
+
+                    @media screen and (max-width: 768px) {
+                        width: 100%;
+                        margin-bottom: 10px;
+                    }
+                    @media screen and (max-width: 450px) {
+                        width: 375px;
+                        margin-bottom: 10px;
+                    }
+                }
+                .inputEmail {
+                    width: 520px;
+                    margin-bottom: 10px;
+
+                    @media screen and (max-width: 1024px) {
+                        width: 515px;
+                    }
+
+                    @media screen and (max-width: 768px) {
+                        width: 437px;
+                    }
+                    @media screen and (max-width: 450px) {
+                        width: 375px;
+                    }
+                }
+                .textarea {
                     width: 515px;
-                }
+                    margin-top: 10px;
 
-                @media screen and (max-width: 768px) {
-                    width: 437px;
-                }
-                @media screen and (max-width: 450px) {
-                    width: 375px;
-                }
-            }
-            .textarea {
-                width: 515px;
-                margin-top: 10px;
-
-                @media screen and (max-width: 768px) {
-                    width: 437px;
-                }
-                @media screen and (max-width: 450px) {
-                    width: 375px;
+                    @media screen and (max-width: 768px) {
+                        width: 437px;
+                    }
+                    @media screen and (max-width: 450px) {
+                        width: 375px;
+                    }
                 }
             }
         }

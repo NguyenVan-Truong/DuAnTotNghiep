@@ -8,9 +8,27 @@ import {
     IconShoppingCart,
     IconUser,
 } from "@tabler/icons-react";
+import { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 const ProfileUser = () => {
-    const userProFile = JSON.parse(localStorage.getItem("userProFile") || "{}");
+    const [userProfile, setUserProfile] = useState(() => {
+        const storedUserProfile = localStorage.getItem("userProFile");
+        return storedUserProfile ? JSON.parse(storedUserProfile) : {};
+    });
+
+    useEffect(() => {
+        const intervalId = setInterval(() => {
+            const storedUserProfile = localStorage.getItem("userProFile");
+            const parsedProfile = storedUserProfile
+                ? JSON.parse(storedUserProfile)
+                : {};
+            if (JSON.stringify(parsedProfile) !== JSON.stringify(userProfile)) {
+                setUserProfile(parsedProfile);
+            }
+        }, 1000); // Kiểm tra mỗi giây
+
+        return () => clearInterval(intervalId); // Dọn dẹp khi component unmount
+    }, [userProfile]);
 
     return (
         <div className="bg-[#F5F5F5]">
@@ -20,16 +38,14 @@ const ProfileUser = () => {
             <div className="container grid grid-cols-1 lg:grid-cols-[25%_75%] xl:gap-5 xl:grid-cols-[20%_80%] !mt-6 !pb-5">
                 <div className="w-64 border-2 hidden lg:block bg-white">
                     <div className="flex items-center space-x-2 mt-5 justify-center mx-auto py-2">
-                        <Image
-                            src={userProFile.avatar || AvatarDefault}
-                            radius="xl"
-                            h={45}
-                            w="auto"
-                            fit="contain"
+                        <img
+                            src={userProfile.avatar || AvatarDefault}
+                            alt="avatar"
+                            className="w-12 h-12 rounded-full"
                         />{" "}
                         <Box w={160}>
                             <Text truncate="end" size="lg">
-                                {userProFile.full_name || userProFile.username}
+                                {userProfile.full_name || userProfile.username}
                             </Text>
                             <Text
                                 size="md"
@@ -69,7 +85,7 @@ const ProfileUser = () => {
                                 </span>
                             }
                         />
-                        <NavLink
+                        {/* <NavLink
                             leftSection={<IconCards size="1.3rem" />}
                             href="/nguoi-dung/thong-tin-tai-khoan"
                             label={
@@ -77,8 +93,8 @@ const ProfileUser = () => {
                                     Danh sách thẻ tín dụng
                                 </span>
                             }
-                        />
-                        <NavLink
+                        /> */}
+                        {/* <NavLink
                             leftSection={<IconHeart size="1.3rem" />}
                             href="/nguoi-dung/yeu-thich"
                             label={
@@ -86,7 +102,7 @@ const ProfileUser = () => {
                                     Danh sách yêu thích
                                 </span>
                             }
-                        />
+                        /> */}
                     </ul>
                 </div>
 

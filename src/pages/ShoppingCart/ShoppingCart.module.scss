@@ -63,14 +63,14 @@
                 margin: 10px 0;
                 font-size: 16px;
                 font-weight: 600;
-                color: #bc5b64;
+                color: #d93344;
                 @media screen and (max-width: 600px) {
                     font-size: 13px;
                 }
             }
             .Content_Button {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
+                // display: grid;
+                // grid-template-columns: 1fr 1fr;
 
                 .Content_Button_Favorite {
                     display: inline-flex;
@@ -92,7 +92,7 @@
                 .Content_Button_Quantity {
                     display: flex;
                     align-items: center;
-                    justify-content: end;
+                    justify-content: start;
                     .Button {
                         width: 30px;
                         height: 30px;

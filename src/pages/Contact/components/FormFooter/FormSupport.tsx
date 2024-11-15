@@ -11,6 +11,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { SubmitHandler } from "react-hook-form";
 import { Supports } from "@/model/Supports";
 import { NotificationExtension } from "@/extension/NotificationExtension";
+import Loading from "@/extension/Loading";
 
 const FormSupport = () => {
     const [files, setFiles] = useState<File[]>([]);
@@ -59,106 +60,93 @@ const FormSupport = () => {
             image: "",
         },
     });
-
+    if (isLoading) {
+        return <Loading />;
+    }
+    if (isError) {
+        return (
+            <div>
+                Đã xảy ra lỗi khi tải dữ liệu liên hệ. Vui lòng thử lại sau.
+            </div>
+        );
+    }
     return (
         <div className={Style.container}>
-            {isLoading && (
-                <LoadingOverlay
-                    visible={visible}
-                    zIndex={1000}
-                    overlayProps={{ radius: "sm", blur: 2 }}
-                    loaderProps={{ color: "pink", type: "bars" }}
-                />
-            )}
-            {isError && <div>Error: {error.message}</div>}
-
             <div className={Style.bannerLeft}>
-                <div className={Style.hotline}>
-                    <MdPhone
-                        style={{
-                            fontSize: "17px",
-                            color: "#fff",
-                            marginTop: "3px",
-                            marginRight: "3px",
-                        }}
-                    />
-                    <span>Hotline: 1800 7200</span>
-                </div>
                 <div className={Style.title}>
                     <h1>Bạn cần hỗ trợ?</h1>
                     <p>Xin vui lòng để lại yêu cầu hỗ trợ của bạn.</p>
                 </div>
-                <Box>
-                    <Group justify="space-between">
-                        <TextInput
-                            className={Style.input}
-                            size="md"
-                            withAsterisk
-                            disabled
-                            defaultValue={data?.full_name}
-                            placeholder="Họ và tên"
-                        />
-                        <TextInput
-                            className={Style.input}
-                            size="md"
-                            withAsterisk
-                            disabled
-                            defaultValue={data?.phone}
-                            placeholder="+(84) 123 456 789"
-                        />
-                    </Group>
-                    <TextInput
-                        className={Style.inputEmail}
-                        withAsterisk
-                        size="md"
-                        disabled
-                        defaultValue={data?.email}
-                        placeholder="your@email.com"
-                    />
-                </Box>
-                <form onSubmit={form.onSubmit(OnSubmit)}>
-                    <Textarea
-                        size="lg"
-                        withAsterisk
-                        className={Style.textarea}
-                        placeholder="Your comment"
-                        {...form.getInputProps("content")}
-                    />
-
-                    <Group justify="space-between" mt="md">
-                        <Group>
-                            <FileButton
-                                onChange={setFiles}
-                                accept="image/png,image/jpeg"
-                                multiple
-                            >
-                                {(props) => (
-                                    <Button
-                                        variant="default"
-                                        className="px-4 py-2 text-sm md:text-base lg:text-lg"
-                                        {...props}
-                                    >
-                                        Chọn Tệp
-                                    </Button>
-                                )}
-                            </FileButton>
-                            {files.length <= 0 && (
-                                <Text className="text-sm md:text-base lg:text-lg">
-                                    Không có tệp nào được chọn
-                                </Text>
-                            )}
-                            <ul>
-                                {files.map((file, index) => (
-                                    <li key={index}>{file.name}</li>
-                                ))}
-                            </ul>
+                <div className="content">
+                    <Box>
+                        <Group justify="space-between">
+                            <TextInput
+                                className="mb-4 pointer-events-none cursor-not-allowed "
+                                size="lg"
+                                withAsterisk
+                                readOnly
+                                defaultValue={data?.full_name}
+                                placeholder="Họ và tên"
+                            />
+                            <TextInput
+                                className="mb-4 pointer-events-none cursor-not-allowed"
+                                size="lg"
+                                withAsterisk
+                                readOnly
+                                defaultValue={data?.phone}
+                                placeholder="+(84) 123 456 789"
+                            />
                         </Group>
-                        <Button type="submit">Gửi Yêu Cầu</Button>
-                    </Group>
-                </form>
-            </div>
-            <div className={Style.bannerRight}>
-                <Image src={footer} />
+                        <TextInput
+                            className="mb-4 pointer-events-none cursor-not-allowed"
+                            withAsterisk
+                            size="lg"
+                            readOnly
+                            defaultValue={data?.email}
+                            placeholder="your@email.com"
+                        />
+                    </Box>
+                    <form onSubmit={form.onSubmit(OnSubmit)}>
+                        <Textarea
+                            size="lg"
+                            withAsterisk
+                            className={Style.textarea}
+                            placeholder="Your comment"
+                            {...form.getInputProps("content")}
+                        />
+
+                        <Group justify="space-between" mt="md">
+                            <Group>
+                                <FileButton
+                                    onChange={setFiles}
+                                    accept="image/png,image/jpeg"
+                                    multiple
+                                >
+                                    {(props) => (
+                                        <Button
+                                            variant="default"
+                                            className="px-4 py-2 text-sm md:text-base lg:text-lg"
+                                            {...props}
+                                        >
+                                            Chọn Tệp
+                                        </Button>
+                                    )}
+                                </FileButton>
+                                {files.length <= 0 && (
+                                    <Text className="text-sm md:text-base lg:text-lg">
+                                        Không có tệp nào được chọn
+                                    </Text>
+                                )}
+                                <ul>
+                                    {files.map((file, index) => (
+                                        <li key={index}>{file.name}</li>
+                                    ))}
+                                </ul>
+                            </Group>
+                            <Button type="submit">Gửi Yêu Cầu</Button>
+                        </Group>
+                    </form>
+                </div>
             </div>
         </div>
     );

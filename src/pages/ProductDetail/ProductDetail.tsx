@@ -74,7 +74,10 @@ const ProductDetail = () => {
                         <div className="imageMain">
                             <ProductImageSlider data={data} />
                             <div className="rightProductTop">
-                                <RightProduct data={data} />
+                                <RightProduct
+                                    data={data}
+                                    id={location.state.id}
+                                />
                             </div>
                             <div className="mt-[30px]">
                                 <DescriptionProduct data={data} />
@@ -91,7 +94,7 @@ const ProductDetail = () => {
                         </div>
                         {/* Phần bên phải: Chi tiết sản phẩm */}
                         <div className="rightProductBottom">
-                            <RightProduct data={data} />
+                            <RightProduct data={data} id={location.state.id} />
                         </div>
                     </div>
 

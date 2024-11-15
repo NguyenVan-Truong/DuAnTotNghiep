@@ -1,26 +1,13 @@
-import { Button, Image, Input } from "@mantine/core";
-import Style from "./ShoppingCart.module.scss";
-import { ban_an_6_cho2 } from "@/assets/img";
-import { MdClose, MdFavorite } from "react-icons/md";
-import { useState } from "react";
+import instance from "@/configs/axios";
+import { NotificationExtension } from "@/extension/NotificationExtension";
+import { formatCurrencyVN } from "@/model/_base/Number";
+import { CartItem } from "@/model/Cart";
+import { useEffect, useState } from "react";
 import { BiArrowBack } from "react-icons/bi";
-import { HeartOutlined } from "@ant-design/icons";
+import { MdClose } from "react-icons/md";
+import Style from "./ShoppingCart.module.scss";
 const ShoppingCart = () => {
-    const [quantity, setQuantity] = useState<number | null>(1);
-    const increment = () => {
-        setQuantity((prevQuantity) =>
-            prevQuantity !== null ? prevQuantity + 1 : 1,
-        );
-    };
-    const decrement = () => {
-        setQuantity((prevQuantity) =>
-            prevQuantity !== null && prevQuantity > 1 ? prevQuantity - 1 : 1,
-        );
-    };
-
-    {
-        /*check radio */
-    }
+    const [data, setData] = useState<any>([]);
     const [selectedOption, setSelectedOption] = useState<string>(
         "Liên hệ phí vận chuyển sau",
     ); // Trạng thái cho lựa chọn
@@ -28,85 +15,141 @@ const ShoppingCart = () => {
     const handleOptionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSelectedOption(event.target.value); // Cập nhật trạng thái khi thay đổi radio button
     };
+    const fetchData = async () => {
+        try {
+            const response = await instance.get("/cart");
+            if (response.status === 200) {
+                setData(response.data.data);
+            }
+        } catch (error) {
+            NotificationExtension.Fails("Đã xảy ra lỗi khi lấy dữ liệu");
+        }
+    };
 
+    useEffect(() => {
+        fetchData();
+    }, []);
+
+    // Tăng số lượng
+    const onhandleIncrease = async (id: number) => {
+        if (data) {
+            const newData = data.map((item: CartItem) => {
+                if (item.id === id) {
+                    const newQuantity = item.quantity + 1;
+                    return {
+                        ...item,
+                        quantity: newQuantity,
+                    };
+                }
+                return item;
+            });
+            setData(newData);
+        }
+    };
+
+    // Giảm số lượng
+    const onhandleReduce = async (id: number) => {
+        if (data) {
+            const newData = data.map((item: CartItem) => {
+                if (item.id === id && item.quantity > 1) {
+                    const newQuantity = item.quantity - 1;
+                    return {
+                        ...item,
+                        quantity: newQuantity,
+                    };
+                }
+                return item;
+            });
+            setData(newData);
+        }
+    };
+    // Tính tổng đơn hàng
+    const calculateTotal = () => {
+        return data.reduce((acc: number, item: CartItem) => {
+            return acc + Number(item.price) * item.quantity;
+        }, 0);
+    };
+
+    console.log("data", data);
     return (
         <div className="container mx-auto padding">
             <h1 className={Style.Title}>
                 Giỏ Hàng
-                <span className={Style.Total_count}>1</span>
+                <span className={Style.Total_count}>{data.length}</span>
             </h1>
             <div className={Style.Main}>
                 <div className={Style.Left}>
-                    <div className="flex border-b-2 border-b-gray-200">
-                        <div className="w-[150px] md:w-[200px]">
-                            <Image src={ban_an_6_cho2} />
-                        </div>
-                        <div className={Style.Content}>
-                            <div className={Style.Content_Title}>
-                                <h1>Sofa 3 chỗ Orientale da beige R5</h1>
-                                <MdClose
-                                    className={Style.Content_Title_Close}
-                                />
-                            </div>
-                            <span className={Style.material}>
-                                <span>pa_vat-lieu:</span>
-                                <span> 3795</span>
-                            </span>
-                            <span className={Style.material}>
-                                <span>pa_kich-thuoc:</span>
-                                <span> 3796</span>
-                            </span>
-                            <span className={Style.Content_Price}>
-                                23,822,100₫
-                            </span>
-                            <div className={Style.Content_Button}>
-                                <span className={Style.Content_Button_Favorite}>
-                                    <HeartOutlined />
-                                    <span className="text-sm md:text-base">
-                                        Thêm vào yêu thích
-                                    </span>
-                                </span>
-                                <div className={Style.Content_Button_Quantity}>
-                                    <button
-                                        onClick={decrement}
-                                        className={Style.Button}
-                                    >
-                                        -
-                                    </button>
-
-                                    <input
-                                        type="number"
-                                        value={
-                                            quantity !== null ? quantity : ""
-                                        }
-                                        onChange={(e) => {
-                                            const value = e.target.value;
-                                            if (value === "") {
-                                                setQuantity(null); // Đặt quantity thành null khi xóa hết
-                                            } else {
-                                                const numValue = Number(value);
-                                                if (numValue >= 1) {
-                                                    setQuantity(numValue);
-                                                }
-                                            }
+                    {data?.map((item: CartItem) => {
+                        return (
+                            <div className="flex border-b-2 border-b-gray-200">
+                                <div className="w-[150px] md:w-[200px]">
+                                    {/* <Image src={ban_an_6_cho2} /> */}
+                                    <img
+                                        src={item.product.image_url}
+                                        alt=""
+                                        style={{
+                                            padding: "10px",
                                         }}
-                                        className={Style.quantity}
-                                        min="1"
                                     />
+                                </div>
+                                <div className={Style.Content}>
+                                    <div className={Style.Content_Title}>
+                                        <h1
+                                            style={{
+                                                fontSize: "18px",
+                                                fontWeight: "500",
+                                                marginTop: "5px",
+                                            }}
+                                        >
+                                            {item.product.name}
+                                        </h1>
+                                        <MdClose
+                                            className={
+                                                Style.Content_Title_Close
+                                            }
+                                        />
+                                    </div>
 
-                                    <button
-                                        onClick={increment}
-                                        className={Style.Button}
-                                    >
-                                        +
-                                    </button>
+                                    <span className={Style.Content_Price}>
+                                        {formatCurrencyVN(item.price)}
+                                    </span>
+                                    <div className={Style.Content_Button}>
+                                        <div
+                                            className={
+                                                Style.Content_Button_Quantity
+                                            }
+                                        >
+                                            <button
+                                                className={Style.Button}
+                                                onClick={() =>
+                                                    onhandleReduce(item.id)
+                                                }
+                                            >
+                                                -
+                                            </button>
+
+                                            <input
+                                                type="number"
+                                                value={item.quantity}
+                                                className={Style.quantity}
+                                                min="1"
+                                                disabled
+                                            />
+
+                                            <button
+                                                className={Style.Button}
+                                                onClick={() =>
+                                                    onhandleIncrease(item.id)
+                                                }
+                                            >
+                                                +
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                    <Button className="flex-1 !bg-[#000000] hover:!bg-gray-800 !text-white !border-white !px-4  rounded mt-5">
-                        Cập Nhật Giỏ Hàng
-                    </Button>
+                        );
+                    })}
                 </div>
                 <div className={Style.Right}>
                     <div className={Style.Right_Container}>
@@ -120,7 +163,7 @@ const ShoppingCart = () => {
                                 Thành tiền
                             </span>
                             <span className={Style.Right_Price_Value}>
-                                23,822,100
+                                {calculateTotal()}
                                 <span className={Style.Right_Price_Value_Unit}>
                                     ₫
                                 </span>

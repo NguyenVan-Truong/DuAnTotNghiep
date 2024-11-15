@@ -1,28 +1,41 @@
 import { AvatarUtils } from "@/common/ColorByName/AvatarUtils";
 import instance from "@/configs/axios";
-import { Badge, Box, Button, Input, Select } from "@mantine/core";
+import {
+    ActionIcon,
+    Badge,
+    Box,
+    Button,
+    Input,
+    Select,
+    Tooltip,
+} from "@mantine/core";
 import { DateInput } from "@mantine/dates";
 import { modals } from "@mantine/modals";
 import {
     IconCalendar,
+    IconCheck,
     IconEye,
     IconFileExport,
     IconSearch,
     IconSwitch,
+    IconTrash,
+    IconX,
 } from "@tabler/icons-react";
 import {
     MantineReactTable,
+    MRT_Row,
     MRT_RowSelectionState,
     useMantineReactTable,
     type MRT_ColumnDef,
 } from "mantine-react-table";
 
 import { formatDateNotTimeZone } from "@/model/_base/Date";
+import { Order } from "@/model/Order";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import * as xlsx from "xlsx";
 import DetailOrder from "../DetailOrder";
-import { Order } from "@/model/Order";
+import { message, Popconfirm } from "antd";
 
 const OrderAll = () => {
     const [data, setData] = useState<Order[]>([]); // Cập nhật kiểu dữ liệu
@@ -187,10 +200,84 @@ const OrderAll = () => {
                         : "₫0";
                 },
             },
+            {
+                accessorKey: "action",
+                header: "Thao tác",
+                size: 10,
+                Cell: ({ row }) => (
+                    <Box
+                        style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "4px",
+                        }}
+                    >
+                        {processTaskActionMenu(row)}
+                    </Box>
+                ),
+            },
         ],
         [],
     );
+    function processTaskActionMenu(row: MRT_Row<any>): any {
+        return (
+            <>
+                <Tooltip label="Xác nhận đã nhận hàng">
+                    <ActionIcon
+                        variant="light"
+                        aria-label="Settings"
+                        color="green"
+                        disabled={row.original.status !== "Đã giao hàng"}
+                    >
+                        <IconCheck
+                            size={20}
+                            onClick={() => handleCheck(row?.original.id)}
+                        />
+                    </ActionIcon>
+                </Tooltip>
+                <Popconfirm
+                    placement="topRight"
+                    title={"Bạn có chắc muốn xóa ko ?"}
+                    okText="Có"
+                    cancelText="Ko"
+                    className="mx-auto"
+                    onConfirm={() => handleCancel(row?.original.id)}
+                >
+                    <Tooltip label="Xóa">
+                        <ActionIcon
+                            color="red"
+                            variant="light"
+                            size="md"
+                            aria-label="Settings"
+                            disabled={row.original.status !== "Chờ xử lý"}
+                        >
+                            <IconX />
+                        </ActionIcon>
+                    </Tooltip>
+                </Popconfirm>
+            </>
+        );
+    }
 
+    const handleCheck = async (id: string) => {
+        try {
+            await instance.put(`/orders/${id}/complete-status`);
+            message.success("Xác nhận đã nhận hàng thành công");
+            fetchData();
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    };
+
+    const handleCancel = async (id: string) => {
+        try {
+            await instance.put(`/orders/${id}/cancel-status`);
+            message.success("Hủy đặt hàng thành công");
+            fetchData();
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    };
     // Xử lý khi chỉ lấy 1 ID từ rowSelection
     useEffect(() => {
         const valuesList = Object.keys(rowSelection);
@@ -231,7 +318,7 @@ const OrderAll = () => {
             showColumnFilters: false,
             columnPinning: {
                 left: ["mrt-row-select", "order_code"],
-                right: ["status"],
+                right: ["action"],
             },
             density: "xs",
         },
@@ -345,19 +432,21 @@ const OrderAll = () => {
             style: { fontSize: "11.5px", padding: "4px 12px" },
         }),
         mantinePaginationProps: {
-            showRowsPerPage: true,
+            showRowsPerPage: false,
             withEdges: true,
             rowsPerPageOptions: ["10", "50", "100"],
         },
     });
 
     useEffect(() => {
+        const headerHeight = headerRef.current?.offsetHeight || 0;
         const handleResize = () => {
-            const height = headerRef.current?.clientHeight ?? 0;
-            setHeight(window.innerHeight - height - 24);
+            setHeight(window.innerHeight - (240 + headerHeight));
         };
+
+        handleResize(); // Set initial height
         window.addEventListener("resize", handleResize);
-        handleResize();
+
         return () => {
             window.removeEventListener("resize", handleResize);
         };

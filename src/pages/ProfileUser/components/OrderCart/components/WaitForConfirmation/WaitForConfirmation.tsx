@@ -1,6 +1,14 @@
 import { AvatarUtils } from "@/common/ColorByName/AvatarUtils";
 import instance from "@/configs/axios";
-import { Badge, Box, Button, Input, Select } from "@mantine/core";
+import {
+    ActionIcon,
+    Badge,
+    Box,
+    Button,
+    Input,
+    Select,
+    Tooltip,
+} from "@mantine/core";
 import { DateInput } from "@mantine/dates";
 import { modals } from "@mantine/modals";
 import {
@@ -9,9 +17,11 @@ import {
     IconFileExport,
     IconSearch,
     IconSwitch,
+    IconX,
 } from "@tabler/icons-react";
 import {
     MantineReactTable,
+    MRT_Row,
     MRT_RowSelectionState,
     useMantineReactTable,
     type MRT_ColumnDef,
@@ -23,6 +33,7 @@ import { toast } from "react-toastify";
 import * as xlsx from "xlsx";
 import DetailOrder from "../DetailOrder";
 import { Order } from "@/model/Order";
+import { message } from "antd";
 
 const WaitForConfirmation = () => {
     const [data, setData] = useState<Order[]>([]); // Cập nhật kiểu dữ liệu
@@ -183,10 +194,53 @@ const WaitForConfirmation = () => {
                         : "₫0";
                 },
             },
+            {
+                accessorKey: "action",
+                header: "Thao tác",
+                size: 10,
+                Cell: ({ row }) => (
+                    <Box
+                        style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "4px",
+                        }}
+                    >
+                        {processTaskActionMenu(row)}
+                    </Box>
+                ),
+            },
         ],
         [],
     );
-
+    function processTaskActionMenu(row: MRT_Row<any>): any {
+        return (
+            <>
+                <Tooltip label="Hủy đặt hàng">
+                    <ActionIcon
+                        variant="light"
+                        aria-label="Settings"
+                        color="red"
+                        disabled={row.original.status !== "Chờ xử lý"}
+                    >
+                        <IconX
+                            size={20}
+                            onClick={() => handleCancel(row?.original.id)}
+                        />
+                    </ActionIcon>
+                </Tooltip>
+            </>
+        );
+    }
+    const handleCancel = async (id: string) => {
+        try {
+            await instance.put(`/orders/${id}/cancel-status`);
+            message.success("Hủy đặt hàng thành công");
+            fetchData();
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    };
     // Xử lý khi chỉ lấy 1 ID từ rowSelection
     useEffect(() => {
         const valuesList = Object.keys(rowSelection);
@@ -227,7 +281,7 @@ const WaitForConfirmation = () => {
             showColumnFilters: false,
             columnPinning: {
                 left: ["mrt-row-select", "order_code"],
-                right: ["status"],
+                right: ["action"],
             },
             density: "xs",
         },
@@ -315,19 +369,21 @@ const WaitForConfirmation = () => {
             style: { fontSize: "11.5px", padding: "4px 12px" },
         }),
         mantinePaginationProps: {
-            showRowsPerPage: true,
+            showRowsPerPage: false,
             withEdges: true,
             rowsPerPageOptions: ["10", "50", "100"],
         },
     });
 
     useEffect(() => {
+        const headerHeight = headerRef.current?.offsetHeight || 0;
         const handleResize = () => {
-            const height = headerRef.current?.clientHeight ?? 0;
-            setHeight(window.innerHeight - height - 24);
+            setHeight(window.innerHeight - (240 + headerHeight));
         };
+
+        handleResize(); // Set initial height
         window.addEventListener("resize", handleResize);
-        handleResize();
+
         return () => {
             window.removeEventListener("resize", handleResize);
         };
