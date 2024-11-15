@@ -1,5 +1,6 @@
-import { Avatar, AvatarDefault } from "@/assets/img";
+import { AvatarDefault } from "@/assets/img";
 import {
+    Avatar,
     Button,
     Group,
     Image,
@@ -22,26 +23,37 @@ import FormUpdate from "./FormUpdate";
 import instance from "@/configs/axios";
 import { useQuery } from "@tanstack/react-query";
 import { UserProfile } from "@/model/User";
+import { formatDateNotTimeZone } from "@/model/_base/Date";
+
+// Khai báo fetchData trước khi sử dụng trong useQuery
+const fetchData = async () => {
+    const response = await instance.get("/auth/profile");
+    return response.data;
+};
 
 const UserAccount = () => {
+    const { data, error, isLoading, isError, refetch } = useQuery<UserProfile>({
+        queryKey: ["profile"],
+        queryFn: fetchData,
+    });
+
     const handleAdd = () => {
+        // Mở modal mà không cần lưu id
         modals.openConfirmModal({
             title: "Cập nhật thông tin",
-            size: "auto",
-            children: <FormUpdate />,
+            size: "525px",
+            children: (
+                <FormUpdate
+                    onSuccess={() => {
+                        refetch(); // Fetch lại dữ liệu mới
+                    }}
+                />
+            ),
             confirmProps: { display: "none" },
             cancelProps: { display: "none" },
         });
     };
-    const fetchData = async () => {
-        const response = await instance.get("/auth/profile");
-        // console.log("object", response.data);
-        return response.data;
-    };
-    const { data, error, isLoading, isError } = useQuery<UserProfile>({
-        queryKey: ["profile"],
-        queryFn: fetchData,
-    });
+
     if (isLoading) {
         return <div>Loading...</div>;
     }
@@ -49,11 +61,13 @@ const UserAccount = () => {
     if (isError) {
         return <div>Error: {error.message}</div>;
     }
+
     if (!data) {
         return <div>Không có thông tin hồ sơ để hiển thị.</div>;
     }
+
     return (
-        <div className="bg-white !pb-6">
+        <div className="bg-white !pb-6 h-[610px]">
             <div className="px-10 py-2">
                 <div className="flex items-center justify-between">
                     <div className="mt-4">
@@ -87,29 +101,24 @@ const UserAccount = () => {
                                     Quản lý địa chỉ
                                 </Menu.Item>
                                 <Menu.Item
-                                    leftSection={<IconCards size="1rem" />}
-                                >
-                                    Danh sách thẻ tín dụng
-                                </Menu.Item>
-                                <Menu.Item
                                     leftSection={<IconHeart size="1rem" />}
                                 >
-                                    Danh sách yêu thích
+                                    Sản phẩm yêu thích
                                 </Menu.Item>
-
-                                <Menu.Divider />
                                 <Menu.Item
-                                    color="red"
+                                    leftSection={<IconCards size="1rem" />}
+                                >
+                                    Thẻ ưu đãi
+                                </Menu.Item>
+                                <Menu.Item
                                     leftSection={<IconDoorExit size="1rem" />}
                                 >
-                                    Đăng Xuất
+                                    Đăng xuất
                                 </Menu.Item>
                             </Menu.Dropdown>
                         </Menu>
                     </div>
                 </div>
-
-                <hr />
                 <form
                     action=""
                     className="mt-5 grid grid-cols-1 md:grid-cols-[65%_35%] gap-3"
@@ -167,18 +176,20 @@ const UserAccount = () => {
                                 disabled
                                 placeholder="Input component"
                                 className="flex-grow"
-                                value={data.birthday || "Không có dữ liệu"}
+                                value={
+                                    data.birthday
+                                        ? formatDateNotTimeZone(data.birthday)
+                                        : "Không có dữ liệu"
+                                }
                             />
                         </div>
                     </div>
                     <div className="border-l-2 border-slate-300">
                         <div className="flex justify-center">
-                            <Image
+                            <img
                                 src={data.avatar}
-                                radius="sm"
-                                h={200}
-                                w="auto"
-                                fit="contain"
+                                alt="avatar"
+                                className="rounded-full h-44 w-44"
                             />
                         </div>
                         <div className="flex justify-center mt-5">
@@ -195,5 +206,4 @@ const UserAccount = () => {
         </div>
     );
 };
-
 export default UserAccount;

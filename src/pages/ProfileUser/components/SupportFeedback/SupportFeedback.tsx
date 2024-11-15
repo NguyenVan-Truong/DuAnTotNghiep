@@ -1,10 +1,23 @@
 import React from "react";
-import { Card, Grid, Text, Badge, Button, Loader, Image } from "@mantine/core";
+import {
+    Card,
+    Grid,
+    Text,
+    Badge,
+    Button,
+    Loader,
+    Image,
+    Box,
+    Tooltip,
+} from "@mantine/core";
 import instance from "@/configs/axios";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import { message, Popconfirm } from "antd";
 import { Feedback } from "@/model/Supports";
+import { IconTrash } from "@tabler/icons-react";
+import { modals } from "@mantine/modals";
+import FeedbackDetail from "./FeedbackDetail";
 
 const SupportFeedback = () => {
     const queryClient = useQueryClient();
@@ -13,7 +26,7 @@ const SupportFeedback = () => {
     const fetchData = async () => {
         await new Promise((resolve) => setTimeout(resolve, 500)); // Giả lập độ trễ
         const response = await instance.get("/contacts/show");
-        return response?.data?.data?.contacts || []; // Trả về danh sách phản hồi
+        return response?.data?.data?.contacts.data || []; // Trả về danh sách phản hồi
     };
 
     // Sử dụng useQuery với kiểu dữ liệu cụ thể
@@ -54,78 +67,81 @@ const SupportFeedback = () => {
         );
     }
 
+    const callApiGetData = async (id: number) => {
+        modals.openConfirmModal({
+            title: "Thư hỗ trợ",
+            size: "550px",
+            children: <FeedbackDetail id={id} />,
+            confirmProps: { display: "none" },
+            cancelProps: { display: "none" },
+        });
+    };
+
     return (
-        <div className="p-5 bg-white">
-            <Text size="xl" mb="md">
+        <div className="p-5 bg-white h-[612px]">
+            <Text size="xl" mb="xl">
                 Danh sách thư hỗ trợ đã gửi
             </Text>
-            <Grid gutter="md">
-                {data?.map(
-                    (
-                        feedback: Feedback, // Sử dụng kiểu Feedback
-                    ) => (
-                        <Grid.Col span={4} key={feedback.id}>
-                            <Card padding="lg" shadow="sm" radius="md">
-                                <Image
-                                    src={feedback.image}
-                                    alt="Hình ảnh phản hồi"
-                                />
-                                <Text mt="sm">
-                                    Nội dung: {feedback.content}
+            <hr />
+            <Grid gutter="md" className="mt-8 ">
+                {data?.map((feedback: Feedback) => (
+                    <div
+                        key={feedback.id}
+                        className="container flex items-center shadow-md bg-slate-100 mx-auto rounded-md !mb-2 cursor-pointer"
+                    >
+                        <div
+                            className="p-4 flex  md:space-x-5 xl:space-x-8 items-center"
+                            onClick={() => callApiGetData(feedback.id)}
+                        >
+                            <Box w={295}>
+                                <Text truncate="end">{feedback.content}</Text>
+                            </Box>
+                            <Box w={295}>
+                                <Text truncate="end">
+                                    {feedback.response
+                                        ? feedback.response
+                                        : "......"}
                                 </Text>
-                                <Text mt="sm">
-                                    Phản hồi:{" "}
-                                    {feedback.response || "Chưa có phản hồi"}
-                                </Text>
-                                <Text size="xs" color="dimmed" mt="xs">
-                                    Ngày gửi:{" "}
-                                    {dayjs(feedback.created_at).format(
-                                        "DD-MM-YYYY",
-                                    )}
-                                </Text>
-                                <Badge
-                                    color={
-                                        feedback.status === "đã phản hồi"
-                                            ? "green"
-                                            : "red"
-                                    }
-                                    mt="xs"
-                                >
-                                    {feedback.status}
-                                </Badge>
-                                {/* <Button
-                                    variant="outline"
-                                    color="red"
-                                    size="xs"
-                                    mt="md"
-                                    onClick={() => mutation.mutate(feedback.id)} // Gọi hàm xóa khi click
-                                >
-                                    Xóa
-                                </Button> */}
-                                <Popconfirm
-                                    placement="topRight"
-                                    title={"Bạn có chắc muốn xóa ko ?"}
-                                    // description={description}
-                                    okText="Có"
-                                    cancelText="Ko"
-                                    onConfirm={() => {
-                                        mutation.mutate(feedback.id);
-                                    }}
-                                >
-                                    <Button>Xóa</Button>
-                                </Popconfirm>
-                                <Button
-                                    variant="outline"
-                                    color="blue"
-                                    size="xs"
-                                    mt="md"
-                                >
-                                    Xem chi tiết
-                                </Button>
-                            </Card>
-                        </Grid.Col>
-                    ),
-                )}
+                            </Box>
+                            <div>
+                                {dayjs(feedback.created_at).format(
+                                    "DD-MM-YYYY",
+                                )}
+                            </div>
+                            <Badge
+                                color={
+                                    feedback.status === "đã phản hồi"
+                                        ? "green"
+                                        : "red"
+                                }
+                            >
+                                {feedback.status}
+                            </Badge>
+                        </div>
+                        {feedback.status === "chưa phản hồi" ? (
+                            <></>
+                        ) : (
+                            <Popconfirm
+                                placement="topRight"
+                                title={"Bạn có chắc muốn xóa ko ?"}
+                                okText="Có"
+                                cancelText="Ko"
+                                className="mx-auto"
+                                onConfirm={() => mutation.mutate(feedback.id)}
+                            >
+                                <Tooltip label="Xóa">
+                                    <Button
+                                        color="red"
+                                        variant="transparent"
+                                        size="xs"
+                                    >
+                                        <IconTrash />
+                                    </Button>
+                                </Tooltip>
+                            </Popconfirm>
+                        )}
+                    </div>
+                ))}
             </Grid>
         </div>
     );

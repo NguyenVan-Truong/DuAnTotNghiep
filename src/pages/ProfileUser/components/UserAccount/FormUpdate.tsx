@@ -1,20 +1,21 @@
-import React, { useEffect, useState } from "react";
+import instance from "@/configs/axios"; // Giả sử bạn có instance axios đã cấu hình sẵn
+import { UploadOutlined } from "@ant-design/icons";
+import { DateInput } from "@mantine/dates";
 import {
+    Button,
+    Col,
+    DatePicker,
     Form,
     Input,
-    Button,
-    DatePicker,
-    Upload,
     message,
     Row,
-    Col,
+    Upload,
 } from "antd";
-import { UploadOutlined } from "@ant-design/icons";
 import ImgCrop from "antd-img-crop";
-import instance from "@/configs/axios"; // Giả sử bạn có instance axios đã cấu hình sẵn
 import moment from "moment";
+import { useEffect, useState } from "react";
 
-const FormUpdate = () => {
+const FormUpdate = ({ onSuccess }: { onSuccess: () => void }) => {
     const [fileList, setFileList] = useState<any[]>([]);
     const [form] = Form.useForm();
 
@@ -82,7 +83,9 @@ const FormUpdate = () => {
             formData.append("address", values.address);
             formData.append(
                 "birthday",
-                values.birthday ? values.birthday.dayjs("DD-MM-YYYY") : "",
+                values.birthday
+                    ? moment(values.birthday).format("YYYY-MM-DD")
+                    : "",
             );
 
             if (fileList.length > 0) {
@@ -100,7 +103,14 @@ const FormUpdate = () => {
             );
 
             message.success("Cập nhật thông tin thành công!");
+            localStorage.setItem(
+                "userProFile",
+                JSON.stringify(response.data.user),
+            );
             console.log("Profile updated successfully", response.data);
+
+            // Call onSuccess callback passed from parent to close modal and trigger refetch
+            onSuccess();
         } catch (error) {
             console.error("Error updating profile", error);
             message.error("Cập nhật thông tin thất bại!");
@@ -168,8 +178,8 @@ const FormUpdate = () => {
 
                 <Col span={24}>
                     <Form.Item label="Ngày sinh" name="birthday">
-                        <DatePicker
-                            format="DD-MM-YYYY"
+                        <DateInput
+                            valueFormat="DD-MM-YYYY"
                             placeholder="Ngày sinh"
                             style={{ width: "100%" }}
                         />
@@ -198,13 +208,6 @@ const FormUpdate = () => {
             </Row>
 
             <Form.Item>
-                <Button
-                    type="default"
-                    style={{ marginRight: "10px" }}
-                    onClick={() => message.info("Đóng form")}
-                >
-                    Đóng
-                </Button>
                 <Button type="primary" htmlType="submit">
                     Lưu
                 </Button>
