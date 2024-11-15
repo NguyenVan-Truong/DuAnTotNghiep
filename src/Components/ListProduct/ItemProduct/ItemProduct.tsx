@@ -62,11 +62,6 @@ const ItemProduct = ({ product }: props) => {
                         alt={product?.name}
                         className={`${style.listProductsImage} ${style.listProductsImagePrimary}`}
                     />
-                    {/* <img
-     src={ban_an_6_cho2}
-     alt="Armchair Doultoun vintage"
-     className={`${style.listProductsImage} ${style.listProductsImageSecondary}`}
- /> */}
                 </div>
                 <Flex
                     direction="row"
@@ -81,9 +76,6 @@ const ItemProduct = ({ product }: props) => {
                             </Box>
                         </h2>
                     </Tooltip>
-                    {/* <CiHeart
-     className={`${style.listProductsFavoriteIcon} text-[24px]`}
- /> */}
                 </Flex>
                 <Flex
                     direction="row"

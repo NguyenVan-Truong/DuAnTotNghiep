@@ -11,6 +11,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Box, Loader, Text } from "@mantine/core";
 import { Favorites } from "@/model/Favorite";
 import { min } from "lodash";
+import Index from "../../../routes/index";
 
 // const fetchFavoritesData = async () => {
 //     const response = await instance.get("/favorites");
@@ -142,9 +143,9 @@ const Favorite = ({ data }: any) => {
                     </div>
                     <div className="max-h-[80%] overflow-auto custom-scrollbar">
                         {data && data.length > 0 ? (
-                            data.map((favorite: any) => (
+                            data.map((favorite: any, index: any) => (
                                 <div
-                                    // key={index}
+                                    key={index}
                                     className="flex space-x-4 mb-2 items-center"
                                 >
                                     <div>

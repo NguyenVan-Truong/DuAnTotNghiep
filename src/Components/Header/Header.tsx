@@ -1,4 +1,5 @@
-import { AvatarDefault, bannerh1 } from "@/assets/img";
+import { AvatarDefault } from "@/assets/img";
+import instance from "@/configs/axios";
 import { EnvironmentOutlined, SearchOutlined } from "@ant-design/icons";
 import { Avatar, Box, Input, Menu, Text, Tooltip } from "@mantine/core";
 import {
@@ -7,6 +8,7 @@ import {
     IconShoppingCart,
     IconUserCircle,
 } from "@tabler/icons-react";
+import { useQuery } from "@tanstack/react-query";
 import { Button, Dropdown, message, Modal } from "antd";
 import { useEffect, useState } from "react";
 import { FiPhone } from "react-icons/fi";
@@ -16,10 +18,6 @@ import Favorite from "./components/FavoriteCollection";
 import IconMenu from "./components/Menu";
 import CartIcon from "./components/MiniCart";
 import "./Header.scss";
-import instance from "@/configs/axios";
-import { useQuery } from "@tanstack/react-query";
-import { Favorites } from "@/model/Favorite";
-import Loading from "@/extension/Loading";
 
 const Header = () => {
     const [visible, setVisible] = useState(false);
@@ -29,7 +27,7 @@ const Header = () => {
         setDropdownVisible(false);
     };
 
-    // Lấy thông tin người dùng từ localStorage
+    // Lấy thông tin người dùng từ localStorageO
     const [userProfile, setUserProfile] = useState(() => {
         const storedUserProfile = localStorage.getItem("userProFile");
         return storedUserProfile ? JSON.parse(storedUserProfile) : {};
@@ -73,16 +71,13 @@ const Header = () => {
         const response = await instance.get("/favorites");
         return response.data;
     };
-    const { data, isLoading, error } = useQuery({
+    const { data } = useQuery({
         queryKey: ["favoritesData"],
         queryFn: fetchFavoritesData,
         staleTime: 0,
         enabled: true,
     });
 
-    // console.log("object", data);
-    // if (isLoading) return <Loading />;
-    // if (error) return <div>Lỗi khi tải dữ liệu yêu thích</div>;
     return (
         <>
             {/* Header1 */}
