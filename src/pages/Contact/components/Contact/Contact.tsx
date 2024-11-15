@@ -1,9 +1,9 @@
 import { dia_chi } from "@/assets/img";
-import styles from "./Contact.module.scss";
 import { AspectRatio, Loader } from "@mantine/core";
 import instance from "@/configs/axios";
 import { useQuery } from "@tanstack/react-query";
 import { Information } from "@/model/Information";
+import FormSupport from "../FormFooter/FormSupport";
 
 const ContactPage = () => {
     const fetchData = async () => {
@@ -16,7 +16,7 @@ const ContactPage = () => {
         }
     };
 
-    const { data, error, isLoading, isError } = useQuery<Information[]>({
+    const { data, isLoading, isError } = useQuery<Information[]>({
         queryKey: ["contactShow"],
         queryFn: fetchData,
     });
@@ -37,67 +37,69 @@ const ContactPage = () => {
     }
 
     return (
-        <div className={styles.contactPage}>
-            <h1 className={styles.title}>Trang Liên Hệ</h1>
-            {data.map((item) => (
-                <div className={styles.infoSection} key={item.id}>
-                    <div className={styles.contactInfo}>
-                        <h2>Thông tin người hỗ trợ</h2>
-                        <div className={styles.contactItem}>
-                            <label htmlFor="name">Tên:</label>
-                            <input
-                                type="text"
-                                id="name"
-                                value={item.name}
-                                width={200}
-                                readOnly
-                            />
-                        </div>
-                        <div className={styles.contactItem}>
-                            <label htmlFor="phone">Điện thoại:</label>
-                            <input
-                                type="text"
-                                id="phone"
-                                value={item.phone}
-                                width={200}
-                                readOnly
-                            />
-                        </div>
-                        <div className={styles.contactItem}>
-                            <label htmlFor="address">Địa chỉ:</label>
-                            <input
-                                type="text"
-                                id="address"
-                                width={250}
-                                value={item.address}
-                                readOnly
-                            />
-                        </div>
-                    </div>
+        <div className="container">
+            <h1 className="text-3xl mb-14 font-semibold text-center">
+                Trang Liên Hệ
+            </h1>
+            <div className="grid grid-cols-2 gap-2">
+                <div>
+                    {" "}
+                    {data.map((item) => (
+                        <div key={item.id} className="space-y-3">
+                            <div className="space-y-3">
+                                <h2 className="text-xl font-medium">
+                                    Thông tin người hỗ trợ
+                                </h2>
+                                <div className="flex">
+                                    <p className="font-semibold mr-3">
+                                        Tên nhân viên hỗ trợ :
+                                    </p>
+                                    <p>{item.name}</p>
+                                </div>
+                                <div className="flex">
+                                    <p className="font-semibold mr-3">
+                                        Điện thoại :
+                                    </p>
+                                    <p>{item.phone}</p>
+                                </div>
+                                <div className="flex">
+                                    <p className="font-semibold mr-3">
+                                        Địa chỉ:
+                                    </p>
+                                    <p>{item.address}</p>
+                                </div>
+                            </div>
 
-                    <div className={styles.addressImages}>
-                        <h2>Ảnh Địa Chỉ Shop</h2>
-                        <img
-                            src={item.image}
-                            alt="Địa chỉ 1"
-                            width={150}
-                            height={150}
-                            className={styles.addressImage}
-                        />
-                    </div>
-
-                    <div className={styles.mapSection}>
-                        <h2>Bản Đồ</h2>
-                        <AspectRatio ratio={16 / 9}>
-                            <iframe
-                                src={item.map}
-                                className="map"
-                                allowFullScreen
-                            />
-                        </AspectRatio>
-                    </div>
+                            <div className="grid grid-cols-2 gap-2">
+                                <div className="h-44">
+                                    <h2 className="font-semibold">
+                                        Ảnh cửa hàng:
+                                    </h2>
+                                    <img
+                                        src={item.image}
+                                        alt="Địa chỉ 1"
+                                        className="w-full h-full object-cover"
+                                    />
+                                </div>
+                                <div className="h-44">
+                                    <h2 className="font-semibold">Bản Đồ:</h2>
+                                    <AspectRatio ratio={16 / 9}>
+                                        <iframe
+                                            src={item.map}
+                                            className="w-full h-full"
+                                            allowFullScreen
+                                            title="map"
+                                        />
+                                    </AspectRatio>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
                 </div>
-            ))}
+                <div>
+                    <FormSupport />
+                </div>
+            </div>
         </div>
     );
 };

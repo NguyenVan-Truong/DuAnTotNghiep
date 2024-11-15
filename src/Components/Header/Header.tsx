@@ -24,8 +24,30 @@ const Header = () => {
         setVisible(false);
         setDropdownVisible(false);
     };
-    const userProFile = JSON.parse(localStorage.getItem("userProFile") || "{}");
+
+    // Lấy thông tin người dùng từ localStorage
+    const [userProfile, setUserProfile] = useState(() => {
+        const storedUserProfile = localStorage.getItem("userProFile");
+        return storedUserProfile ? JSON.parse(storedUserProfile) : {};
+    });
+
+    useEffect(() => {
+        const intervalId = setInterval(() => {
+            const storedUserProfile = localStorage.getItem("userProFile");
+            const parsedProfile = storedUserProfile
+                ? JSON.parse(storedUserProfile)
+                : {};
+            if (JSON.stringify(parsedProfile) !== JSON.stringify(userProfile)) {
+                setUserProfile(parsedProfile);
+            }
+        }, 1000); // Kiểm tra mỗi giây
+
+        return () => clearInterval(intervalId); // Dọn dẹp khi component unmount
+    }, [userProfile]);
+
     const navigate = useNavigate();
+
+    // Xử lý đăng xuất
     const logout = () => {
         Modal.confirm({
             title: "Xác nhận đăng xuất",
@@ -42,10 +64,11 @@ const Header = () => {
             },
         });
     };
+
     return (
         <>
             {/* Header1 */}
-            <header className="container flex border-b border-gray-100 bg-white justify-between items-center !py-3 ">
+            <header className="container flex border-b border-gray-100 bg-white justify-between items-center !py-3">
                 <div className="flex flex-row ml-5 xl:ml-0">
                     <span className="text-black flex flex-row items-center font-bold text-sm">
                         <FiPhone style={{ fontSize: "13px", color: "black" }} />{" "}
@@ -73,11 +96,11 @@ const Header = () => {
                         >
                             <Menu.Target>
                                 <Tooltip
-                                    label={`Chào, ${userProFile.full_name || userProFile.username}`}
+                                    label={`Chào, ${userProfile.full_name || userProfile.username}`}
                                 >
                                     <Avatar
                                         src={
-                                            userProFile.avatar || AvatarDefault
+                                            userProfile.avatar || AvatarDefault
                                         }
                                     />
                                 </Tooltip>
@@ -86,9 +109,9 @@ const Header = () => {
                                 <Menu.Label>
                                     <Box w={170}>
                                         <Text truncate="end" size="sm">
-                                            Chào ,{" "}
-                                            {userProFile.full_name ||
-                                                userProFile.username}
+                                            Chào,{" "}
+                                            {userProfile.full_name ||
+                                                userProfile.username}
                                         </Text>
                                     </Box>
                                 </Menu.Label>
@@ -171,12 +194,12 @@ const Header = () => {
                             >
                                 <Menu.Target>
                                     <Tooltip
-                                        label={`Chào, ${userProFile.full_name}`}
+                                        label={`Chào, ${userProfile.full_name}`}
                                     >
                                         <Avatar
                                             size="sm"
                                             src={
-                                                userProFile.avatar ||
+                                                userProfile.avatar ||
                                                 AvatarDefault
                                             }
                                         />
@@ -186,7 +209,7 @@ const Header = () => {
                                     <Menu.Label>
                                         <Box w={170}>
                                             <Text truncate="end" size="sm">
-                                                Chào , userProFile.full_name
+                                                Chào, {userProfile.full_name}
                                             </Text>
                                         </Box>
                                     </Menu.Label>
@@ -259,6 +282,7 @@ const Header = () => {
                     </div>
                 </div>
             </header>
+
             {/* Header2 */}
             <header className=" sticky top-0 space-x-5  bg-white left-0 w-ful z-50 flex items-center">
                 <div
@@ -384,7 +408,6 @@ const Header = () => {
                     </div>
                 </div>
             </header>
-            {/* Overlay */}
             {(visible || dropdownVisible) && (
                 <div className="overlay" onClick={handleOverlayClick} />
             )}
