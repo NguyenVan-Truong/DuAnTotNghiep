@@ -4,6 +4,7 @@ import instance from "@/configs/axios";
 import { useQuery } from "@tanstack/react-query";
 import { Information } from "@/model/Information";
 import FormSupport from "../FormFooter/FormSupport";
+import Loading from "@/extension/Loading";
 
 const ContactPage = () => {
     const fetchData = async () => {
@@ -22,7 +23,7 @@ const ContactPage = () => {
     });
 
     if (isLoading) {
-        return <Loader />;
+        return <Loading />;
     }
     if (isError) {
         return (

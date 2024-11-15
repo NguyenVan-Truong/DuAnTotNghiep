@@ -11,6 +11,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { SubmitHandler } from "react-hook-form";
 import { Supports } from "@/model/Supports";
 import { NotificationExtension } from "@/extension/NotificationExtension";
+import Loading from "@/extension/Loading";
 
 const FormSupport = () => {
     const [files, setFiles] = useState<File[]>([]);
@@ -59,19 +60,18 @@ const FormSupport = () => {
             image: "",
         },
     });
-
+    if (isLoading) {
+        return <Loading />;
+    }
+    if (isError) {
+        return (
+            <div>
+                Đã xảy ra lỗi khi tải dữ liệu liên hệ. Vui lòng thử lại sau.
+            </div>
+        );
+    }
     return (
         <div className={Style.container}>
-            {isLoading && (
-                <LoadingOverlay
-                    visible={visible}
-                    zIndex={1000}
-                    overlayProps={{ radius: "sm", blur: 2 }}
-                    loaderProps={{ color: "pink", type: "bars" }}
-                />
-            )}
-            {isError && <div>Error: {error.message}</div>}
-
             <div className={Style.bannerLeft}>
                 <div className={Style.title}>
                     <h1>Bạn cần hỗ trợ?</h1>

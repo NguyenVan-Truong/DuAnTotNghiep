@@ -1,6 +1,6 @@
 import { bg_bage } from "@/assets/img";
 import { Product } from "@/model/Products";
-import { Button, Flex, Rating, Tooltip } from "@mantine/core";
+import { Box, Button, Flex, Rating, Text, Tooltip } from "@mantine/core";
 import { IconHeartFilled } from "@tabler/icons-react";
 import { useState } from "react";
 import { CiHeart } from "react-icons/ci";
@@ -21,27 +21,30 @@ const ItemProduct = ({ product }: props) => {
         setTym(!tym);
         try {
             const response = await instance.post("/favorites/toggle", {
-              product_id: product.id,
+                product_id: product.id,
             });
-            
-            if (response.status === 200) {
-                queryClient.setQueryData<FavoritesData>(['favoritesData'], (oldData) => {
-                    // Nếu oldData là undefined, sử dụng mảng rỗng làm giá trị mặc định
-                    const currentData = oldData ?? [];
-                    
-                    // Cập nhật dữ liệu yêu thích trong cache
-                    const updatedData = tym
-                        ? currentData.filter((id) => id !== product.id) // Xoá ID nếu yêu thích
-                        : [...currentData, product.id]; // Thêm ID vào mảng nếu chưa yêu thích
 
-                    return updatedData;
-                  });
+            if (response.status === 200) {
+                queryClient.setQueryData<FavoritesData>(
+                    ["favoritesData"],
+                    (oldData) => {
+                        // Nếu oldData là undefined, sử dụng mảng rỗng làm giá trị mặc định
+                        const currentData = oldData ?? [];
+
+                        // Cập nhật dữ liệu yêu thích trong cache
+                        const updatedData = tym
+                            ? currentData.filter((id) => id !== product.id) // Xoá ID nếu yêu thích
+                            : [...currentData, product.id]; // Thêm ID vào mảng nếu chưa yêu thích
+
+                        return updatedData;
+                    },
+                );
             } else {
-              console.error("Error toggling favorite status:", response.data);
+                console.error("Error toggling favorite status:", response.data);
             }
-          } catch (error) {
+        } catch (error) {
             console.error("Có lỗi xảy", error);
-          }
+        }
         setTym(!tym);
     };
     const onhandleTurnPage = (id: number, slug: string) => {
@@ -70,7 +73,9 @@ const ItemProduct = ({ product }: props) => {
                         <h2
                             className={`${style.listProductsTitle} font-medium`}
                         >
-                            {product?.name}
+                            <Box w={300}>
+                                <Text truncate="end">{product?.name}</Text>
+                            </Box>
                         </h2>
                     </Tooltip>
                     {/* <CiHeart

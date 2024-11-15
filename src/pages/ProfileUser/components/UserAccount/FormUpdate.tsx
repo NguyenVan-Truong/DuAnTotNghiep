@@ -14,8 +14,11 @@ import {
 import ImgCrop from "antd-img-crop";
 import moment from "moment";
 import { useEffect, useState } from "react";
-
-const FormUpdate = ({ onSuccess }: { onSuccess: () => void }) => {
+type FormUpdateProps = {
+    onSuccess: () => void;
+    modals: any;
+};
+const FormUpdate = ({ onSuccess, modals }: FormUpdateProps) => {
     const [fileList, setFileList] = useState<any[]>([]);
     const [form] = Form.useForm();
 
@@ -109,8 +112,8 @@ const FormUpdate = ({ onSuccess }: { onSuccess: () => void }) => {
             );
             console.log("Profile updated successfully", response.data);
 
-            // Call onSuccess callback passed from parent to close modal and trigger refetch
             onSuccess();
+            modals.closeAll();
         } catch (error) {
             console.error("Error updating profile", error);
             message.error("Cập nhật thông tin thất bại!");
