@@ -23,30 +23,33 @@ const ItemProduct = ({ product }: props) => {
             const response = await instance.post("/favorites/toggle", {
                 product_id: product.id,
             });
-
+            queryClient.invalidateQueries({
+                queryKey: ["favoritesData"],
+            });
             if (response.status === 200) {
+                // Cập nhật dữ liệu trong cache của react-query
                 queryClient.setQueryData<FavoritesData>(
                     ["favoritesData"],
                     (oldData) => {
-                        // Nếu oldData là undefined, sử dụng mảng rỗng làm giá trị mặc định
                         const currentData = oldData ?? [];
-
-                        // Cập nhật dữ liệu yêu thích trong cache
                         const updatedData = tym
-                            ? currentData.filter((id) => id !== product.id) // Xoá ID nếu yêu thích
-                            : [...currentData, product.id]; // Thêm ID vào mảng nếu chưa yêu thích
+                            ? currentData.filter((id) => id !== product.id)
+                            : [...currentData, product.id];
 
                         return updatedData;
                     },
                 );
+
+                // Yêu cầu fetch lại dữ liệu yêu thích
             } else {
                 console.error("Error toggling favorite status:", response.data);
             }
         } catch (error) {
-            console.error("Có lỗi xảy", error);
+            console.error("Có lỗi xảy ra", error);
         }
         setTym(!tym);
     };
+
     const onhandleTurnPage = (id: number, slug: string) => {
         navigate(`/chi-tiet-san-pham/${slug}`, { state: { id: id } });
     };

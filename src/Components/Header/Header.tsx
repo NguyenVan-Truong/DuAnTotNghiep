@@ -16,6 +16,10 @@ import Favorite from "./components/FavoriteCollection";
 import IconMenu from "./components/Menu";
 import CartIcon from "./components/MiniCart";
 import "./Header.scss";
+import instance from "@/configs/axios";
+import { useQuery } from "@tanstack/react-query";
+import { Favorites } from "@/model/Favorite";
+import Loading from "@/extension/Loading";
 
 const Header = () => {
     const [visible, setVisible] = useState(false);
@@ -65,6 +69,20 @@ const Header = () => {
         });
     };
 
+    const fetchFavoritesData = async () => {
+        const response = await instance.get("/favorites");
+        return response.data;
+    };
+    const { data, isLoading, error } = useQuery({
+        queryKey: ["favoritesData"],
+        queryFn: fetchFavoritesData,
+        staleTime: 0,
+        enabled: true,
+    });
+
+    // console.log("object", data);
+    // if (isLoading) return <Loading />;
+    // if (error) return <div>Lỗi khi tải dữ liệu yêu thích</div>;
     return (
         <>
             {/* Header1 */}
@@ -82,7 +100,7 @@ const Header = () => {
                 </div>
                 <div className="hidden lg:flex items-center mr-10 space-x-3">
                     <EnvironmentOutlined className="text-xl mb-1" />
-                    <Favorite />
+                    <Favorite data={data} />
                     <CartIcon />
                     {localStorage.getItem("userProFile") ? (
                         <Menu
