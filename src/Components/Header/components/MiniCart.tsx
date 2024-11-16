@@ -1,16 +1,16 @@
+import instance from "@/configs/axios";
+import { NotificationExtension } from "@/extension/NotificationExtension";
+import { formatCurrencyVN } from "@/model/_base/Number";
 import { CloseCircleOutlined, ShoppingCartOutlined } from "@ant-design/icons";
+import { Skeleton } from "@mantine/core";
 import { Badge, Drawer } from "antd";
-import { useState } from "react";
-import { sanpham1 } from "@/assets/img";
-
-const MiniCart = () => {
-    const products = Array(10).fill({
-        name: "Sofa 3 chỗ Orientale da beige R5",
-        price: "115,387,500₫",
-        quantity: 2,
-        image: sanpham1,
-    });
-
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+type Props = {
+    dataCart: any;
+};
+const MiniCart = ({ dataCart }: Props) => {
+    const [totalPrice, setTotalPrice] = useState(0);
     return (
         <div className="flex flex-col justify-between h-full">
             <div className="text-center h-[10%]">
@@ -19,17 +19,26 @@ const MiniCart = () => {
                 </h3>
             </div>
             <div className="max-h-[80%] overflow-auto custom-scrollbar">
-                {products.map((product, index) => (
+                {dataCart?.map((product: any, index: number) => (
                     <div key={index} className="flex space-x-4 mb-2">
                         <div>
-                            <img src={product.image} alt="" width={100} />
+                            <img
+                                src={product.product.image_url}
+                                alt=""
+                                width={100}
+                                style={{
+                                    maxHeight: "70px",
+                                    objectFit: "cover",
+                                }}
+                            />
                         </div>
                         <div>
                             <h1 className="font-medium text-lg">
-                                {product.name}
+                                {product.product.name}
                             </h1>
                             <p className="text-base">
-                                {product.quantity} × {product.price}
+                                {product.quantity} ×{" "}
+                                {formatCurrencyVN(product.product.price)}
                             </p>
                         </div>
                         <div>
@@ -46,9 +55,11 @@ const MiniCart = () => {
                     <h3>37,451,000₫</h3>
                 </div>
                 <div className="mt-5">
-                    <button className="w-full bg-black text-white p-2 rounded-md mb-3">
-                        Xem Giỏ Hàng
-                    </button>
+                    <Link to="/gio-hang">
+                        <button className="w-full bg-black text-white p-2 rounded-md mb-3">
+                            Xem Giỏ Hàng
+                        </button>
+                    </Link>
                     <button className="w-full hover:bg-gray-300 border border-collapse p-2 rounded-md">
                         Thanh Toán
                     </button>
@@ -60,7 +71,8 @@ const MiniCart = () => {
 
 const IconCart = () => {
     const [drawerVisible, setDrawerVisible] = useState(false);
-
+    const [dataCart, setDataCart] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
     const showDrawer = () => {
         setDrawerVisible(true);
     };
@@ -68,11 +80,26 @@ const IconCart = () => {
     const onClose = () => {
         setDrawerVisible(false);
     };
-
+    const fetchData = async () => {
+        setIsLoading(true);
+        try {
+            const response = await instance.get("/cart");
+            if (response && response.status === 200) {
+                setDataCart(response.data.data);
+            }
+        } catch (error) {
+            NotificationExtension.Fails("Đã xảy ra lỗi khi lấy dữ liệu");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+    useEffect(() => {
+        fetchData();
+    }, [setDrawerVisible]);
     return (
         <>
             <div className="items-center space-x-4">
-                <Badge count={1} className="relative">
+                <Badge count={dataCart?.length} className="relative">
                     <ShoppingCartOutlined
                         className="text-xl cursor-pointer"
                         onClick={showDrawer}
@@ -86,7 +113,8 @@ const IconCart = () => {
                 open={drawerVisible}
                 width={500}
             >
-                <MiniCart />
+                <Skeleton visible={isLoading} />
+                <MiniCart dataCart={dataCart} />
             </Drawer>
         </>
     );

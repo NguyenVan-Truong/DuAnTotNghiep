@@ -8,18 +8,23 @@ import ListSimilarProducts from "./Component/ListSimilarProducts/ListSimilarProd
 import ProductImageSlider from "./Component/ProductImageSlider/ProductImageSlider";
 import RightProduct from "./Component/RightProduct/RightProduct";
 import "./ProductDetail.scss";
+import { Flex, LoadingOverlay } from "@mantine/core";
+import { IconHome } from "@tabler/icons-react";
 
 const ProductDetail = () => {
     const location = useLocation();
     const [data, setData] = useState<TypeProductDetail>();
-    const [isLiked, setIsLiked] = useState(false);
     const [dataComment, setDataComment] = useState<{}>();
     const [valueRating, setValueRating] = useState(0);
     const [dataCategory, setDataCategory] = useState();
-    const handleLike = () => {
-        setIsLiked(!isLiked);
-    };
+    const [isLoading, setisLoading] = useState(false);
+    //attribute
+    const [dataAttribute, setDataAttribute] = useState([]);
+    //loading comment
+    const [loadingComment, setLoadingComment] = useState(false);
+
     const fetchData = async () => {
+        setisLoading(true);
         try {
             const response = await instance.get(
                 `/products/chi-tiet-san-pham/${location.state.id}`,
@@ -30,9 +35,12 @@ const ProductDetail = () => {
             }
         } catch (error) {
             NotificationExtension.Fails("Đã xảy ra lỗi khi lấy dữ liệu");
+        } finally {
+            setisLoading(false);
         }
     };
     const fetchDataComment = async () => {
+        setLoadingComment(true);
         let url = "";
         if (valueRating) {
             url += `?rating=${valueRating}`;
@@ -48,28 +56,99 @@ const ProductDetail = () => {
             NotificationExtension.Fails(
                 "Đã xảy ra lỗi khi lấy dữ liệu đánh giá",
             );
+        } finally {
+            setLoadingComment(false);
         }
     };
+    const fetchAttribute = async () => {
+        try {
+            const response = await instance.get(`/attribute`);
+            if (response.status === 200) {
+                // setDataAttribute(response.data.data);
+                const attributeNames = response.data.data.map(
+                    (item: any) => item.name,
+                );
+                setDataAttribute(attributeNames);
+            }
+        } catch (error) {
+            NotificationExtension.Fails("Đã xảy ra lỗi khi lấy dữ liệu");
+        }
+    };
+
     useEffect(() => {
-        Promise.all([fetchData(), fetchDataComment()]);
+        Promise.all([fetchData(), fetchDataComment(), fetchAttribute()]);
+        window.scrollTo(0, 0);
     }, [location.state.id]);
     useEffect(() => {
         fetchDataComment();
     }, [valueRating]);
     return (
         <>
-            <div className="product-detail-main ">
+            <div
+                className="product-detail-main"
+                style={{
+                    position: "relative",
+                    minHeight: "900px",
+                }}
+            >
+                <LoadingOverlay
+                    visible={isLoading}
+                    zIndex={1000}
+                    overlayProps={{ radius: "sm", blur: 2 }}
+                    style={{
+                        height: "100%",
+                        width: "100%",
+                        margin: "0 auto",
+                    }}
+                />
                 <div className="Breadcrumbs">
                     <div className="container padding">
-                        <div className="menu">
-                            <Link to="#">Trang Chủ</Link> /
-                            <Link to="#">
-                                <span className="">Phòng Khách</span>
-                            </Link>
-                        </div>
+                        <Flex
+                            direction={"row"}
+                            align={"center"}
+                            gap={"sm"}
+                            className="menu"
+                        >
+                            <Link to="/">
+                                <IconHome
+                                    stroke={1}
+                                    style={{
+                                        marginTop: "-2px",
+                                    }}
+                                />
+                            </Link>{" "}
+                            <p
+                                style={{
+                                    color: "#666",
+                                }}
+                            >
+                                /
+                            </p>
+                            <Link to="/san-pham">sản phẩm</Link>
+                            <p
+                                style={{
+                                    color: "#666",
+                                }}
+                            >
+                                /
+                            </p>
+                            <p
+                                style={{
+                                    color: "#000",
+                                }}
+                            >
+                                {data?.name}
+                            </p>
+                        </Flex>
                     </div>
                 </div>
-                <div className="container">
+
+                <div
+                    className="container"
+                    style={{
+                        position: "relative",
+                    }}
+                >
                     <div className="product-content padding">
                         <div className="imageMain">
                             <ProductImageSlider data={data} />
@@ -77,6 +156,7 @@ const ProductDetail = () => {
                                 <RightProduct
                                     data={data}
                                     id={location.state.id}
+                                    dataAttribute={dataAttribute}
                                 />
                             </div>
                             <div className="mt-[30px]">
@@ -84,17 +164,20 @@ const ProductDetail = () => {
                             </div>
 
                             <div>
-                                {dataComment !== undefined && (
-                                    <CommentProductDetail
-                                        data={dataComment}
-                                        setValueRating={setValueRating}
-                                    />
-                                )}
+                                <CommentProductDetail
+                                    data={dataComment}
+                                    setValueRating={setValueRating}
+                                    loadingComment={loadingComment}
+                                />
                             </div>
                         </div>
                         {/* Phần bên phải: Chi tiết sản phẩm */}
                         <div className="rightProductBottom">
-                            <RightProduct data={data} id={location.state.id} />
+                            <RightProduct
+                                data={data}
+                                id={location.state.id}
+                                dataAttribute={dataAttribute}
+                            />
                         </div>
                     </div>
 
