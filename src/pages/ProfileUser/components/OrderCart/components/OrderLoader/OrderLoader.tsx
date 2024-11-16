@@ -315,19 +315,21 @@ const OrderLoader = () => {
             style: { fontSize: "11.5px", padding: "4px 12px" },
         }),
         mantinePaginationProps: {
-            showRowsPerPage: true,
+            showRowsPerPage: false,
             withEdges: true,
             rowsPerPageOptions: ["10", "50", "100"],
         },
     });
 
     useEffect(() => {
+        const headerHeight = headerRef.current?.offsetHeight || 0;
         const handleResize = () => {
-            const height = headerRef.current?.clientHeight ?? 0;
-            setHeight(window.innerHeight - height - 24);
+            setHeight(window.innerHeight - (240 + headerHeight));
         };
+
+        handleResize(); // Set initial height
         window.addEventListener("resize", handleResize);
-        handleResize();
+
         return () => {
             window.removeEventListener("resize", handleResize);
         };

@@ -7,7 +7,7 @@ import instance from "@/configs/axios";
 // Hàm gọi API
 const fetchPostsData = async () => {
     const response = await instance.get("/posts");
-    return response.data;
+    return response.data.data;
 };
 
 const StoryNew = () => {
@@ -26,7 +26,7 @@ const StoryNew = () => {
     if (error) return <div>Lỗi khi tải dữ liệu bài viết</div>; // Hiển thị thông báo lỗi nếu có lỗi
     return (
         <div className={styles.container}>
-            <h1 className={styles.pageTitle}>CHUYỆN NHÀ XINH</h1>
+            <h1 className={styles.pageTitle}>Câu Chuyện</h1>
             <div className={styles.newsContainer}>
                 {newsData?.map((newsItem) => (
                     <div key={newsItem.id} className={styles.newsItem}>

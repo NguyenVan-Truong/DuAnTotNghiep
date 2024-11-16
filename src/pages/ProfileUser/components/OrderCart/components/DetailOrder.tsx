@@ -8,16 +8,19 @@ type OrderDetailProps = {
 
 const OrderDetail = ({ data }: OrderDetailProps) => {
     const componentPDF = useRef<HTMLDivElement>(null);
-
-    console.log("data", data);
-
     const rows = data.order_items.map((item: any) => (
-        <tr key={item.id}>
-            <td>{item.product_name}</td>
-            <td>{item.quantity}</td>
-            <td>{Number(item.price).toLocaleString("vi-VN")} VND</td>
-            <td>{Number(item.total).toLocaleString("vi-VN")} VND</td>
-            <td>{item.variant ? JSON.parse(item.variant).join(", ") : ""}</td>
+        <tr key={item.id} className="border-b border-gray-200">
+            <td className="px-4 py-2 text-left">{item.product_name}</td>
+            <td className="px-4 py-2 text-center">{item.quantity}</td>
+            <td className="px-4 py-2 text-center">
+                {Number(item.price).toLocaleString("vi-VN")} VND
+            </td>
+            <td className="px-4 py-2 text-center">
+                {Number(item.total).toLocaleString("vi-VN")} VND
+            </td>
+            <td className="px-4 py-2 text-left">
+                {item.variant ? JSON.parse(item.variant).join(", ") : ""}
+            </td>
         </tr>
     ));
 
@@ -51,10 +54,10 @@ const OrderDetail = ({ data }: OrderDetailProps) => {
                     cursor: "pointer",
                 }}
             >
-                In Pdf
+                In hóa đơn
             </button>
             <div ref={componentPDF}>
-                <h2>Chi tiết đơn hàng #{data.id}</h2>
+                <h2>Mã đơn hàng : {data.id}</h2>
                 <div
                     style={{
                         display: "flex",
@@ -64,11 +67,11 @@ const OrderDetail = ({ data }: OrderDetailProps) => {
                 >
                     <div style={{ width: "45%" }}>
                         <p>
-                            <strong>Tên khách hàng:</strong>{" "}
+                            <strong>Tên người nhận:</strong>{" "}
                             {data.customer_name}
                         </p>
                         <p>
-                            <strong>Tên tài khoản:</strong>{" "}
+                            <strong>Tên khách hàng :</strong>{" "}
                             {data.customer.customer_name}
                         </p>
                         <p>
@@ -109,7 +112,7 @@ const OrderDetail = ({ data }: OrderDetailProps) => {
                             VND
                         </p>
                         <p>
-                            <strong>Thành tiền:</strong>{" "}
+                            <strong>Thành toán:</strong>{" "}
                             {Number(data.final_amount).toLocaleString("vi-VN")}{" "}
                             VND
                         </p>
