@@ -2,12 +2,11 @@ import instance from "@/configs/axios";
 import { NotificationExtension } from "@/extension/NotificationExtension";
 import { formatCurrencyVN } from "@/model/_base/Number";
 import { CartItem } from "@/model/Cart";
-import { useEffect, useState } from "react";
-import { BiArrowBack } from "react-icons/bi";
-import { MdClose } from "react-icons/md";
-import Style from "./ShoppingCart.module.scss";
 import { Button, Checkbox, Flex, LoadingOverlay } from "@mantine/core";
 import { useDebouncedState } from "@mantine/hooks";
+import { useEffect, useState } from "react";
+import { BiArrowBack } from "react-icons/bi";
+import Style from "./ShoppingCart.module.scss";
 const ShoppingCart = () => {
     const [data, setData] = useState<any>([]);
     const [selectedOption, setSelectedOption] = useState<string>(
@@ -17,8 +16,6 @@ const ShoppingCart = () => {
     const handleOptionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSelectedOption(event.target.value); // Cập nhật trạng thái khi thay đổi radio button
     };
-    //update số lượng sp
-    const [value, setValue] = useDebouncedState("", 200);
     const fetchData = async () => {
         setisLoading(true);
         try {
@@ -33,79 +30,38 @@ const ShoppingCart = () => {
         }
     };
 
-    // Tăng số lượng
-    const onhandleIncrease = async (id: number) => {
-        if (data) {
-            const newData = data.map((item: CartItem) => {
-                if (item.id === id) {
-                    const newQuantity = item.quantity + 1;
-                    return {
-                        ...item,
-                        quantity: newQuantity,
-                    };
-                }
-                return item;
-            });
-            // setData(newData);
-            console.log("newData", newData);
-        }
-    };
-
-    // Giảm số lượng
-    const onhandleReduce = async (id: number) => {
-        if (data) {
-            const newData = data.map((item: CartItem) => {
-                if (item.id === id && item.quantity > 1) {
-                    const newQuantity = item.quantity - 1;
-                    return {
-                        ...item,
-                        quantity: newQuantity,
-                    };
-                }
-                return item;
-            });
-            setData(newData);
-        }
-    };
     // // Tính tổng đơn hàng
     // const calculateTotal = () => {
     //     return data.reduce((acc: number, item: CartItem) => {
     //         return acc + Number(item.price) * item.quantity;
     //     }, 0);
     // };
-    const UpdateData = async (id: number, quantity: number) => {
+    // Cập nhật số lượng
+    const onhandleUpdateQuantity = async (id: number, type: string) => {
+        console.log("id", id);
+        console.log("type", type);
         try {
-            const response = await instance.put(`/cart/${id}`, {
-                quantity: quantity,
-            });
+            // const response = await instance.put(`/cart/${id}`, {
+            //     quantity: quantity,
+            // });
         } catch (error) {
             NotificationExtension.Fails("Đã xảy ra lỗi khi cập nhật dữ liệu");
         }
     };
 
     useEffect(() => {
-        if (data) {
-            data.map((item: CartItem) => {
-                UpdateData(item.id, item.quantity);
-            });
-        }
-    }, []);
-    useEffect(() => {
         fetchData();
     }, []);
     console.log("data", data);
 
     return (
-        <div className="container mx-auto padding">
-            <Flex direction="row">
-                <h1 className={Style.Title}>
-                    Giỏ Hàng
-                    <span className={Style.Total_count}>{data.length}</span>
-                </h1>
-                <Button variant="filled" color="red">
-                    Xóa{" "}
-                </Button>
-            </Flex>
+        <div
+            className="container mx-auto padding"
+            style={{
+                marginTop: "10px",
+                marginBottom: "30px",
+            }}
+        >
             <div className={Style.Main}>
                 <LoadingOverlay
                     visible={isLoading}
@@ -114,90 +70,161 @@ const ShoppingCart = () => {
                 />
 
                 <div className={Style.Left}>
+                    <Flex direction="row" justify={"space-between"}>
+                        <h1 className={Style.Title}>
+                            Giỏ Hàng
+                            <span className={Style.Total_count}>
+                                {data.length}
+                            </span>
+                        </h1>
+                        <Button variant="filled" color="red" disabled>
+                            Xóa{" "}
+                        </Button>
+                    </Flex>
                     {data?.map((item: CartItem) => {
                         return (
-                            <div
-                                className="flex border-b-2 border-b-gray-200"
-                                style={{
-                                    alignItems: "start",
-                                }}
+                            <Flex
+                                direction={"row"}
+                                justify={"space-between"}
+                                className="border-b-2 border-b-gray-200"
                             >
-                                <div>
-                                    <Checkbox
-                                        defaultChecked
+                                <div
+                                    className="flex "
+                                    style={{
+                                        alignItems: "start",
+                                    }}
+                                >
+                                    <div
                                         style={{
-                                            marginTop: "10px",
+                                            marginTop: "35px",
                                         }}
-                                    />
-                                </div>
-                                <div className="">
-                                    <img
-                                        src={item.product.image_url}
-                                        alt=""
-                                        style={{
-                                            padding: "10px",
-                                            maxHeight: "100px",
-                                            minHeight: "100px",
-                                            minWidth: "100px",
-                                            maxWidth: "100px",
-                                            objectFit: "cover",
-                                        }}
-                                    />
-                                </div>
-                                <div className={Style.Content}>
-                                    <div className={Style.Content_Title}>
-                                        <h4
+                                    >
+                                        <Checkbox
+                                            defaultChecked
                                             style={{
-                                                fontSize: "16px",
-                                                fontWeight: "500",
-                                                marginTop: "5px",
+                                                marginTop: "10px",
                                             }}
-                                        >
-                                            {item.product.name}
-                                        </h4>
+                                        />
                                     </div>
+                                    <div className="">
+                                        <img
+                                            src={item.product.image_url}
+                                            alt=""
+                                            style={{
+                                                padding: "10px",
+                                                maxHeight: "110px",
+                                                minHeight: "110px",
+                                                minWidth: "130px",
+                                                maxWidth: "130px",
+                                                objectFit: "cover",
+                                            }}
+                                        />
+                                    </div>
+                                    <div className={Style.Content}>
+                                        <div className={Style.Content_Title}>
+                                            <h4
+                                                style={{
+                                                    fontSize: "16px",
+                                                    fontWeight: "500",
+                                                    marginTop: "5px",
+                                                }}
+                                            >
+                                                {item.product.name}
+                                            </h4>
+                                        </div>
 
-                                    <Flex direction="row">
-                                        <span className={Style.Content_Price}>
-                                            {formatCurrencyVN(item.price)}
-                                        </span>
-                                        <p></p>
-                                    </Flex>
-                                    <div className={Style.Content_Button}>
-                                        <div
-                                            className={
-                                                Style.Content_Button_Quantity
-                                            }
+                                        <Flex
+                                            direction="row"
+                                            style={{
+                                                margin: "5px 0",
+                                            }}
+                                            align={"center"}
                                         >
-                                            <button
-                                                className={Style.Button}
-                                                onClick={() =>
-                                                    onhandleReduce(item.id)
+                                            <span
+                                                className={Style.Content_Price}
+                                            >
+                                                {formatCurrencyVN(
+                                                    item.product_variant
+                                                        .discount_price,
+                                                )}
+                                            </span>
+                                            <p
+                                                style={{
+                                                    color: "#333",
+                                                    fontSize: "14px",
+                                                    fontWeight: "400",
+                                                    marginLeft: "10px",
+                                                    marginTop: "-5px",
+                                                }}
+                                            >
+                                                Thuộc tính
+                                            </p>
+                                        </Flex>
+
+                                        <div className={Style.Content_Button}>
+                                            <div
+                                                className={
+                                                    Style.Content_Button_Quantity
                                                 }
                                             >
-                                                -
-                                            </button>
+                                                <button
+                                                    className={Style.Button}
+                                                    onClick={() =>
+                                                        onhandleUpdateQuantity(
+                                                            item.id,
+                                                            "decrease",
+                                                        )
+                                                    }
+                                                >
+                                                    -
+                                                </button>
 
-                                            <input
-                                                type="number"
-                                                value={item.quantity}
-                                                className={Style.quantity}
-                                                min="1"
-                                                disabled
-                                            />
+                                                <input
+                                                    type="number"
+                                                    value={item.quantity}
+                                                    className={Style.quantity}
+                                                    min="1"
+                                                    disabled
+                                                />
 
-                                            <button
-                                                className={Style.Button}
-                                                onClick={() =>
-                                                    onhandleIncrease(item.id)
-                                                }
-                                            >
-                                                +
-                                            </button>
+                                                <button
+                                                    className={Style.Button}
+                                                    onClick={() =>
+                                                        onhandleUpdateQuantity(
+                                                            item.id,
+                                                            "increase",
+                                                        )
+                                                    }
+                                                >
+                                                    +
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                                <div
+                                    style={{
+                                        display: "flex",
+                                        flexDirection: "column-reverse",
+                                    }}
+                                >
+                                    {/* tổng tiền của 1 sản phẩm */}
+                                    <p
+                                        style={{
+                                            marginBottom: "10px",
+                                        }}
+                                    >
+                                        {formatCurrencyVN(
+                                            String(
+                                                Number(
+                                                    item.product_variant
+                                                        .discount_price,
+                                                ) * Number(item.quantity),
+                                            ),
+                                        )}
+                                    </p>
+                                </div>
+                            </Flex>
                         );
                     })}
                 </div>
@@ -277,7 +304,6 @@ const ShoppingCart = () => {
                                 Tổng cộng
                             </span>
                             <span className={Style.Right_Price_Value}>
-                                23,822,100
                                 <span className={Style.Right_Price_Value_Unit}>
                                     ₫
                                 </span>

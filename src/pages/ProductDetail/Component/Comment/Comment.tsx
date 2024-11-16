@@ -1,4 +1,4 @@
-import { Box, Flex, Rating, ScrollArea } from "@mantine/core";
+import { Box, Flex, LoadingOverlay, Rating, ScrollArea } from "@mantine/core";
 import "./Comment.scss";
 import { IconCornerDownRightDouble } from "@tabler/icons-react";
 import { Image } from "antd";
@@ -6,9 +6,17 @@ import { formatDate } from "@/model/_base/Date";
 type Props = {
     data: any;
     setValueRating: any;
+    loadingComment: boolean;
 };
-const CommentProductDetail = ({ data, setValueRating }: Props) => {
-    const dataComments = data.reviews.data;
+const CommentProductDetail = ({
+    data,
+    setValueRating,
+    loadingComment,
+}: Props) => {
+    const dataComments = data?.reviews.data;
+    if (!dataComments) {
+        return null;
+    }
     return (
         <div className="rating-container">
             <Flex direction="column" gap="md">
@@ -107,7 +115,7 @@ const CommentProductDetail = ({ data, setValueRating }: Props) => {
                         className="rating-details"
                         justify="start"
                         style={{
-                            height: "600px",
+                            maxHeight: "600px",
                         }}
                     >
                         <div className="mx-auto p-5 border rounded-lg shadow-lg bg-white w-full">
@@ -123,7 +131,16 @@ const CommentProductDetail = ({ data, setValueRating }: Props) => {
                                 </h2>
                             </Box>
                             <div>
-                                <ScrollArea h={520}>
+                                <ScrollArea
+                                    style={{
+                                        maxHeight: "520px",
+                                    }}
+                                >
+                                    <LoadingOverlay
+                                        visible={loadingComment}
+                                        zIndex={1000}
+                                        overlayProps={{ radius: "sm", blur: 2 }}
+                                    />
                                     {dataComments &&
                                     Array.isArray(dataComments) &&
                                     dataComments.length > 0 ? (
@@ -230,6 +247,8 @@ const CommentProductDetail = ({ data, setValueRating }: Props) => {
                                                                             color: "000",
                                                                             width: "2px",
                                                                             height: "100%",
+                                                                            marginRight:
+                                                                                "5px",
                                                                         }}
                                                                     >
                                                                         |
@@ -292,44 +311,49 @@ const CommentProductDetail = ({ data, setValueRating }: Props) => {
                                                                     />
                                                                 )}
                                                             </div>
-                                                            <Flex
-                                                                direction={
-                                                                    "row"
-                                                                }
-                                                                gap={"sm"}
-                                                                style={{
-                                                                    padding:
-                                                                        "10px",
-                                                                    background:
-                                                                        "rgb(246 244 244)",
-                                                                    marginTop:
-                                                                        "3px",
-                                                                }}
-                                                            >
-                                                                <div>
-                                                                    <IconCornerDownRightDouble color="#c3c3c3" />
-                                                                </div>
+                                                            {item.comments
+                                                                .length > 0 ? (
+                                                                <Flex
+                                                                    direction={
+                                                                        "row"
+                                                                    }
+                                                                    gap={"sm"}
+                                                                    style={{
+                                                                        padding:
+                                                                            "10px",
+                                                                        background:
+                                                                            "rgb(246 244 244)",
+                                                                        marginTop:
+                                                                            "3px",
+                                                                    }}
+                                                                >
+                                                                    <div>
+                                                                        <IconCornerDownRightDouble color="#c3c3c3" />
+                                                                    </div>
 
-                                                                <div>
-                                                                    <p
-                                                                        style={{
-                                                                            // width: "200px",
-                                                                            fontWeight:
-                                                                                "500",
-                                                                        }}
-                                                                    >
-                                                                        phản hồi
-                                                                        của
-                                                                        Người
-                                                                        Bán
-                                                                    </p>
+                                                                    <div>
+                                                                        <p
+                                                                            style={{
+                                                                                fontWeight:
+                                                                                    "500",
+                                                                            }}
+                                                                        >
+                                                                            phản
+                                                                            hồi
+                                                                            của
+                                                                            Người
+                                                                            Bán
+                                                                        </p>
 
-                                                                    {item.comments.map(
-                                                                        (
-                                                                            comment: any,
-                                                                        ) => {
-                                                                            return (
+                                                                        {item.comments.map(
+                                                                            (
+                                                                                comment: any,
+                                                                                index: number,
+                                                                            ) => (
                                                                                 <p
+                                                                                    key={
+                                                                                        index
+                                                                                    } // Thêm key để tránh cảnh báo React
                                                                                     style={{
                                                                                         fontSize:
                                                                                             "12px",
@@ -340,18 +364,24 @@ const CommentProductDetail = ({ data, setValueRating }: Props) => {
                                                                                         comment.comment
                                                                                     }
                                                                                 </p>
-                                                                            );
-                                                                        },
-                                                                    )}
-                                                                </div>
-                                                            </Flex>
+                                                                            ),
+                                                                        )}
+                                                                    </div>
+                                                                </Flex>
+                                                            ) : null}
                                                         </div>
                                                     </Flex>
                                                 </Box>
                                             );
                                         })
                                     ) : (
-                                        <p>Chưa có đánh giá</p>
+                                        <div
+                                            style={{
+                                                height: "50px",
+                                            }}
+                                        >
+                                            <p>Chưa có đánh giá</p>
+                                        </div>
                                     )}
                                 </ScrollArea>
                             </div>

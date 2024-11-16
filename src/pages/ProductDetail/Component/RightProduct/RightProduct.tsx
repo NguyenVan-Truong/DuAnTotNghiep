@@ -1,6 +1,13 @@
 import { NotificationExtension } from "@/extension/NotificationExtension";
 import { toTitleCase } from "@/model/_base/Text";
-import { Badge, Button, Flex, Rating } from "@mantine/core";
+import {
+    Badge,
+    Button,
+    Flex,
+    Loader,
+    LoadingOverlay,
+    Rating,
+} from "@mantine/core";
 import { IconCheck, IconMinus, IconPlus } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import "../../ProductDetail.scss";
@@ -10,6 +17,7 @@ import { formatCurrencyVN } from "@/model/_base/Number";
 type Props = {
     data: TypeProductDetail | undefined;
     id: number;
+    dataAttribute: any;
 };
 type AttributeValues = {
     [key: string]: string[] | any;
@@ -31,7 +39,8 @@ type TypeFilteredVariant = {
     updated_at: string;
     attributes: Attribute[];
 };
-const RightProduct = ({ data, id }: Props) => {
+
+const RightProduct = ({ data, id, dataAttribute }: Props) => {
     if (!data) return null;
     const [quantity, setQuantity] = useState(1);
     const [isLoading, setisLoading] = useState(false);
@@ -52,23 +61,26 @@ const RightProduct = ({ data, id }: Props) => {
     };
     //#region handleAttribute
     const [selectedAttributes, setSelectedAttributes] = useState<any>({});
-
-    const attributes = ["Chất Liệu", "Màu Sắc", "Kích Thước"];
-    const uniqueAttributes: AttributeValues = attributes.reduce((acc, attr) => {
-        const values = Array.from(
-            new Set(
-                data.variants.flatMap((variant: any) =>
-                    variant.attributes
-                        .filter(
-                            (attribute: any) => attribute.attribute === attr,
-                        )
-                        .map((attribute: any) => attribute.value),
+    // const attributes = ["Chất Liệu", "Màu Sắc", "Kích Thước"];
+    const uniqueAttributes: AttributeValues = dataAttribute.reduce(
+        (acc: any, attr: any) => {
+            const values = Array.from(
+                new Set(
+                    data.variants.flatMap((variant: any) =>
+                        variant.attributes
+                            .filter(
+                                (attribute: any) =>
+                                    attribute.attribute === attr,
+                            )
+                            .map((attribute: any) => attribute.value),
+                    ),
                 ),
-            ),
-        );
-        acc[attr] = values;
-        return acc;
-    }, {} as AttributeValues);
+            );
+            acc[attr] = values;
+            return acc;
+        },
+        {} as AttributeValues,
+    );
     // xử lý khi chọn thuộc tính
     const handleAttributeSelect = (attribute: string, value: string) => {
         setSelectedAttributes((prev: any) => {
@@ -94,10 +106,8 @@ const RightProduct = ({ data, id }: Props) => {
             },
         );
     }) as TypeFilteredVariant | undefined;
-    // console.log("data", data);
-    // console.log("selectedAttributes", selectedAttributes);
-    // console.log("filteredVariant", filteredVariant);
 
+    //add Cart
     const onhandleAddToCart = async () => {
         const dataAddToCart = {
             product_id: id,
@@ -116,7 +126,21 @@ const RightProduct = ({ data, id }: Props) => {
             setisLoading(false);
         }
     };
-
+    const calculateDiscountPercentage = (
+        originalPrice: number,
+        discountPrice: number,
+    ) => {
+        if (
+            !originalPrice ||
+            !discountPrice ||
+            originalPrice <= discountPrice
+        ) {
+            return 0; // Không giảm giá hoặc giá gốc không hợp lệ
+        }
+        return Math.round(
+            ((originalPrice - discountPrice) / originalPrice) * 100,
+        );
+    };
     return (
         <div className="product-details">
             <div className="product-header">
@@ -135,12 +159,24 @@ const RightProduct = ({ data, id }: Props) => {
             </Flex>
             <div className="product-pricing my-[5px] py-[5px] ">
                 <Flex direction="row" align="center" gap="lg">
+                    {/* phần trăm được giảm */}
                     <Badge
                         size="lg"
                         radius="sm"
                         style={{ backgroundColor: "red" }}
-                    ></Badge>
+                    >
+                        {calculateDiscountPercentage(
+                            filteredVariant
+                                ? Number(filteredVariant?.price)
+                                : Number(data?.price),
+                            filteredVariant
+                                ? Number(filteredVariant?.discount_price)
+                                : Number(data?.discount_price),
+                        )}
+                        %
+                    </Badge>
                     <span className="current-price text-[#ef683a] text-[17px] font-bold">
+                        {/* giá sau khi được giảm */}
                         {formatCurrencyVN(
                             filteredVariant
                                 ? filteredVariant?.discount_price
@@ -149,6 +185,7 @@ const RightProduct = ({ data, id }: Props) => {
                     </span>
                     <span className="original-price text-[#777a7b] text-[14px] ">
                         <del>
+                            {/* giá gốc */}
                             {formatCurrencyVN(
                                 filteredVariant
                                     ? filteredVariant?.price
@@ -159,7 +196,7 @@ const RightProduct = ({ data, id }: Props) => {
                 </Flex>
             </div>
             <Flex direction="column" gap="sm" className="product-attributes">
-                {attributes.map((attribute) => (
+                {dataAttribute.map((attribute: any) => (
                     <div key={attribute}>
                         <h4 style={{ fontWeight: "600" }}>{attribute}</h4>
                         <Flex direction="row" gap="lg">
@@ -300,6 +337,15 @@ const RightProduct = ({ data, id }: Props) => {
                                     radius="xs"
                                     onClick={() => onhandleAddToCart()}
                                 >
+                                    <LoadingOverlay
+                                        visible={isLoading}
+                                        zIndex={1000}
+                                        overlayProps={{ radius: "sm", blur: 2 }}
+                                        loaderProps={{
+                                            color: "pink",
+                                            type: "bars",
+                                        }}
+                                    />{" "}
                                     Thêm vào giỏ hàng
                                 </Badge>
                             </div>

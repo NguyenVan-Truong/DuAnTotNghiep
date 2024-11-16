@@ -13,14 +13,15 @@ import { LoadingOverlay } from "@mantine/core";
 const ProductDetail = () => {
     const location = useLocation();
     const [data, setData] = useState<TypeProductDetail>();
-    const [isLiked, setIsLiked] = useState(false);
     const [dataComment, setDataComment] = useState<{}>();
     const [valueRating, setValueRating] = useState(0);
     const [dataCategory, setDataCategory] = useState();
     const [isLoading, setisLoading] = useState(false);
-    const handleLike = () => {
-        setIsLiked(!isLiked);
-    };
+    //attribute
+    const [dataAttribute, setDataAttribute] = useState([]);
+    //loading comment
+    const [loadingComment, setLoadingComment] = useState(false);
+
     const fetchData = async () => {
         setisLoading(true);
         try {
@@ -38,6 +39,7 @@ const ProductDetail = () => {
         }
     };
     const fetchDataComment = async () => {
+        setLoadingComment(true);
         let url = "";
         if (valueRating) {
             url += `?rating=${valueRating}`;
@@ -53,17 +55,40 @@ const ProductDetail = () => {
             NotificationExtension.Fails(
                 "Đã xảy ra lỗi khi lấy dữ liệu đánh giá",
             );
+        } finally {
+            setLoadingComment(false);
         }
     };
+    const fetchAttribute = async () => {
+        try {
+            const response = await instance.get(`/attribute`);
+            if (response.status === 200) {
+                // setDataAttribute(response.data.data);
+                const attributeNames = response.data.data.map(
+                    (item: any) => item.name,
+                );
+                setDataAttribute(attributeNames);
+            }
+        } catch (error) {
+            NotificationExtension.Fails("Đã xảy ra lỗi khi lấy dữ liệu");
+        }
+    };
+
     useEffect(() => {
-        Promise.all([fetchData(), fetchDataComment()]);
+        Promise.all([fetchData(), fetchDataComment(), fetchAttribute()]);
+        window.scrollTo(0, 0);
     }, [location.state.id]);
     useEffect(() => {
         fetchDataComment();
     }, [valueRating]);
     return (
         <>
-            <div className="product-detail-main">
+            <div
+                className="product-detail-main"
+                style={{
+                    position: "relative",
+                }}
+            >
                 <div className="Breadcrumbs">
                     <div className="container padding">
                         <div className="menu">
@@ -74,17 +99,22 @@ const ProductDetail = () => {
                         </div>
                     </div>
                 </div>
+                <LoadingOverlay
+                    visible={isLoading}
+                    zIndex={1000}
+                    overlayProps={{ radius: "sm", blur: 2 }}
+                    style={{
+                        height: "100vh",
+                        width: "100vw",
+                        margin: "0 auto",
+                    }}
+                />
                 <div
                     className="container"
                     style={{
                         position: "relative",
                     }}
                 >
-                    <LoadingOverlay
-                        visible={isLoading}
-                        zIndex={1000}
-                        overlayProps={{ radius: "sm", blur: 2 }}
-                    />
                     <div className="product-content padding">
                         <div className="imageMain">
                             <ProductImageSlider data={data} />
@@ -92,6 +122,7 @@ const ProductDetail = () => {
                                 <RightProduct
                                     data={data}
                                     id={location.state.id}
+                                    dataAttribute={dataAttribute}
                                 />
                             </div>
                             <div className="mt-[30px]">
@@ -99,17 +130,20 @@ const ProductDetail = () => {
                             </div>
 
                             <div>
-                                {dataComment !== undefined && (
-                                    <CommentProductDetail
-                                        data={dataComment}
-                                        setValueRating={setValueRating}
-                                    />
-                                )}
+                                <CommentProductDetail
+                                    data={dataComment}
+                                    setValueRating={setValueRating}
+                                    loadingComment={loadingComment}
+                                />
                             </div>
                         </div>
                         {/* Phần bên phải: Chi tiết sản phẩm */}
                         <div className="rightProductBottom">
-                            <RightProduct data={data} id={location.state.id} />
+                            <RightProduct
+                                data={data}
+                                id={location.state.id}
+                                dataAttribute={dataAttribute}
+                            />
                         </div>
                     </div>
 
