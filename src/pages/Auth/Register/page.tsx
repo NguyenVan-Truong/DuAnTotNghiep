@@ -105,6 +105,7 @@ const Register = () => {
     const strength = getStrength(value);
     const color = strength === 100 ? "teal" : strength > 50 ? "yellow" : "red";
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
     const onSubmit = async (user: UserRegister) => {
         // const isPasswordValid = requirements.every((requirement) =>
         //     requirement.re.test(user.password),
@@ -120,8 +121,9 @@ const Register = () => {
         //     return; // Ngừng thực hiện nếu mật khẩu không hợp lệ
         // }
         try {
-            const response = await instance.post(`/auth/register`, user);
-            NotificationExtension.Success("Đăng Ký Thành Công");
+            setLoading(true);
+            await instance.post(`/auth/register`, user);
+            message.success("Đăng Ký Thành Công");
             navigate("/xac-thuc/dang-nhap");
         } catch (error) {
             // const axiosError = error as AxiosError;
@@ -146,6 +148,8 @@ const Register = () => {
             // }
             message.error("Đã có tài khoản này");
             console.error("Error:", error);
+        } finally {
+            setLoading(false); // tắt loading khi xong
         }
     };
 
@@ -259,6 +263,7 @@ const Register = () => {
                     </Link>
                 </Group>
                 <Button
+                    loading={loading}
                     type="submit"
                     radius="md"
                     size="md"

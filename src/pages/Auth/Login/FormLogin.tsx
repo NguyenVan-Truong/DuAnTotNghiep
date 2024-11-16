@@ -11,6 +11,7 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { message } from "antd";
+import { useState } from "react";
 import { FaUser } from "react-icons/fa";
 import { FiLock } from "react-icons/fi";
 import { Link, useNavigate } from "react-router-dom";
@@ -30,8 +31,10 @@ const Login = () => {
         },
     });
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
     const onSubmit = async (user: UserLogin) => {
         try {
+            setLoading(true);
             const response = await instance.post(`/auth/login`, user);
             localStorage.setItem("token", response.data.access_token);
             localStorage.setItem(
@@ -45,6 +48,8 @@ const Login = () => {
         } catch (error) {
             message.error("Tài Khoản hoặc Mật Khẩu không chính xác");
             console.error("Error:", error);
+        } finally {
+            setLoading(false); // tắt loading khi xong
         }
     };
 
@@ -101,6 +106,7 @@ const Login = () => {
                     size="md"
                     fullWidth
                     className="!bg-black !text-white hover:!bg-gray-800"
+                    loading={loading}
                 >
                     Đăng Nhập
                 </Button>
