@@ -6,16 +6,21 @@ import { useEffect, useState } from "react";
 import { BiArrowBack } from "react-icons/bi";
 import { MdClose } from "react-icons/md";
 import Style from "./ShoppingCart.module.scss";
+import { Button, Checkbox, Flex, LoadingOverlay } from "@mantine/core";
+import { useDebouncedState } from "@mantine/hooks";
 const ShoppingCart = () => {
     const [data, setData] = useState<any>([]);
     const [selectedOption, setSelectedOption] = useState<string>(
         "Liên hệ phí vận chuyển sau",
     ); // Trạng thái cho lựa chọn
-
+    const [isLoading, setisLoading] = useState(false);
     const handleOptionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSelectedOption(event.target.value); // Cập nhật trạng thái khi thay đổi radio button
     };
+    //update số lượng sp
+    const [value, setValue] = useDebouncedState("", 200);
     const fetchData = async () => {
+        setisLoading(true);
         try {
             const response = await instance.get("/cart");
             if (response.status === 200) {
@@ -23,12 +28,10 @@ const ShoppingCart = () => {
             }
         } catch (error) {
             NotificationExtension.Fails("Đã xảy ra lỗi khi lấy dữ liệu");
+        } finally {
+            setisLoading(false);
         }
     };
-
-    useEffect(() => {
-        fetchData();
-    }, []);
 
     // Tăng số lượng
     const onhandleIncrease = async (id: number) => {
@@ -43,7 +46,8 @@ const ShoppingCart = () => {
                 }
                 return item;
             });
-            setData(newData);
+            // setData(newData);
+            console.log("newData", newData);
         }
     };
 
@@ -63,56 +67,102 @@ const ShoppingCart = () => {
             setData(newData);
         }
     };
-    // Tính tổng đơn hàng
-    const calculateTotal = () => {
-        return data.reduce((acc: number, item: CartItem) => {
-            return acc + Number(item.price) * item.quantity;
-        }, 0);
+    // // Tính tổng đơn hàng
+    // const calculateTotal = () => {
+    //     return data.reduce((acc: number, item: CartItem) => {
+    //         return acc + Number(item.price) * item.quantity;
+    //     }, 0);
+    // };
+    const UpdateData = async (id: number, quantity: number) => {
+        try {
+            const response = await instance.put(`/cart/${id}`, {
+                quantity: quantity,
+            });
+        } catch (error) {
+            NotificationExtension.Fails("Đã xảy ra lỗi khi cập nhật dữ liệu");
+        }
     };
 
+    useEffect(() => {
+        if (data) {
+            data.map((item: CartItem) => {
+                UpdateData(item.id, item.quantity);
+            });
+        }
+    }, []);
+    useEffect(() => {
+        fetchData();
+    }, []);
     console.log("data", data);
+
     return (
         <div className="container mx-auto padding">
-            <h1 className={Style.Title}>
-                Giỏ Hàng
-                <span className={Style.Total_count}>{data.length}</span>
-            </h1>
+            <Flex direction="row">
+                <h1 className={Style.Title}>
+                    Giỏ Hàng
+                    <span className={Style.Total_count}>{data.length}</span>
+                </h1>
+                <Button variant="filled" color="red">
+                    Xóa{" "}
+                </Button>
+            </Flex>
             <div className={Style.Main}>
+                <LoadingOverlay
+                    visible={isLoading}
+                    zIndex={1000}
+                    overlayProps={{ radius: "sm", blur: 2 }}
+                />
+
                 <div className={Style.Left}>
                     {data?.map((item: CartItem) => {
                         return (
-                            <div className="flex border-b-2 border-b-gray-200">
-                                <div className="w-[150px] md:w-[200px]">
-                                    {/* <Image src={ban_an_6_cho2} /> */}
+                            <div
+                                className="flex border-b-2 border-b-gray-200"
+                                style={{
+                                    alignItems: "start",
+                                }}
+                            >
+                                <div>
+                                    <Checkbox
+                                        defaultChecked
+                                        style={{
+                                            marginTop: "10px",
+                                        }}
+                                    />
+                                </div>
+                                <div className="">
                                     <img
                                         src={item.product.image_url}
                                         alt=""
                                         style={{
                                             padding: "10px",
+                                            maxHeight: "100px",
+                                            minHeight: "100px",
+                                            minWidth: "100px",
+                                            maxWidth: "100px",
+                                            objectFit: "cover",
                                         }}
                                     />
                                 </div>
                                 <div className={Style.Content}>
                                     <div className={Style.Content_Title}>
-                                        <h1
+                                        <h4
                                             style={{
-                                                fontSize: "18px",
+                                                fontSize: "16px",
                                                 fontWeight: "500",
                                                 marginTop: "5px",
                                             }}
                                         >
                                             {item.product.name}
-                                        </h1>
-                                        <MdClose
-                                            className={
-                                                Style.Content_Title_Close
-                                            }
-                                        />
+                                        </h4>
                                     </div>
 
-                                    <span className={Style.Content_Price}>
-                                        {formatCurrencyVN(item.price)}
-                                    </span>
+                                    <Flex direction="row">
+                                        <span className={Style.Content_Price}>
+                                            {formatCurrencyVN(item.price)}
+                                        </span>
+                                        <p></p>
+                                    </Flex>
                                     <div className={Style.Content_Button}>
                                         <div
                                             className={
@@ -163,7 +213,7 @@ const ShoppingCart = () => {
                                 Thành tiền
                             </span>
                             <span className={Style.Right_Price_Value}>
-                                {calculateTotal()}
+                                {/* {calculateTotal()} */}
                                 <span className={Style.Right_Price_Value_Unit}>
                                     ₫
                                 </span>

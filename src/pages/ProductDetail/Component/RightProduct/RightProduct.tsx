@@ -34,6 +34,7 @@ type TypeFilteredVariant = {
 const RightProduct = ({ data, id }: Props) => {
     if (!data) return null;
     const [quantity, setQuantity] = useState(1);
+    const [isLoading, setisLoading] = useState(false);
 
     const increaseQuantity = () => {
         if (
@@ -53,18 +54,15 @@ const RightProduct = ({ data, id }: Props) => {
     const [selectedAttributes, setSelectedAttributes] = useState<any>({});
 
     const attributes = ["Chất Liệu", "Màu Sắc", "Kích Thước"];
-    // Lôi những thuộc tính và value thuộc tính có trong sản phẩm
     const uniqueAttributes: AttributeValues = attributes.reduce((acc, attr) => {
         const values = Array.from(
             new Set(
-                data.variants.flatMap(
-                    (variant: any) =>
-                        variant.attributes
-                            .filter(
-                                (attribute: any) =>
-                                    attribute.attribute === attr,
-                            )
-                            .map((attribute: any) => attribute.value), // Giả sử giá trị thuộc tính lưu trong `value`
+                data.variants.flatMap((variant: any) =>
+                    variant.attributes
+                        .filter(
+                            (attribute: any) => attribute.attribute === attr,
+                        )
+                        .map((attribute: any) => attribute.value),
                 ),
             ),
         );
@@ -73,10 +71,6 @@ const RightProduct = ({ data, id }: Props) => {
     }, {} as AttributeValues);
     // xử lý khi chọn thuộc tính
     const handleAttributeSelect = (attribute: string, value: string) => {
-        // setSelectedAttributes({
-        //     ...selectedAttributes,
-        //     [attribute]: value,
-        // });
         setSelectedAttributes((prev: any) => {
             if (prev[attribute] === value) {
                 const updatedAttributes = { ...prev };
@@ -110,6 +104,7 @@ const RightProduct = ({ data, id }: Props) => {
             product_variant_id: filteredVariant?.id,
             quantity: quantity,
         };
+        setisLoading(true);
         try {
             const response = await instance.post("/cart", dataAddToCart);
             if (response.status === 201) {
@@ -117,8 +112,11 @@ const RightProduct = ({ data, id }: Props) => {
             }
         } catch (error) {
             NotificationExtension.Fails("Đã xảy ra lỗi khi thêm vào giỏ hàng");
+        } finally {
+            setisLoading(false);
         }
     };
+
     return (
         <div className="product-details">
             <div className="product-header">
@@ -137,19 +135,11 @@ const RightProduct = ({ data, id }: Props) => {
             </Flex>
             <div className="product-pricing my-[5px] py-[5px] ">
                 <Flex direction="row" align="center" gap="lg">
-                    {/* <Badge
+                    <Badge
                         size="lg"
                         radius="sm"
                         style={{ backgroundColor: "red" }}
-                    >
-                        -35%
-                    </Badge>
-                    <span className="current-price text-[#ef683a] text-[17px] font-bold">
-                        {data?.discount_price}
-                    </span>
-                    <span className="original-price text-[#777a7b] text-[14px] ">
-                        <del>{data?.price}</del>
-                    </span> */}
+                    ></Badge>
                     <span className="current-price text-[#ef683a] text-[17px] font-bold">
                         {formatCurrencyVN(
                             filteredVariant
@@ -344,143 +334,3 @@ const RightProduct = ({ data, id }: Props) => {
 };
 
 export default RightProduct;
-
-// const RightProduct = ({ data: product }: any) => {
-//     const [selectedMaterial, setSelectedMaterial] = useState("");
-//     const [selectedColor, setSelectedColor] = useState("");
-//     console.log("data", product);
-//     // Lấy tất cả giá trị unique của "Chất Liệu" và "Màu Sắc" từ dữ liệu
-//     const materials = Array.from(
-//         new Set(
-//             product.variants.flatMap((variant: any) =>
-//                 variant.attributes
-//                     .filter(
-//                         (attr: any) =>
-//                             attr.attribute_value.attributes.name ===
-//                             "Chất Liệu",
-//                     )
-
-//                     .map((attr: any) => attr.attribute_value.name),
-//             ),
-//         ),
-//     );
-//     console.log("materials", materials);
-//     // Tìm các màu khả dụng dựa trên chất liệu đã chọn
-//     const availableColorsForMaterial = selectedMaterial
-//         ? Array.from(
-//               new Set(
-//                   product.variants
-//                       .filter((variant: any) =>
-//                           variant.attributes.some(
-//                               (attr: any) =>
-//                                   attr.attribute_value.attributes.name ===
-//                                       "Chất Liệu" &&
-//                                   attr.attribute_value.name ===
-//                                       selectedMaterial,
-//                           ),
-//                       )
-//                       .flatMap((variant: any) =>
-//                           variant.attributes
-//                               .filter(
-//                                   (attr: any) =>
-//                                       attr.attribute_value.attributes.name ===
-//                                       "Màu Sắc",
-//                               )
-//                               .map((attr: any) => attr.attribute_value.name),
-//                       ),
-//               ),
-//           )
-//         : [];
-//     console.log("availableColorsForMaterial", availableColorsForMaterial);
-//     const colors = Array.from(
-//         new Set(
-//             product.variants.flatMap((variant: any) =>
-//                 variant.attributes
-//                     .filter(
-//                         (attr: any) =>
-//                             attr.attribute_value.attributes.name === "Màu Sắc",
-//                     )
-//                     .map((attr: any) => attr.attribute_value.name),
-//             ),
-//         ),
-//     );
-//     console.log("colors", colors);
-//     // Lọc variant theo lựa chọn của người dùng
-//     const filteredVariant = product.variants.find((variant: any) => {
-//         const material = variant.attributes.find(
-//             (attr: any) => attr.attribute_value.attributes.name === "Chất Liệu",
-//         )?.attribute_value.name;
-//         const color = variant.attributes.find(
-//             (attr: any) => attr.attribute_value.attributes.name === "Màu Sắc",
-//         )?.attribute_value.name;
-
-//         return material === selectedMaterial && color === selectedColor;
-//     });
-//     console.log("filteredVariant", filteredVariant);
-//     return (
-//         <div>
-//             <div>
-//                 <h3>Chọn thuộc tính</h3>
-//                 <div>
-//                     <label>Chất Liệu: </label>
-//                     <select
-//                         value={selectedMaterial}
-//                         onChange={(e) => {
-//                             setSelectedMaterial(e.target.value);
-//                             setSelectedColor(""); // Reset màu sắc khi thay đổi chất liệu
-//                         }}
-//                     >
-//                         <option value="">Chọn Chất Liệu</option>
-//                         {materials.map((material: any) => (
-//                             <option key={material} value={material}>
-//                                 {material}
-//                             </option>
-//                         ))}
-//                     </select>
-//                 </div>
-
-//                 <div>
-//                     <label>Màu Sắc: </label>
-//                     <select
-//                         value={selectedColor}
-//                         onChange={(e) => setSelectedColor(e.target.value)}
-//                     >
-//                         <option value="">Chọn Màu Sắc</option>
-//                         {colors.map((color: any) => (
-//                             <option
-//                                 key={color}
-//                                 value={color}
-//                                 style={{
-//                                     color: availableColorsForMaterial.includes(
-//                                         color,
-//                                     )
-//                                         ? "red"
-//                                         : "black",
-//                                 }}
-//                                 disabled={
-//                                     !availableColorsForMaterial.includes(color)
-//                                 }
-//                             >
-//                                 {color}
-//                             </option>
-//                         ))}
-//                     </select>
-//                 </div>
-
-//                 {filteredVariant ? (
-//                     <div>
-//                         <h4>Thông tin sản phẩm</h4>
-//                         <p>SKU: {filteredVariant.sku}</p>
-//                         <p>Giá: {filteredVariant.price}</p>
-//                         <p>Giảm giá: {filteredVariant.discount_price}</p>
-//                         <p>Tồn kho: {filteredVariant.stock}</p>
-//                     </div>
-//                 ) : (
-//                     <p>Không tìm thấy sản phẩm với cặp thuộc tính đã chọn.</p>
-//                 )}
-//             </div>
-//         </div>
-//     );
-// };
-
-// export default RightProduct;

@@ -211,17 +211,58 @@ const CommentProductDetail = ({ data, setValueRating }: Props) => {
                                                                     }
                                                                     readOnly
                                                                 />
-                                                                <p
-                                                                    style={{
-                                                                        color: "#333",
-                                                                        fontSize:
-                                                                            "12px",
-                                                                    }}
-                                                                >
-                                                                    {formatDate(
-                                                                        item.created_at,
-                                                                    )}
-                                                                </p>
+                                                                <Flex direction="row">
+                                                                    <p
+                                                                        style={{
+                                                                            color: "#333",
+                                                                            fontSize:
+                                                                                "12px",
+                                                                            marginRight:
+                                                                                "2px",
+                                                                        }}
+                                                                    >
+                                                                        {formatDate(
+                                                                            item.created_at,
+                                                                        )}
+                                                                    </p>
+                                                                    <p
+                                                                        style={{
+                                                                            color: "000",
+                                                                            width: "2px",
+                                                                            height: "100%",
+                                                                        }}
+                                                                    >
+                                                                        |
+                                                                    </p>
+                                                                    <p
+                                                                        style={{
+                                                                            color: "#333",
+                                                                            fontSize:
+                                                                                "12px",
+                                                                        }}
+                                                                    >
+                                                                        Phân
+                                                                        loại
+                                                                        hàng:
+                                                                        {item.variant.map(
+                                                                            (
+                                                                                x: string,
+                                                                            ) => {
+                                                                                return (
+                                                                                    <span
+                                                                                        style={{
+                                                                                            margin: "0 2px",
+                                                                                        }}
+                                                                                    >
+                                                                                        {
+                                                                                            x
+                                                                                        }
+                                                                                    </span>
+                                                                                );
+                                                                            },
+                                                                        )}
+                                                                    </p>
+                                                                </Flex>
                                                             </div>
                                                             <div
                                                                 style={{

@@ -32,7 +32,6 @@ const MiniFavorite = () => {
     } = useQuery<Favorites[]>({
         queryKey: ["favoritesData"],
         queryFn: fetchFavoritesData,
-        refetchInterval: 1000,
     });
 
     const handleRemoveFavorite = async (productId: number) => {
@@ -130,7 +129,6 @@ const Favorite = () => {
     const { data: products } = useQuery<Favorites[]>({
         queryKey: ["favoritesData"],
         queryFn: fetchFavoritesData,
-        refetchInterval: 1000,
     });
 
     const showDrawer = () => {

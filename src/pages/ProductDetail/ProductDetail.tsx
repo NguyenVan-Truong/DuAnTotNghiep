@@ -8,6 +8,7 @@ import ListSimilarProducts from "./Component/ListSimilarProducts/ListSimilarProd
 import ProductImageSlider from "./Component/ProductImageSlider/ProductImageSlider";
 import RightProduct from "./Component/RightProduct/RightProduct";
 import "./ProductDetail.scss";
+import { LoadingOverlay } from "@mantine/core";
 
 const ProductDetail = () => {
     const location = useLocation();
@@ -16,10 +17,12 @@ const ProductDetail = () => {
     const [dataComment, setDataComment] = useState<{}>();
     const [valueRating, setValueRating] = useState(0);
     const [dataCategory, setDataCategory] = useState();
+    const [isLoading, setisLoading] = useState(false);
     const handleLike = () => {
         setIsLiked(!isLiked);
     };
     const fetchData = async () => {
+        setisLoading(true);
         try {
             const response = await instance.get(
                 `/products/chi-tiet-san-pham/${location.state.id}`,
@@ -30,6 +33,8 @@ const ProductDetail = () => {
             }
         } catch (error) {
             NotificationExtension.Fails("Đã xảy ra lỗi khi lấy dữ liệu");
+        } finally {
+            setisLoading(false);
         }
     };
     const fetchDataComment = async () => {
@@ -58,7 +63,7 @@ const ProductDetail = () => {
     }, [valueRating]);
     return (
         <>
-            <div className="product-detail-main ">
+            <div className="product-detail-main">
                 <div className="Breadcrumbs">
                     <div className="container padding">
                         <div className="menu">
@@ -69,7 +74,17 @@ const ProductDetail = () => {
                         </div>
                     </div>
                 </div>
-                <div className="container">
+                <div
+                    className="container"
+                    style={{
+                        position: "relative",
+                    }}
+                >
+                    <LoadingOverlay
+                        visible={isLoading}
+                        zIndex={1000}
+                        overlayProps={{ radius: "sm", blur: 2 }}
+                    />
                     <div className="product-content padding">
                         <div className="imageMain">
                             <ProductImageSlider data={data} />
