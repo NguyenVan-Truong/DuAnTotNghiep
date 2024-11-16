@@ -1,6 +1,8 @@
+import instance from "@/configs/axios";
 import { Button, Flex, Text, TextInput, Title } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { message } from "antd";
+import { useState } from "react";
 import { FaAt, FaChevronLeft } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -15,10 +17,17 @@ const ForgotPassword = () => {
                 /^\S+@\S+$/.test(value) ? null : "Email không hợp lệ",
         },
     });
-
-    const handleSubmit = (values: typeof form.values) => {
-        message.success("Thành công");
-        toast.success("Thành công");
+    const [loading, setLoading] = useState(false);
+    const handleSubmit = async (values: typeof form.values) => {
+        try {
+            setLoading(true); // bật loading
+            await instance.post("auth/forgot-password", values);
+            message.success("Thành công, Mời bạn kiểm tra email");
+        } catch (error) {
+            message.error("Có lỗi xảy ra, vui lòng thử lại");
+        } finally {
+            setLoading(false); // tắt loading khi xong
+        }
     };
 
     return (
@@ -64,6 +73,7 @@ const ForgotPassword = () => {
                     size="md"
                     fullWidth
                     className="!bg-black !border-white !text-white hover:!bg-gray-800"
+                    loading={loading}
                 >
                     Gửi Mật Khẩu
                 </Button>
