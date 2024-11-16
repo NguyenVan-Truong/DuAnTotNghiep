@@ -44,7 +44,6 @@ const ListSimilarProducts = ({ dataCategory, productId }: Props) => {
         ],
     };
     const sliderRef = React.createRef<Slider>();
-    const [visible, { toggle }] = useDisclosure(false);
     const [data, setData] = useState([]);
     const fetchData = async () => {
         try {

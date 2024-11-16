@@ -14,6 +14,7 @@ import "../../ProductDetail.scss";
 import WanrrantyTab from "../WarrantyTab/WanrrantyTab";
 import instance from "@/configs/axios";
 import { formatCurrencyVN } from "@/model/_base/Number";
+import { message } from "antd";
 type Props = {
     data: TypeProductDetail | undefined;
     id: number;
@@ -117,11 +118,11 @@ const RightProduct = ({ data, id, dataAttribute }: Props) => {
         setisLoading(true);
         try {
             const response = await instance.post("/cart", dataAddToCart);
-            if (response.status === 201) {
-                NotificationExtension.Success("Thêm vào giỏ hàng thành công");
+            if (response.status === 201 || response.status === 200) {
+                message.success("Thêm vào giỏ hàng thành công");
             }
         } catch (error) {
-            NotificationExtension.Fails("Đã xảy ra lỗi khi thêm vào giỏ hàng");
+            message.error("Thêm vào giỏ hàng thất bại");
         } finally {
             setisLoading(false);
         }
@@ -337,16 +338,11 @@ const RightProduct = ({ data, id, dataAttribute }: Props) => {
                                     radius="xs"
                                     onClick={() => onhandleAddToCart()}
                                 >
-                                    <LoadingOverlay
-                                        visible={isLoading}
-                                        zIndex={1000}
-                                        overlayProps={{ radius: "sm", blur: 2 }}
-                                        loaderProps={{
-                                            color: "pink",
-                                            type: "bars",
-                                        }}
-                                    />{" "}
-                                    Thêm vào giỏ hàng
+                                    {isLoading ? (
+                                        <Loader />
+                                    ) : (
+                                        "Thêm vào giỏ hàng"
+                                    )}
                                 </Badge>
                             </div>
                             <div style={{ width: "50%" }}>

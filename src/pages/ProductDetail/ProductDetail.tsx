@@ -8,7 +8,8 @@ import ListSimilarProducts from "./Component/ListSimilarProducts/ListSimilarProd
 import ProductImageSlider from "./Component/ProductImageSlider/ProductImageSlider";
 import RightProduct from "./Component/RightProduct/RightProduct";
 import "./ProductDetail.scss";
-import { LoadingOverlay } from "@mantine/core";
+import { Flex, LoadingOverlay } from "@mantine/core";
+import { IconHome } from "@tabler/icons-react";
 
 const ProductDetail = () => {
     const location = useLocation();
@@ -87,28 +88,61 @@ const ProductDetail = () => {
                 className="product-detail-main"
                 style={{
                     position: "relative",
+                    minHeight: "900px",
                 }}
             >
-                <div className="Breadcrumbs">
-                    <div className="container padding">
-                        <div className="menu">
-                            <Link to="#">Trang Chủ</Link> /
-                            <Link to="#">
-                                <span className="">Phòng Khách</span>
-                            </Link>
-                        </div>
-                    </div>
-                </div>
                 <LoadingOverlay
                     visible={isLoading}
                     zIndex={1000}
                     overlayProps={{ radius: "sm", blur: 2 }}
                     style={{
-                        height: "100vh",
-                        width: "100vw",
+                        height: "100%",
+                        width: "100%",
                         margin: "0 auto",
                     }}
                 />
+                <div className="Breadcrumbs">
+                    <div className="container padding">
+                        <Flex
+                            direction={"row"}
+                            align={"center"}
+                            gap={"sm"}
+                            className="menu"
+                        >
+                            <Link to="/">
+                                <IconHome
+                                    stroke={1}
+                                    style={{
+                                        marginTop: "-2px",
+                                    }}
+                                />
+                            </Link>{" "}
+                            <p
+                                style={{
+                                    color: "#666",
+                                }}
+                            >
+                                /
+                            </p>
+                            <Link to="/san-pham">sản phẩm</Link>
+                            <p
+                                style={{
+                                    color: "#666",
+                                }}
+                            >
+                                /
+                            </p>
+                            <p
+                                style={{
+                                    color: "#000",
+                                }}
+                            >
+                                {data?.name}
+                            </p>
+                        </Flex>
+                    </div>
+                </div>
+
                 <div
                     className="container"
                     style={{

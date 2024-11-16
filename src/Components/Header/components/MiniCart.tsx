@@ -99,7 +99,7 @@ const IconCart = () => {
     return (
         <>
             <div className="items-center space-x-4">
-                <Badge count={1} className="relative">
+                <Badge count={dataCart?.length} className="relative">
                     <ShoppingCartOutlined
                         className="text-xl cursor-pointer"
                         onClick={showDrawer}
