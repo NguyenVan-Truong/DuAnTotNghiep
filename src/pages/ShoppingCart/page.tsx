@@ -260,14 +260,31 @@ const ShoppingCart = () => {
                                         </div>
 
                                         <Flex
-                                            direction="row"
+                                            direction="column"
                                             style={{
                                                 margin: "5px 0",
                                             }}
-                                            align={"center"}
                                         >
+                                            <p
+                                                style={{
+                                                    color: "#333",
+                                                    fontSize: "14px",
+                                                    fontWeight: "400",
+                                                    marginTop: "-5px",
+                                                }}
+                                            >
+                                                {item.product_variant.attribute_values
+                                                    .map(
+                                                        (item: any) =>
+                                                            item.name,
+                                                    )
+                                                    .join(", ")}
+                                            </p>
                                             <span
                                                 className={Style.Content_Price}
+                                                style={{
+                                                    marginTop: "2px",
+                                                }}
                                             >
                                                 {formatCurrencyVN(
                                                     item.product_variant
@@ -283,26 +300,11 @@ const ShoppingCart = () => {
                                                     }}
                                                 >
                                                     {formatCurrencyVN(
-                                                        item.price,
+                                                        item.product_variant
+                                                            .price,
                                                     )}
                                                 </del>
                                             </span>
-                                            <p
-                                                style={{
-                                                    color: "#333",
-                                                    fontSize: "14px",
-                                                    fontWeight: "400",
-                                                    marginLeft: "10px",
-                                                    marginTop: "-5px",
-                                                }}
-                                            >
-                                                {item.product_variant.attribute_values
-                                                    .map(
-                                                        (item: any) =>
-                                                            item.name,
-                                                    )
-                                                    .join(", ")}
-                                            </p>
                                         </Flex>
 
                                         <div className={Style.Content_Button}>
