@@ -15,6 +15,8 @@ import WanrrantyTab from "../WarrantyTab/WanrrantyTab";
 import instance from "@/configs/axios";
 import { formatCurrencyVN } from "@/model/_base/Number";
 import { message } from "antd";
+import { useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 type Props = {
     data: TypeProductDetail | undefined;
     id: number;
@@ -43,9 +45,11 @@ type TypeFilteredVariant = {
 
 const RightProduct = ({ data, id, dataAttribute }: Props) => {
     if (!data) return null;
+    const navigate = useNavigate();
     const [quantity, setQuantity] = useState(1);
     const [isLoading, setisLoading] = useState(false);
-
+    const queryClient = useQueryClient();
+    const [isLoadingPaymentButton, setIsLoadingPaymentButton] = useState(false);
     const increaseQuantity = () => {
         if (
             quantity < (filteredVariant ? filteredVariant?.stock : data.stock)
@@ -62,7 +66,6 @@ const RightProduct = ({ data, id, dataAttribute }: Props) => {
     };
     //#region handleAttribute
     const [selectedAttributes, setSelectedAttributes] = useState<any>({});
-    // const attributes = ["Chất Liệu", "Màu Sắc", "Kích Thước"];
     const uniqueAttributes: AttributeValues = dataAttribute.reduce(
         (acc: any, attr: any) => {
             const values = Array.from(
@@ -107,26 +110,86 @@ const RightProduct = ({ data, id, dataAttribute }: Props) => {
             },
         );
     }) as TypeFilteredVariant | undefined;
+    // console.log("filteredVariant", filteredVariant);
+    // console.log("selectedAttributes", selectedAttributes);
+    // console.log("dataAttribute", dataAttribute);
 
     //add Cart
-    const onhandleAddToCart = async () => {
+    const onhandleAddToCart = async (type: string) => {
+        // Kiểm tra nếu selectedAttributes không đủ các thuộc tính cần thiết từ dataAttribute
+        const missingAttributes = dataAttribute.filter(
+            (attribute: string) => !(attribute in selectedAttributes),
+        );
+
+        // Nếu thiếu thuộc tính nào, hiển thị thông báo lỗi và dừng lại
+        if (missingAttributes.length > 0) {
+            message.error(
+                `Vui lòng chọn đầy đủ các thuộc tính: ${missingAttributes.join(", ")}`,
+            );
+            return; // Dừng lại nếu thiếu thuộc tính
+        }
+
+        // Kiểm tra nếu filteredVariant không có giá trị hợp lệ
+        if (!filteredVariant) {
+            message.error("Không tìm thấy biến thể sản phẩm phù hợp.");
+            return; // Dừng lại nếu không tìm thấy variant
+        }
         const dataAddToCart = {
             product_id: id,
             product_variant_id: filteredVariant?.id,
             quantity: quantity,
         };
-        setisLoading(true);
+
         try {
-            const response = await instance.post("/cart", dataAddToCart);
-            if (response.status === 201 || response.status === 200) {
-                message.success("Thêm vào giỏ hàng thành công");
+            if (type === "cart") {
+                setisLoading(true);
+                const response = await instance.post("/cart", dataAddToCart);
+                if (response.status === 201 || response.status === 200) {
+                    message.success("Thêm vào giỏ hàng thành công");
+                    queryClient.invalidateQueries({ queryKey: ["cart"] });
+                }
+            }
+            if (type === "buy") {
+                setIsLoadingPaymentButton(true);
+                const response = await instance.post("/cart", dataAddToCart);
+                if (response.status === 201 || response.status === 200) {
+                    queryClient.invalidateQueries({ queryKey: ["cart"] });
+                    // Lấy lại giỏ hàng để tìm sản phẩm vừa thêm
+                    const cartResponse = await instance.get("/cart");
+                    const cartItems = cartResponse.data.data || [];
+                    // Tìm sản phẩm vừa thêm trong giỏ hàng
+                    const addedProduct = cartItems.find((item: any) => {
+                        return (
+                            Number(item.product_id) ==
+                                Number(dataAddToCart.product_id) &&
+                            Number(item.product_variants_id) ==
+                                Number(dataAddToCart.product_variant_id)
+                        );
+                    });
+                    const TotalPrice =
+                        Number(addedProduct.product_variant.discount_price) *
+                        Number(addedProduct.quantity);
+                    if (addedProduct && TotalPrice) {
+                        navigate("/thanh-toan", {
+                            state: {
+                                listchecked: [addedProduct],
+                                totalPrice: TotalPrice,
+                            },
+                        });
+                    }
+                } else {
+                    message.error("Đã xảy ra lỗi khi mua hàng");
+                }
             }
         } catch (error) {
             message.error("Thêm vào giỏ hàng thất bại");
         } finally {
             setisLoading(false);
+            setIsLoadingPaymentButton(false);
         }
     };
+
+    // Tính phần trăm giảm giá
     const calculateDiscountPercentage = (
         originalPrice: number,
         discountPrice: number,
@@ -336,10 +399,10 @@ const RightProduct = ({ data, id, dataAttribute }: Props) => {
                                         cursor: "pointer",
                                     }}
                                     radius="xs"
-                                    onClick={() => onhandleAddToCart()}
+                                    onClick={() => onhandleAddToCart("cart")}
                                 >
                                     {isLoading ? (
-                                        <Loader />
+                                        <Loader color="blue" size="xs" />
                                     ) : (
                                         "Thêm vào giỏ hàng"
                                     )}
@@ -360,8 +423,13 @@ const RightProduct = ({ data, id, dataAttribute }: Props) => {
                                         padding: "20px ",
                                         cursor: "pointer",
                                     }}
+                                    onClick={() => onhandleAddToCart("buy")}
                                 >
-                                    Mua ngay
+                                    {isLoadingPaymentButton ? (
+                                        <Loader color="#fff" size="xs" />
+                                    ) : (
+                                        "Mua ngay"
+                                    )}{" "}
                                 </Badge>
                             </div>
                         </>

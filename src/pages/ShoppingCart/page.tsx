@@ -107,22 +107,22 @@ const ShoppingCart = () => {
                             ? item.quantity + 1
                             : item.quantity - 1;
                     if (newQuantity < 1) {
-                        const openModal = () =>
-                            modals.openConfirmModal({
-                                title: "Bạn chắc chắn muốn bỏ sản phẩm này?",
-                                children: (
-                                    <Text size="lg">{debouncedName}</Text>
-                                ),
-                                labels: { confirm: "Xác nhận", cancel: "Hủy" },
-                                // onCancel: () => console.log("Hủy bỏ"),
-                                onConfirm: () => {},
-                                classNames: {
-                                    title: "my-custom-modal-title",
-                                    body: "my-custom-modal-body",
-                                    header: "my-custom-modal-header",
-                                },
-                            });
-                        openModal();
+                        // const openModal = () =>
+                        //     modals.openConfirmModal({
+                        //         title: "Bạn chắc chắn muốn bỏ sản phẩm này?",
+                        //         children: (
+                        //             <Text size="lg">{debouncedName}</Text>
+                        //         ),
+                        //         labels: { confirm: "Xác nhận", cancel: "Hủy" },
+                        //         // onCancel: () => console.log("Hủy bỏ"),
+                        //         onConfirm: () => {},
+                        //         classNames: {
+                        //             title: "my-custom-modal-title",
+                        //             body: "my-custom-modal-body",
+                        //             header: "my-custom-modal-header",
+                        //         },
+                        //     });
+                        // openModal();
                         return item;
                     }
                     setDebouncedQuantity(newQuantity);
@@ -177,7 +177,6 @@ const ShoppingCart = () => {
             setTotalPrice(0);
         }
     }, [dataCart, listchecked]);
-    console.log("listchecked", listchecked);
     return (
         <div
             className="container mx-auto padding"
@@ -205,7 +204,7 @@ const ShoppingCart = () => {
                             Xóa{" "}
                         </Button> */}
                     </Flex>
-                    {dataCart?.map((item: CartItem) => {
+                    {dataCartRequest?.map((item: CartItem) => {
                         return (
                             <Flex
                                 direction={"row"}

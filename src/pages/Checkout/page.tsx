@@ -33,6 +33,9 @@ const CheckoutPage = (props: Props) => {
     // thông tin phường xã
     const [valueWard, setValueWard] = useState([]);
     const [checkedValueWard, setCheckedValueWard] = useState();
+    // Phương thức thanh toán
+    const [selectedPaymentMethod, setSelectedPaymentMethod] =
+        useState<Number>(3);
     const form = useForm({
         mode: "uncontrolled",
         initialValues: {
@@ -309,7 +312,18 @@ const CheckoutPage = (props: Props) => {
                                         <Flex className={styles.paymentMethod}>
                                             <div
                                                 className="px-[20px] py-[20px] flex flex-col border border-spacing-1 mr-[10px] "
-                                                style={{ alignItems: "center" }}
+                                                style={{
+                                                    alignItems: "center",
+                                                    cursor: "pointer",
+                                                    border:
+                                                        selectedPaymentMethod ===
+                                                        2
+                                                            ? "1px solid #000"
+                                                            : "1px solid #e5e5e5",
+                                                }}
+                                                onClick={() =>
+                                                    setSelectedPaymentMethod(2)
+                                                }
                                             >
                                                 <IconBuildingBank
                                                     stroke={1.25}
@@ -322,7 +336,18 @@ const CheckoutPage = (props: Props) => {
                                             </div>
                                             <div
                                                 className="px-[20px] py-[20px] flex flex-col border border-spacing-1"
-                                                style={{ alignItems: "center" }}
+                                                style={{
+                                                    alignItems: "center",
+                                                    cursor: "pointer",
+                                                    border:
+                                                        selectedPaymentMethod ===
+                                                        3
+                                                            ? "1px solid #000"
+                                                            : "1px solid #e5e5e5",
+                                                }}
+                                                onClick={() =>
+                                                    setSelectedPaymentMethod(3)
+                                                }
                                             >
                                                 <IconCashBanknote
                                                     stroke={1.25}
@@ -412,7 +437,7 @@ const CheckoutPage = (props: Props) => {
                                                                 </p>
                                                             </Flex>
                                                             <strong>
-                                                                x{item.quantity}
+                                                                {item.quantity}x
                                                             </strong>
                                                             <p
                                                                 className={
@@ -439,32 +464,28 @@ const CheckoutPage = (props: Props) => {
                                             )}
                                         </p>
                                     </div>
-                                    <div className="mt-[5px] border-b-[1px] pb-[10px]">
-                                        <h2
-                                            className={`${styles.sectionTitle} text-[#7b7b7b] font-semibold text-[16px]`}
-                                        >
-                                            VẬN CHUYỂN
-                                        </h2>
-                                        <Radio.Group name="favoriteFramework">
-                                            <Group mt="xs">
-                                                <Radio
-                                                    value="react"
-                                                    label="Liên hệ phí vận chuyển sau"
-                                                />
-                                                <Radio
-                                                    value="svelte"
-                                                    label="Phí vận chuyển"
-                                                />
-                                            </Group>
-                                        </Radio.Group>
+                                    <div className="flex flex-row justify-between mt-[5px]">
+                                        <p>Vận chuyển</p>
+                                        <p>0</p>
+                                    </div>
+                                    <div className="flex flex-row justify-between mt-[5px]">
+                                        <p>Giảm giá</p>
+                                        <p>0</p>
                                     </div>
                                     <div className="flex flex-row justify-between mt-[5px]">
                                         <h2
-                                            className={`${styles.sectionTitle} text-[#7b7b7b] font-semibold`}
+                                            className={`${styles.sectionTitle} text-[#000000] font-semibold`}
                                         >
                                             TỔNG CỘNG
                                         </h2>
-                                        <p>23,630,000đ</p>
+                                        <p
+                                            style={{
+                                                color: "red",
+                                            }}
+                                        >
+                                            {" "}
+                                            0
+                                        </p>
                                     </div>
 
                                     <div className="my-[7px] py-3">
@@ -476,7 +497,7 @@ const CheckoutPage = (props: Props) => {
                                         <Checkbox
                                             defaultChecked
                                             label="Tôi đã đọc và đồng ý điều kiện đổi trả hàng, giao hàng, chính sách bảo mật, điều khoản dịch vụ mua hàng online **"
-                                            color="rgba(0, 0, 0, 1)"
+                                            color="rgba(71, 71, 71, 1)"
                                             className={styles.terms}
                                         />
                                         <div
@@ -484,11 +505,11 @@ const CheckoutPage = (props: Props) => {
                                         >
                                             <Button
                                                 variant="filled"
-                                                color="rgba(0, 0, 0, 1)"
+                                                color="blue"
                                                 type="submit"
                                                 style={{ width: "100%" }}
                                             >
-                                                ĐẶT MUA
+                                                HOÀN TẤT ĐƠN HÀNG
                                             </Button>
                                         </div>
                                     </div>
