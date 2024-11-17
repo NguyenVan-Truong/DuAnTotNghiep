@@ -36,6 +36,7 @@ export interface ProductVariant {
     created_at: string;
     updated_at: string;
     discount_price: string;
+    attribute_values: [];
 }
 
 export interface CartItem {
