@@ -1,27 +1,49 @@
 import { CartItem } from "@/model/Cart";
 import { formatCurrencyVN } from "@/model/_base/Number";
-import { Button, Checkbox, Flex, Group, Radio, ScrollArea, Textarea, TextInput } from "@mantine/core";
+import {
+    Button,
+    Checkbox,
+    Flex,
+    Group,
+    Radio,
+    ScrollArea,
+    Select,
+    Textarea,
+    TextInput,
+} from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { IconBuildingBank, IconCashBanknote } from "@tabler/icons-react";
 import { useLocation } from "react-router-dom";
 import DescriptionShipping from "./DescriptionShipping";
 import styles from "./checkoutPage.module.scss"; // Import CSS module
+import instance from "@/configs/axios";
+import { useState } from "react";
+import { message } from "antd";
 
 type Props = {};
 
 const CheckoutPage = (props: Props) => {
     const location = useLocation();
+    // thông tin tỉnh thành phố
+    const [valueCity, setValueCity] = useState([]);
+    const [checkedValueCity, setCheckedValueCity] = useState();
+    // thông tin quận huyện
+    const [valueDistrict, setValueDistrict] = useState([]);
+    const [checkedValueDistrict, setCheckedValueDistrict] = useState();
+    // thông tin phường xã
+    const [valueWard, setValueWard] = useState([]);
+    const [checkedValueWard, setCheckedValueWard] = useState();
     const form = useForm({
         mode: "uncontrolled",
         initialValues: {
             email: "",
             name: "",
             sđt: "",
-            city: "",
-            district: "",
+            city: null,
+            district: null,
+            ward: null,
             address: "",
             description: "",
-            termsOfService: false,
         },
 
         validate: {
@@ -29,7 +51,81 @@ const CheckoutPage = (props: Props) => {
                 /^\S+@\S+$/.test(value) ? null : "Invalid email",
         },
     });
+    // CHọn tỉnh
+    const onhandleSelectCity = async () => {
+        try {
+            const response = await instance.get("/getAllProvinces");
+            if (response && response.status === 200) {
+                // setValueCity(response.data.content);
+                const transformedData = response.data.content.map(
+                    (item: any) => ({
+                        value: item.code,
+                        label: item.name,
+                    }),
+                );
+                setValueCity(transformedData);
+            }
+        } catch (error) {
+            message.error("Lỗi không thể lấy dữ liệu");
+        }
+    };
+    // Chọn quận huyện
+    const onhandleSelectDistrict = async () => {
+        try {
+            const response = await instance.get(
+                `/getLocaion?target=district&data[province_id]=${checkedValueCity}`,
+            );
+            if (response && response.status === 200) {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(
+                    response.data.content,
+                    "text/html",
+                );
 
+                // Lấy tất cả các phần tử <option>
+                const options = Array.from(doc.querySelectorAll("option"));
+                // Chuyển đổi thành mảng các đối tượng với code và name
+                const transformedData = options.map((option) => ({
+                    value: option.value,
+                    label: option.text.trim(),
+                }));
+                setValueDistrict(transformedData as []);
+            }
+        } catch (error) {
+            message.error("Lỗi không thể lấy dữ liệu");
+        }
+    };
+    // Chọn phường xã
+    const onhandleSelectWart = async () => {
+        try {
+            const response = await instance.get(
+                `/getLocaion?target=ward&data[district_id]=${checkedValueDistrict}`,
+            );
+            if (response && response.status === 200) {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(
+                    response.data.content,
+                    "text/html",
+                );
+
+                // Lấy tất cả các phần tử <option>
+                const options = Array.from(doc.querySelectorAll("option"));
+                // Chuyển đổi thành mảng các đối tượng với code và name
+                const transformedData = options.map((option) => ({
+                    value: option.value,
+                    label: option.text.trim(),
+                }));
+                setValueWard(transformedData as []);
+            }
+        } catch (error) {
+            message.error("Lỗi không thể lấy dữ liệu");
+        }
+    };
+
+    // Xử lý submit form
+    const onhandleSubmit = async (values: any) => {
+        console.log("values", values);
+    };
     return (
         <div className="padding my-[40px]">
             <div className="container">
@@ -37,7 +133,7 @@ const CheckoutPage = (props: Props) => {
                     <div className={styles.container}>
                         <form
                             onSubmit={form.onSubmit((values) =>
-                                console.log(values),
+                                onhandleSubmit(values),
                             )}
                         >
                             <Flex
@@ -51,34 +147,6 @@ const CheckoutPage = (props: Props) => {
                                         >
                                             ĐỊA CHỈ GIAO HÀNG
                                         </h2>
-
-                                        {/* <ActionIcon
-                                            size="input-sm"
-                                            variant="default"
-                                            aria-label="ActionIcon the same size as inputs"
-                                            className="my-[10px]"
-                                        >
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                width="24"
-                                                height="24"
-                                                viewBox="0 0 24 24"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                strokeWidth="2"
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                className="icon icon-tabler icons-tabler-outline icon-tabler-plus"
-                                            >
-                                                <path
-                                                    stroke="none"
-                                                    d="M0 0h24v24H0z"
-                                                    fill="none"
-                                                />
-                                                <path d="M12 5l0 14" />
-                                                <path d="M5 12l14 0" />
-                                            </svg>
-                                        </ActionIcon> */}
                                     </div>
                                     <div
                                         className={`${styles.inputGroup} flex w-[100%] justify-between gap-3 mb-[10px] `}
@@ -108,30 +176,86 @@ const CheckoutPage = (props: Props) => {
                                             {...form.getInputProps("name")}
                                             className="w-[50%]"
                                         />
-                                        <TextInput
+                                        <Select
                                             withAsterisk
                                             label="Tỉnh/Thành phố"
+                                            data={valueCity}
                                             placeholder="Nhập tỉnh/thành phố"
-                                            {...form.getInputProps("city")}
                                             className="w-[50%]"
+                                            onClick={() => {
+                                                if (valueCity.length === 0) {
+                                                    onhandleSelectCity();
+                                                }
+                                            }}
+                                            onChange={(value: any) => {
+                                                form.setFieldValue(
+                                                    "city",
+                                                    value,
+                                                );
+                                                setCheckedValueCity(value);
+                                            }}
                                         />
                                     </div>
                                     <div
                                         className={`${styles.inputGroup} flex w-[100%] justify-between gap-3 mb-[10px] `}
                                     >
-                                        <TextInput
+                                        <Select
                                             withAsterisk
                                             label="Quận / Huyện"
                                             placeholder="Nhập quận/huyện"
-                                            {...form.getInputProps("district")}
+                                            data={valueDistrict}
                                             className="w-[50%]"
+                                            onClick={() => {
+                                                if (
+                                                    valueCity.length === 0 ||
+                                                    !checkedValueCity
+                                                ) {
+                                                    return message.error(
+                                                        "Vui lòng chọn tỉnh/thành phố trước",
+                                                    );
+                                                }
+                                                if (
+                                                    valueDistrict.length === 0
+                                                ) {
+                                                    onhandleSelectDistrict();
+                                                }
+                                            }}
+                                            onChange={(value: any) => {
+                                                form.setFieldValue(
+                                                    "district",
+                                                    value,
+                                                );
+                                                setCheckedValueDistrict(value);
+                                            }}
                                         />
-                                        <TextInput
+                                        <Select
                                             withAsterisk
                                             label="Phường/Xã"
                                             placeholder="Nhập phường/xã"
-                                            {...form.getInputProps("city")}
+                                            data={valueWard}
+                                            {...form.getInputProps("ward")}
                                             className="w-[50%]"
+                                            onClick={() => {
+                                                if (
+                                                    valueDistrict.length ===
+                                                        0 ||
+                                                    !checkedValueDistrict
+                                                ) {
+                                                    return message.error(
+                                                        "Vui lòng chọn quận huyện trước",
+                                                    );
+                                                }
+                                                if (valueWard.length === 0) {
+                                                    onhandleSelectWart();
+                                                }
+                                            }}
+                                            onChange={(value: any) => {
+                                                form.setFieldValue(
+                                                    "ward",
+                                                    value,
+                                                );
+                                                setCheckedValueWard(value);
+                                            }}
                                         />
                                     </div>
                                     <div className={styles.inputGroup}>
@@ -236,6 +360,7 @@ const CheckoutPage = (props: Props) => {
                                                     return (
                                                         <div
                                                             className={`${styles.productDetails} flex flex-row justify-between gap-3 items-center my-[9px]`}
+                                                            key={item.id}
                                                         >
                                                             <div
                                                                 className={`${styles.imgwp} `}
