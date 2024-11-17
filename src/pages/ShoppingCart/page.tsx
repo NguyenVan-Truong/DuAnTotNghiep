@@ -8,18 +8,24 @@ import {
     Checkbox,
     Flex,
     Grid,
-    GridCol,
     LoadingOverlay,
     Text,
 } from "@mantine/core";
 import { useDebouncedState } from "@mantine/hooks";
 import { modals } from "@mantine/modals";
+import {
+    IconAB2,
+    IconAlertOctagon,
+    IconPhoneCall,
+    IconShoppingCart,
+    IconX,
+} from "@tabler/icons-react";
 import { message } from "antd";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Style from "./ShoppingCart.module.scss";
-import { IconShoppingCart } from "@tabler/icons-react";
 const ShoppingCart = () => {
+    const navigate = useNavigate();
     const [data, setData] = useState<any>([]);
     const [debouncedQuantity, setDebouncedQuantity] = useDebouncedState<
         number | null
@@ -29,6 +35,8 @@ const ShoppingCart = () => {
     const [isLoading, setisLoading] = useState(false);
     //   tỔNG TIỀN
     const [totalPrice, setTotalPrice] = useState<number>(0);
+    // click select checkbox
+    const [listchecked, setListChecked] = useState<[]>([]);
     const fetchData = async () => {
         setisLoading(true);
         try {
@@ -82,17 +90,37 @@ const ShoppingCart = () => {
             }),
         );
     };
-
+    // click checkbox
+    const onhandleChecked = (item: CartItem) => {
+        setListChecked((prevList: any) => {
+            // Kiểm tra nếu item.id đã tồn tại trong listchecked
+            if (prevList.some((prev: CartItem) => prev.id === item.id)) {
+                // Loại bỏ item khỏi danh sách
+                return prevList.filter((prev: CartItem) => prev.id !== item.id);
+            } else {
+                // Thêm item vào danh sách
+                return [...prevList, item];
+            }
+        });
+    };
     // Xóa sản phẩm
-    const handleDeleteProduct = async (id: number) => {
-        console.log("id", id);
+    const handleDeleteProduct = async (ids: number) => {
+        console.log("id", ids);
         try {
-            const response = await instance.delete(`/cart/${id}`);
+            const response = await instance.delete(`/delete-cart?ids=${ids}`);
             console.log("response", response);
         } catch (error) {
             message.error("Đã xảy ra lỗi khi xóa sản phẩm");
         }
     };
+
+    //chuyển trang Thanh toán
+    const handlePayment = () => {
+        // navigate("/warranty/detail-borrowed-goods", {
+        //     state: { id, status },
+        //   });
+    };
+
     useEffect(() => {
         if (debouncedQuantity !== null && debouncedQuantity >= 1) {
             const updateQuantity = async () => {
@@ -110,22 +138,31 @@ const ShoppingCart = () => {
     useEffect(() => {
         fetchData();
     }, []);
-    // Tính tổng số lượng và tổng tiền
     useEffect(() => {
-        if (data?.length > 0) {
+        if (data?.length > 0 && listchecked.length > 0) {
             const total = data.reduce(
                 (acc: any, item: CartItem) => {
-                    acc.totalQuantity += item.quantity;
-                    acc.totalPrice +=
-                        Number(item.product_variant.discount_price) *
-                        Number(item.quantity);
+                    // Kiểm tra xem sản phẩm có được chọn không
+                    if (
+                        listchecked.some(
+                            (checkedItem: CartItem) =>
+                                checkedItem.id === item.id,
+                        )
+                    ) {
+                        acc.totalQuantity += item.quantity;
+                        acc.totalPrice +=
+                            Number(item.product_variant.discount_price) *
+                            Number(item.quantity);
+                    }
                     return acc;
                 },
                 { totalQuantity: 0, totalPrice: 0 },
             );
             setTotalPrice(total.totalPrice);
+        } else {
+            setTotalPrice(0);
         }
-    }, [data]);
+    }, [data, listchecked]); // Thêm listchecked vào dependency array
 
     return (
         <div
@@ -150,9 +187,9 @@ const ShoppingCart = () => {
                                 {data.length}
                             </span>
                         </h1>
-                        <Button variant="filled" color="red" disabled>
+                        {/* <Button variant="filled" color="red" disabled>
                             Xóa{" "}
-                        </Button>
+                        </Button> */}
                     </Flex>
                     {data?.map((item: CartItem) => {
                         return (
@@ -173,10 +210,12 @@ const ShoppingCart = () => {
                                         }}
                                     >
                                         <Checkbox
-                                            defaultChecked
                                             style={{
                                                 marginTop: "10px",
                                             }}
+                                            onClick={() =>
+                                                onhandleChecked(item)
+                                            }
                                         />
                                     </div>
                                     <div className="">
@@ -220,6 +259,19 @@ const ShoppingCart = () => {
                                                     item.product_variant
                                                         .discount_price,
                                                 )}
+
+                                                <del
+                                                    style={{
+                                                        margin: "0 7px",
+                                                        color: "#999",
+                                                        fontSize: "14px",
+                                                        fontWeight: "400",
+                                                    }}
+                                                >
+                                                    {formatCurrencyVN(
+                                                        item.price,
+                                                    )}
+                                                </del>
                                             </span>
                                             <p
                                                 style={{
@@ -230,7 +282,12 @@ const ShoppingCart = () => {
                                                     marginTop: "-5px",
                                                 }}
                                             >
-                                                Thuộc tính
+                                                {item.product_variant.attribute_values
+                                                    .map(
+                                                        (item: any) =>
+                                                            item.name,
+                                                    )
+                                                    .join(", ")}
                                             </p>
                                         </Flex>
 
@@ -274,12 +331,27 @@ const ShoppingCart = () => {
                                         </div>
                                     </div>
                                 </div>
-                                <div
+                                <Flex
+                                    direction={"column"}
+                                    justify={"space-between"}
+                                    align={"end"}
                                     style={{
-                                        display: "flex",
-                                        flexDirection: "column-reverse",
+                                        padding: "6px 0",
                                     }}
                                 >
+                                    {/* Xóa sp */}
+                                    <div
+                                        style={{
+                                            cursor: "pointer",
+                                        }}
+                                    >
+                                        <IconX
+                                            stroke={2}
+                                            onClick={() => {
+                                                handleDeleteProduct(item.id);
+                                            }}
+                                        />
+                                    </div>
                                     {/* tổng tiền của 1 sản phẩm */}
                                     <p
                                         style={{
@@ -295,7 +367,7 @@ const ShoppingCart = () => {
                                             ),
                                         )}
                                     </p>
-                                </div>
+                                </Flex>
                             </Flex>
                         );
                     })}
@@ -350,6 +422,7 @@ const ShoppingCart = () => {
                                         width: "100%",
                                         fontSize: "16px",
                                     }}
+                                    onClick={() => handlePayment()}
                                 >
                                     THANH TOÁN
                                 </Button>
@@ -374,60 +447,193 @@ const ShoppingCart = () => {
             <div
                 style={{
                     position: "relative",
+                    marginTop: "100px",
                 }}
             >
                 <Grid>
                     <Grid.Col span={{ base: 6, md: 4, lg: 3 }}>
-                        <Flex direction="column" justify={"center"}>
-                            <div>
-                                <IconShoppingCart stroke={2} />
-                            </div>
-                            <div>
-                                <p>Giao hàng và lắp đặt</p>
-                            </div>
-                            <div>
-                                <p>Miễn phí</p>
-                            </div>
-                        </Flex>
+                        <Box
+                            c="blue.6"
+                            bg="#fff"
+                            my="xl"
+                            style={{
+                                borderRadius: "10px",
+                                boxShadow: "0 0 10px 0 rgba(0,0,0,.1)",
+                                padding: "20px",
+                            }}
+                        >
+                            <Flex
+                                direction="column"
+                                justify={"center"}
+                                align={"center"}
+                                style={{
+                                    color: "rgb(85 85 85)",
+                                }}
+                                gap={4}
+                            >
+                                <div>
+                                    <IconShoppingCart
+                                        stroke={2}
+                                        style={{
+                                            height: "48px",
+                                            width: "48px",
+                                            color: "rgb(85 85 85)",
+                                        }}
+                                    />
+                                </div>
+                                <div>
+                                    <p
+                                        style={{
+                                            fontSize: "16px",
+                                            fontWeight: 400,
+                                        }}
+                                    >
+                                        Giao hàng và lắp đặt
+                                    </p>
+                                </div>
+                                <div>
+                                    <p>Miễn phí</p>
+                                </div>
+                            </Flex>
+                        </Box>
                     </Grid.Col>
                     <Grid.Col span={{ base: 6, md: 4, lg: 3 }}>
-                        <Flex direction="column" justify={"center"}>
-                            <div>
-                                <IconShoppingCart stroke={2} />
-                            </div>
-                            <div>
-                                <p>Giao hàng và lắp đặt</p>
-                            </div>
-                            <div>
-                                <p>Miễn phí</p>
-                            </div>
-                        </Flex>
-                    </Grid.Col>
+                        <Box
+                            c="blue.6"
+                            bg="#fff"
+                            my="xl"
+                            style={{
+                                borderRadius: "10px",
+                                boxShadow: "0 0 10px 0 rgba(0,0,0,.1)",
+                                padding: "20px",
+                            }}
+                        >
+                            <Flex
+                                direction="column"
+                                justify={"center"}
+                                align={"center"}
+                                style={{
+                                    color: "rgb(85 85 85)",
+                                }}
+                                gap={4}
+                            >
+                                <div>
+                                    <IconAB2
+                                        stroke={2}
+                                        style={{
+                                            height: "48px",
+                                            width: "48px",
+                                            color: "rgb(85 85 85)",
+                                        }}
+                                    />
+                                </div>
+                                <div>
+                                    <p
+                                        style={{
+                                            fontSize: "16px",
+                                            fontWeight: 400,
+                                        }}
+                                    >
+                                        Đổi trả 1-1
+                                    </p>
+                                </div>
+                                <div>
+                                    <p>Miễn phí</p>
+                                </div>
+                            </Flex>
+                        </Box>
+                    </Grid.Col>{" "}
                     <Grid.Col span={{ base: 6, md: 4, lg: 3 }}>
-                        <Flex direction="column" justify={"center"}>
-                            <div>
-                                <IconShoppingCart stroke={2} />
-                            </div>
-                            <div>
-                                <p>Giao hàng và lắp đặt</p>
-                            </div>
-                            <div>
-                                <p>Miễn phí</p>
-                            </div>
-                        </Flex>
-                    </Grid.Col>
+                        <Box
+                            c="blue.6"
+                            bg="#fff"
+                            my="xl"
+                            style={{
+                                borderRadius: "10px",
+                                boxShadow: "0 0 10px 0 rgba(0,0,0,.1)",
+                                padding: "20px",
+                            }}
+                        >
+                            <Flex
+                                direction="column"
+                                justify={"center"}
+                                align={"center"}
+                                style={{
+                                    color: "rgb(85 85 85)",
+                                }}
+                                gap={4}
+                            >
+                                <div>
+                                    <IconAlertOctagon
+                                        stroke={2}
+                                        style={{
+                                            height: "48px",
+                                            width: "48px",
+                                            color: "rgb(85 85 85)",
+                                        }}
+                                    />
+                                </div>
+                                <div>
+                                    <p
+                                        style={{
+                                            fontSize: "16px",
+                                            fontWeight: 400,
+                                        }}
+                                    >
+                                        Bảo hành 2 năm
+                                    </p>
+                                </div>
+                                <div>
+                                    <p>Miễn phí</p>
+                                </div>
+                            </Flex>
+                        </Box>
+                    </Grid.Col>{" "}
                     <Grid.Col span={{ base: 6, md: 4, lg: 3 }}>
-                        <Flex direction="column" justify={"center"}>
-                            <div>
-                                <IconShoppingCart stroke={2} />
-                            </div>
-                            <div>
-                                <p>Giao hàng và lắp đặt</p>
-                            </div>
-                            <div>
-                                <p>Miễn phí</p>
-                            </div>
-                        </Flex>
+                        <Box
+                            c="blue.6"
+                            bg="#fff"
+                            my="xl"
+                            style={{
+                                borderRadius: "10px",
+                                boxShadow: "0 0 10px 0 rgba(0,0,0,.1)",
+                                padding: "20px",
+                            }}
+                        >
+                            <Flex
+                                direction="column"
+                                justify={"center"}
+                                align={"center"}
+                                style={{
+                                    color: "rgb(85 85 85)",
+                                }}
+                                gap={4}
+                            >
+                                <div>
+                                    <IconPhoneCall
+                                        stroke={2}
+                                        style={{
+                                            height: "48px",
+                                            width: "48px",
+                                            color: "rgb(85 85 85)",
+                                        }}
+                                    />
+                                </div>
+                                <div>
+                                    <p
+                                        style={{
+                                            fontSize: "16px",
+                                            fontWeight: 400,
+                                        }}
+                                    >
+                                        Tư vấn miễn phí
+                                    </p>
+                                </div>
+                                <div>
+                                    <p>Miễn phí</p>
+                                </div>
+                            </Flex>
+                        </Box>
                     </Grid.Col>
                 </Grid>
             </div>
