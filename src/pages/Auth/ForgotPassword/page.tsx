@@ -4,7 +4,7 @@ import { useForm } from "@mantine/form";
 import { message } from "antd";
 import { useState } from "react";
 import { FaAt, FaChevronLeft } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 const ForgotPassword = () => {
@@ -17,12 +17,14 @@ const ForgotPassword = () => {
                 /^\S+@\S+$/.test(value) ? null : "Email không hợp lệ",
         },
     });
+    const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const handleSubmit = async (values: typeof form.values) => {
         try {
             setLoading(true); // bật loading
             await instance.post("auth/forgot-password", values);
             message.success("Thành công, Mời bạn kiểm tra email");
+            navigate("/xac-thuc/dang-nhap");
         } catch (error) {
             message.error("Có lỗi xảy ra, vui lòng thử lại");
         } finally {

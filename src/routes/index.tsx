@@ -18,7 +18,13 @@ import WishList from "@/pages/ProfileUser/components/Wishlist/WishList";
 import ProfileUser from "@/pages/ProfileUser/pages";
 import ShoppingCart from "@/pages/ShoppingCart/page";
 import { useEffect } from "react";
-import { Navigate, Route, Routes, useLocation } from "react-router-dom";
+import {
+    Navigate,
+    Route,
+    Routes,
+    useLocation,
+    useNavigate,
+} from "react-router-dom";
 
 const Index = () => {
     const { pathname } = useLocation();
@@ -40,7 +46,16 @@ const Index = () => {
                         path="chi-tiet-san-pham/:slug"
                         element={<ProductDetail />}
                     />
-                    <Route path="/nguoi-dung" element={<ProfileUser />}>
+                    <Route
+                        path="nguoi-dung"
+                        element={
+                            localStorage.getItem("token") ? (
+                                <ProfileUser />
+                            ) : (
+                                <Route path="/xac-thuc" element={<Auth />} />
+                            )
+                        }
+                    >
                         <Route
                             index
                             element={

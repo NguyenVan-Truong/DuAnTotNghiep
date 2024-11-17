@@ -18,6 +18,8 @@ import Favorite from "./components/FavoriteCollection";
 import IconMenu from "./components/Menu";
 import CartIcon from "./components/MiniCart";
 import "./Header.scss";
+import { Category } from "@/model/Category";
+import MenuHeader from "./components/MenuHeader";
 
 const Header = () => {
     const [visible, setVisible] = useState(false);
@@ -69,7 +71,7 @@ const Header = () => {
 
     const fetchFavoritesData = async () => {
         const response = await instance.get("/favorites");
-        return response.data;
+        return response?.data;
     };
     const { data } = useQuery({
         queryKey: ["favoritesData"],
@@ -77,7 +79,6 @@ const Header = () => {
         staleTime: 0,
         enabled: true,
     });
-
     return (
         <>
             {/* Header1 */}
@@ -313,7 +314,7 @@ const Header = () => {
                         </div>
                     </div>
                     <div className="flex-1 w-full block xl:w-[180px]">
-                        <ul className="hidden lg:flex justify-center  space-x-3 xl:space-x-5 uppercase font-normal text-[14px] !md:text-sm !lg:text-[12px]">
+                        <ul className="hidden lg:flex justify-center space-x-3 xl:space-x-5 text-[14px] !md:text-sm !lg:text-[12px]">
                             <li className="flex items-center space-x-5 !lg:space-x-2 whitespace-nowrap">
                                 <NavLink
                                     to="/"
@@ -322,59 +323,6 @@ const Header = () => {
                                     }
                                 >
                                     Trang chủ
-                                </NavLink>
-                            </li>
-                            <li className="flex items-center space-x-5 !lg:space-x-2 whitespace-nowrap">
-                                <Dropdown
-                                    menu={{
-                                        items: [
-                                            {
-                                                key: "1",
-                                                label: (
-                                                    <NavLink to="/shop/sub1">
-                                                        Subitem 1
-                                                    </NavLink>
-                                                ),
-                                            },
-                                            {
-                                                key: "2",
-                                                label: (
-                                                    <NavLink to="/shop/sub2">
-                                                        Subitem 2
-                                                    </NavLink>
-                                                ),
-                                            },
-                                            {
-                                                key: "3",
-                                                label: (
-                                                    <NavLink to="/shop/sub3">
-                                                        Subitem 3
-                                                    </NavLink>
-                                                ),
-                                            },
-                                        ],
-                                    }}
-                                    placement="bottomLeft"
-                                    arrow
-                                >
-                                    <NavLink
-                                        to="/san-pham"
-                                        className={({ isActive }) =>
-                                            `relative ${isActive ? "border-b-4 border-red-500" : "hover:border-b-2 hover:border-red-500"}`
-                                        }
-                                    >
-                                        Sản phẩm
-                                    </NavLink>
-                                </Dropdown>
-                            </li>
-                            <li className="flex items-center space-x-5 !lg:space-x-2 whitespace-nowrap">
-                                <NavLink
-                                    to="/lien-he"
-                                    className={({ isActive }) =>
-                                        `relative ${isActive ? "border-b-4 border-red-500" : "hover:border-b-2 hover:text-orange-300"}`
-                                    }
-                                >
-                                    Liên Hệ
                                 </NavLink>
                             </li>
                             <li className="flex items-center space-x-5 !lg:space-x-2 whitespace-nowrap">
@@ -387,26 +335,20 @@ const Header = () => {
                                     Giới thiệu
                                 </NavLink>
                             </li>
-                            {/* <li className="flex items-center space-x-5 !lg:space-x-2 whitespace-nowrap">
+                            <li className="flex items-center space-x-5 !lg:space-x-2 whitespace-nowrap">
+                                {/* MenuHeader sẽ hiển thị danh mục cha-con */}
+                                <MenuHeader />
+                            </li>
+                            <li className="flex items-center space-x-5 !lg:space-x-2 whitespace-nowrap">
                                 <NavLink
-                                    to="/123"
+                                    to="/lien-he"
                                     className={({ isActive }) =>
                                         `relative ${isActive ? "border-b-4 border-red-500" : "hover:border-b-2 hover:text-orange-300"}`
                                     }
                                 >
-                                    Góc cảm hứng
+                                    Liên Hệ
                                 </NavLink>
-                            </li> */}
-                            {/* <li className="flex items-center space-x-5 !lg:space-x-2 whitespace-nowrap">
-                                <NavLink
-                                    to="/123"
-                                    className={({ isActive }) =>
-                                        `relative ${isActive ? "border-b-4 border-red-500" : "hover:border-b-2 hover:text-orange-300"}`
-                                    }
-                                >
-                                    Cửa hàng 360 độ
-                                </NavLink>
-                            </li> */}
+                            </li>
                         </ul>
                     </div>
 
