@@ -51,4 +51,5 @@ export interface CartItem {
     price: string;
     product: Product;
     product_variant: ProductVariant;
+    image_url: string;
 }
