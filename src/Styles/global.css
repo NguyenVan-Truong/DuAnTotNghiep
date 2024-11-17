@@ -2,9 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-
-
-
 .container {
     max-width: 1290px !important;
     margin: 0 auto;
@@ -30,4 +27,15 @@ body {
         padding-left: 15px !important;
         padding-right: 15px !important;
     }
+}
+/* css modal */
+.my-custom-modal-header {
+    background-color: #228be6;
+}
+.my-custom-modal-title {
+    font-size: 16px;
+    color: #ffff;
+}
+.my-custom-modal-body {
+    padding: 15px;
 }

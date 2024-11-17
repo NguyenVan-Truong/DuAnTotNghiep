@@ -1,15 +1,24 @@
 import { NotificationExtension } from "@/extension/NotificationExtension";
 import { toTitleCase } from "@/model/_base/Text";
-import { Badge, Button, Flex, Rating } from "@mantine/core";
+import {
+    Badge,
+    Button,
+    Flex,
+    Loader,
+    LoadingOverlay,
+    Rating,
+} from "@mantine/core";
 import { IconCheck, IconMinus, IconPlus } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import "../../ProductDetail.scss";
 import WanrrantyTab from "../WarrantyTab/WanrrantyTab";
 import instance from "@/configs/axios";
 import { formatCurrencyVN } from "@/model/_base/Number";
+import { message } from "antd";
 type Props = {
     data: TypeProductDetail | undefined;
     id: number;
+    dataAttribute: any;
 };
 type AttributeValues = {
     [key: string]: string[] | any;
@@ -31,9 +40,11 @@ type TypeFilteredVariant = {
     updated_at: string;
     attributes: Attribute[];
 };
-const RightProduct = ({ data, id }: Props) => {
+
+const RightProduct = ({ data, id, dataAttribute }: Props) => {
     if (!data) return null;
     const [quantity, setQuantity] = useState(1);
+    const [isLoading, setisLoading] = useState(false);
 
     const increaseQuantity = () => {
         if (
@@ -51,32 +62,28 @@ const RightProduct = ({ data, id }: Props) => {
     };
     //#region handleAttribute
     const [selectedAttributes, setSelectedAttributes] = useState<any>({});
-
-    const attributes = ["Chất Liệu", "Màu Sắc", "Kích Thước"];
-    // Lôi những thuộc tính và value thuộc tính có trong sản phẩm
-    const uniqueAttributes: AttributeValues = attributes.reduce((acc, attr) => {
-        const values = Array.from(
-            new Set(
-                data.variants.flatMap(
-                    (variant: any) =>
+    // const attributes = ["Chất Liệu", "Màu Sắc", "Kích Thước"];
+    const uniqueAttributes: AttributeValues = dataAttribute.reduce(
+        (acc: any, attr: any) => {
+            const values = Array.from(
+                new Set(
+                    data.variants.flatMap((variant: any) =>
                         variant.attributes
                             .filter(
                                 (attribute: any) =>
                                     attribute.attribute === attr,
                             )
-                            .map((attribute: any) => attribute.value), // Giả sử giá trị thuộc tính lưu trong `value`
+                            .map((attribute: any) => attribute.value),
+                    ),
                 ),
-            ),
-        );
-        acc[attr] = values;
-        return acc;
-    }, {} as AttributeValues);
+            );
+            acc[attr] = values;
+            return acc;
+        },
+        {} as AttributeValues,
+    );
     // xử lý khi chọn thuộc tính
     const handleAttributeSelect = (attribute: string, value: string) => {
-        // setSelectedAttributes({
-        //     ...selectedAttributes,
-        //     [attribute]: value,
-        // });
         setSelectedAttributes((prev: any) => {
             if (prev[attribute] === value) {
                 const updatedAttributes = { ...prev };
@@ -100,24 +107,40 @@ const RightProduct = ({ data, id }: Props) => {
             },
         );
     }) as TypeFilteredVariant | undefined;
-    // console.log("data", data);
-    // console.log("selectedAttributes", selectedAttributes);
-    // console.log("filteredVariant", filteredVariant);
 
+    //add Cart
     const onhandleAddToCart = async () => {
         const dataAddToCart = {
             product_id: id,
             product_variant_id: filteredVariant?.id,
             quantity: quantity,
         };
+        setisLoading(true);
         try {
             const response = await instance.post("/cart", dataAddToCart);
-            if (response.status === 201) {
-                NotificationExtension.Success("Thêm vào giỏ hàng thành công");
+            if (response.status === 201 || response.status === 200) {
+                message.success("Thêm vào giỏ hàng thành công");
             }
         } catch (error) {
-            NotificationExtension.Fails("Đã xảy ra lỗi khi thêm vào giỏ hàng");
+            message.error("Thêm vào giỏ hàng thất bại");
+        } finally {
+            setisLoading(false);
         }
+    };
+    const calculateDiscountPercentage = (
+        originalPrice: number,
+        discountPrice: number,
+    ) => {
+        if (
+            !originalPrice ||
+            !discountPrice ||
+            originalPrice <= discountPrice
+        ) {
+            return 0; // Không giảm giá hoặc giá gốc không hợp lệ
+        }
+        return Math.round(
+            ((originalPrice - discountPrice) / originalPrice) * 100,
+        );
     };
     return (
         <div className="product-details">
@@ -137,20 +160,24 @@ const RightProduct = ({ data, id }: Props) => {
             </Flex>
             <div className="product-pricing my-[5px] py-[5px] ">
                 <Flex direction="row" align="center" gap="lg">
-                    {/* <Badge
+                    {/* phần trăm được giảm */}
+                    <Badge
                         size="lg"
                         radius="sm"
                         style={{ backgroundColor: "red" }}
                     >
-                        -35%
+                        {calculateDiscountPercentage(
+                            filteredVariant
+                                ? Number(filteredVariant?.price)
+                                : Number(data?.price),
+                            filteredVariant
+                                ? Number(filteredVariant?.discount_price)
+                                : Number(data?.discount_price),
+                        )}
+                        %
                     </Badge>
                     <span className="current-price text-[#ef683a] text-[17px] font-bold">
-                        {data?.discount_price}
-                    </span>
-                    <span className="original-price text-[#777a7b] text-[14px] ">
-                        <del>{data?.price}</del>
-                    </span> */}
-                    <span className="current-price text-[#ef683a] text-[17px] font-bold">
+                        {/* giá sau khi được giảm */}
                         {formatCurrencyVN(
                             filteredVariant
                                 ? filteredVariant?.discount_price
@@ -159,6 +186,7 @@ const RightProduct = ({ data, id }: Props) => {
                     </span>
                     <span className="original-price text-[#777a7b] text-[14px] ">
                         <del>
+                            {/* giá gốc */}
                             {formatCurrencyVN(
                                 filteredVariant
                                     ? filteredVariant?.price
@@ -169,7 +197,7 @@ const RightProduct = ({ data, id }: Props) => {
                 </Flex>
             </div>
             <Flex direction="column" gap="sm" className="product-attributes">
-                {attributes.map((attribute) => (
+                {dataAttribute.map((attribute: any) => (
                     <div key={attribute}>
                         <h4 style={{ fontWeight: "600" }}>{attribute}</h4>
                         <Flex direction="row" gap="lg">
@@ -310,7 +338,11 @@ const RightProduct = ({ data, id }: Props) => {
                                     radius="xs"
                                     onClick={() => onhandleAddToCart()}
                                 >
-                                    Thêm vào giỏ hàng
+                                    {isLoading ? (
+                                        <Loader />
+                                    ) : (
+                                        "Thêm vào giỏ hàng"
+                                    )}
                                 </Badge>
                             </div>
                             <div style={{ width: "50%" }}>
@@ -344,143 +376,3 @@ const RightProduct = ({ data, id }: Props) => {
 };
 
 export default RightProduct;
-
-// const RightProduct = ({ data: product }: any) => {
-//     const [selectedMaterial, setSelectedMaterial] = useState("");
-//     const [selectedColor, setSelectedColor] = useState("");
-//     console.log("data", product);
-//     // Lấy tất cả giá trị unique của "Chất Liệu" và "Màu Sắc" từ dữ liệu
-//     const materials = Array.from(
-//         new Set(
-//             product.variants.flatMap((variant: any) =>
-//                 variant.attributes
-//                     .filter(
-//                         (attr: any) =>
-//                             attr.attribute_value.attributes.name ===
-//                             "Chất Liệu",
-//                     )
-
-//                     .map((attr: any) => attr.attribute_value.name),
-//             ),
-//         ),
-//     );
-//     console.log("materials", materials);
-//     // Tìm các màu khả dụng dựa trên chất liệu đã chọn
-//     const availableColorsForMaterial = selectedMaterial
-//         ? Array.from(
-//               new Set(
-//                   product.variants
-//                       .filter((variant: any) =>
-//                           variant.attributes.some(
-//                               (attr: any) =>
-//                                   attr.attribute_value.attributes.name ===
-//                                       "Chất Liệu" &&
-//                                   attr.attribute_value.name ===
-//                                       selectedMaterial,
-//                           ),
-//                       )
-//                       .flatMap((variant: any) =>
-//                           variant.attributes
-//                               .filter(
-//                                   (attr: any) =>
-//                                       attr.attribute_value.attributes.name ===
-//                                       "Màu Sắc",
-//                               )
-//                               .map((attr: any) => attr.attribute_value.name),
-//                       ),
-//               ),
-//           )
-//         : [];
-//     console.log("availableColorsForMaterial", availableColorsForMaterial);
-//     const colors = Array.from(
-//         new Set(
-//             product.variants.flatMap((variant: any) =>
-//                 variant.attributes
-//                     .filter(
-//                         (attr: any) =>
-//                             attr.attribute_value.attributes.name === "Màu Sắc",
-//                     )
-//                     .map((attr: any) => attr.attribute_value.name),
-//             ),
-//         ),
-//     );
-//     console.log("colors", colors);
-//     // Lọc variant theo lựa chọn của người dùng
-//     const filteredVariant = product.variants.find((variant: any) => {
-//         const material = variant.attributes.find(
-//             (attr: any) => attr.attribute_value.attributes.name === "Chất Liệu",
-//         )?.attribute_value.name;
-//         const color = variant.attributes.find(
-//             (attr: any) => attr.attribute_value.attributes.name === "Màu Sắc",
-//         )?.attribute_value.name;
-
-//         return material === selectedMaterial && color === selectedColor;
-//     });
-//     console.log("filteredVariant", filteredVariant);
-//     return (
-//         <div>
-//             <div>
-//                 <h3>Chọn thuộc tính</h3>
-//                 <div>
-//                     <label>Chất Liệu: </label>
-//                     <select
-//                         value={selectedMaterial}
-//                         onChange={(e) => {
-//                             setSelectedMaterial(e.target.value);
-//                             setSelectedColor(""); // Reset màu sắc khi thay đổi chất liệu
-//                         }}
-//                     >
-//                         <option value="">Chọn Chất Liệu</option>
-//                         {materials.map((material: any) => (
-//                             <option key={material} value={material}>
-//                                 {material}
-//                             </option>
-//                         ))}
-//                     </select>
-//                 </div>
-
-//                 <div>
-//                     <label>Màu Sắc: </label>
-//                     <select
-//                         value={selectedColor}
-//                         onChange={(e) => setSelectedColor(e.target.value)}
-//                     >
-//                         <option value="">Chọn Màu Sắc</option>
-//                         {colors.map((color: any) => (
-//                             <option
-//                                 key={color}
-//                                 value={color}
-//                                 style={{
-//                                     color: availableColorsForMaterial.includes(
-//                                         color,
-//                                     )
-//                                         ? "red"
-//                                         : "black",
-//                                 }}
-//                                 disabled={
-//                                     !availableColorsForMaterial.includes(color)
-//                                 }
-//                             >
-//                                 {color}
-//                             </option>
-//                         ))}
-//                     </select>
-//                 </div>
-
-//                 {filteredVariant ? (
-//                     <div>
-//                         <h4>Thông tin sản phẩm</h4>
-//                         <p>SKU: {filteredVariant.sku}</p>
-//                         <p>Giá: {filteredVariant.price}</p>
-//                         <p>Giảm giá: {filteredVariant.discount_price}</p>
-//                         <p>Tồn kho: {filteredVariant.stock}</p>
-//                     </div>
-//                 ) : (
-//                     <p>Không tìm thấy sản phẩm với cặp thuộc tính đã chọn.</p>
-//                 )}
-//             </div>
-//         </div>
-//     );
-// };
-
-// export default RightProduct;

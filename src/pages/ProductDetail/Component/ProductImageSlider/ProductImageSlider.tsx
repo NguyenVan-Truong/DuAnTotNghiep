@@ -42,7 +42,12 @@ const ProductImageSlider = ({ data }: Props) => {
                     }
                 >
                     {images.map((image, index) => (
-                        <div key={index}>
+                        <div
+                            key={index}
+                            style={{
+                                borderRadius: "20px",
+                            }}
+                        >
                             <Image
                                 src={image.image_url}
                                 alt={`Product image ${index + 1}`}
@@ -91,6 +96,7 @@ const ProductImageSlider = ({ data }: Props) => {
                                 height: "90px",
                                 cursor: "pointer", // Thêm con trỏ để dễ nhận biết khi hover
                                 padding: "5px ",
+                                objectFit: "cover",
                             }}
                         />
                     </div>
