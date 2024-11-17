@@ -20,42 +20,86 @@ import {
     IconShoppingCart,
     IconX,
 } from "@tabler/icons-react";
+import { useQuery } from "@tanstack/react-query";
 import { message } from "antd";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Style from "./ShoppingCart.module.scss";
 const ShoppingCart = () => {
     const navigate = useNavigate();
-    const [data, setData] = useState<any>([]);
     const [debouncedQuantity, setDebouncedQuantity] = useDebouncedState<
         number | null
     >(null, 400); // Sử dụng hook debounced state để giảm số lần gọi API
     const [debouncedId, setDebouncedId] = useState<number | null>();
     const [debouncedName, setDebouncedName] = useState<string | null>();
-    const [isLoading, setisLoading] = useState(false);
+    const [dataCartRequest, setDataCartRequest] = useState<CartItem[]>([]);
     //   tỔNG TIỀN
     const [totalPrice, setTotalPrice] = useState<number>(0);
     // click select checkbox
     const [listchecked, setListChecked] = useState<[]>([]);
-    const fetchData = async () => {
-        setisLoading(true);
+    //chuyển trang Thanh toán
+    const handlePayment = () => {
+        if (listchecked.length === 0) {
+            message.error("Vui lòng chọn sản phẩm để thanh toán");
+            return;
+        }
+        navigate("/thanh-toan", {
+            state: { listchecked: listchecked, totalPrice: totalPrice },
+        });
+    };
+    // #region Lấy dl giỏ hàng
+    const fetchDataCart = async () => {
         try {
             const response = await instance.get("/cart");
             if (response.status === 200) {
-                setData(response.data.data);
+                setDataCartRequest(response.data.data);
+                return response.data.data;
             }
         } catch (error) {
             NotificationExtension.Fails("Đã xảy ra lỗi khi lấy dữ liệu");
-        } finally {
-            setisLoading(false);
         }
     };
 
+    const {
+        data: dataCart,
+        isLoading: isLoadingCart,
+        refetch,
+    } = useQuery<CartItem[]>({
+        queryKey: ["cart"],
+        queryFn: fetchDataCart,
+    });
+
+    // #endregion
+    // click checkbox
+    const onhandleChecked = (item: CartItem) => {
+        setListChecked((prevList: any) => {
+            // Kiểm tra nếu item.id đã tồn tại trong listchecked
+            if (prevList.some((prev: CartItem) => prev.id === item.id)) {
+                // Loại bỏ item khỏi danh sách
+                return prevList.filter((prev: CartItem) => prev.id !== item.id);
+            } else {
+                // Thêm item vào danh sách
+                return [...prevList, item];
+            }
+        });
+    };
+    // Xóa sản phẩm
+    const handleDeleteProduct = async (ids: number) => {
+        try {
+            const response = await instance.delete(`/delete-cart?ids=${ids}`);
+            if (response && response.status === 200) {
+                refetch();
+                message.success("Xóa sản phẩm thành công");
+            }
+        } catch (error) {
+            message.error("Đã xảy ra lỗi khi xóa sản phẩm");
+        }
+    };
     const handleQuantityChange = (
         id: number,
         type: "increase" | "decrease",
     ) => {
-        setData((prevData: any) =>
+        setDataCartRequest((prevData: any) =>
             prevData.map((item: CartItem) => {
                 if (item.id === id) {
                     const newQuantity =
@@ -90,36 +134,6 @@ const ShoppingCart = () => {
             }),
         );
     };
-    // click checkbox
-    const onhandleChecked = (item: CartItem) => {
-        setListChecked((prevList: any) => {
-            // Kiểm tra nếu item.id đã tồn tại trong listchecked
-            if (prevList.some((prev: CartItem) => prev.id === item.id)) {
-                // Loại bỏ item khỏi danh sách
-                return prevList.filter((prev: CartItem) => prev.id !== item.id);
-            } else {
-                // Thêm item vào danh sách
-                return [...prevList, item];
-            }
-        });
-    };
-    // Xóa sản phẩm
-    const handleDeleteProduct = async (ids: number) => {
-        console.log("id", ids);
-        try {
-            const response = await instance.delete(`/delete-cart?ids=${ids}`);
-            console.log("response", response);
-        } catch (error) {
-            message.error("Đã xảy ra lỗi khi xóa sản phẩm");
-        }
-    };
-
-    //chuyển trang Thanh toán
-    const handlePayment = () => {
-        // navigate("/warranty/detail-borrowed-goods", {
-        //     state: { id, status },
-        //   });
-    };
 
     useEffect(() => {
         if (debouncedQuantity !== null && debouncedQuantity >= 1) {
@@ -130,17 +144,17 @@ const ShoppingCart = () => {
                     });
                 } catch (error) {
                     message.error("Đã xảy ra lỗi khi cập nhật số lượng");
+                } finally {
+                    refetch();
                 }
             };
             updateQuantity();
         }
-    }, [debouncedQuantity]);
+    }, [debouncedQuantity, debouncedId]);
     useEffect(() => {
-        fetchData();
-    }, []);
-    useEffect(() => {
-        if (data?.length > 0 && listchecked.length > 0) {
-            const total = data.reduce(
+        if (!dataCart) return;
+        if (dataCart?.length > 0 && listchecked.length > 0) {
+            const total = dataCart.reduce(
                 (acc: any, item: CartItem) => {
                     // Kiểm tra xem sản phẩm có được chọn không
                     if (
@@ -162,8 +176,8 @@ const ShoppingCart = () => {
         } else {
             setTotalPrice(0);
         }
-    }, [data, listchecked]); // Thêm listchecked vào dependency array
-
+    }, [dataCart, listchecked]);
+    console.log("listchecked", listchecked);
     return (
         <div
             className="container mx-auto padding"
@@ -174,7 +188,7 @@ const ShoppingCart = () => {
         >
             <div className={Style.Main}>
                 <LoadingOverlay
-                    visible={isLoading}
+                    visible={isLoadingCart}
                     zIndex={1000}
                     overlayProps={{ radius: "sm", blur: 2 }}
                 />
@@ -184,19 +198,20 @@ const ShoppingCart = () => {
                         <h1 className={Style.Title}>
                             Giỏ Hàng
                             <span className={Style.Total_count}>
-                                {data.length}
+                                {dataCart?.length}
                             </span>
                         </h1>
                         {/* <Button variant="filled" color="red" disabled>
                             Xóa{" "}
                         </Button> */}
                     </Flex>
-                    {data?.map((item: CartItem) => {
+                    {dataCart?.map((item: CartItem) => {
                         return (
                             <Flex
                                 direction={"row"}
                                 justify={"space-between"}
                                 className="border-b-2 border-b-gray-200"
+                                key={item.id}
                             >
                                 <div
                                     className="flex "

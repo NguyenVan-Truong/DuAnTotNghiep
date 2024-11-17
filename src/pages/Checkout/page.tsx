@@ -1,14 +1,16 @@
-import { ban_an_6_cho2 } from "@/assets/img";
-import { ActionIcon, Flex, Radio, ScrollArea, Textarea } from "@mantine/core";
-import { Button, Checkbox, Group, TextInput } from "@mantine/core";
+import { CartItem } from "@/model/Cart";
+import { formatCurrencyVN } from "@/model/_base/Number";
+import { Button, Checkbox, Flex, Group, Radio, ScrollArea, Textarea, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import styles from "./checkoutPage.module.scss"; // Import CSS module
 import { IconBuildingBank, IconCashBanknote } from "@tabler/icons-react";
+import { useLocation } from "react-router-dom";
 import DescriptionShipping from "./DescriptionShipping";
+import styles from "./checkoutPage.module.scss"; // Import CSS module
 
 type Props = {};
 
 const CheckoutPage = (props: Props) => {
+    const location = useLocation();
     const form = useForm({
         mode: "uncontrolled",
         initialValues: {
@@ -29,7 +31,7 @@ const CheckoutPage = (props: Props) => {
     });
 
     return (
-        <div className="padding my-[80px]">
+        <div className="padding my-[40px]">
             <div className="container">
                 <div className={styles.checkoutForm}>
                     <div className={styles.container}>
@@ -50,7 +52,7 @@ const CheckoutPage = (props: Props) => {
                                             ĐỊA CHỈ GIAO HÀNG
                                         </h2>
 
-                                        <ActionIcon
+                                        {/* <ActionIcon
                                             size="input-sm"
                                             variant="default"
                                             aria-label="ActionIcon the same size as inputs"
@@ -76,15 +78,24 @@ const CheckoutPage = (props: Props) => {
                                                 <path d="M12 5l0 14" />
                                                 <path d="M5 12l14 0" />
                                             </svg>
-                                        </ActionIcon>
+                                        </ActionIcon> */}
                                     </div>
-                                    <div className="mb-[10px]">
+                                    <div
+                                        className={`${styles.inputGroup} flex w-[100%] justify-between gap-3 mb-[10px] `}
+                                    >
                                         <TextInput
                                             withAsterisk
                                             label="Họ và tên"
                                             placeholder="Nhập họ và tên"
                                             {...form.getInputProps("name")}
-                                            className="w-[100%]"
+                                            className="w-[50%]"
+                                        />
+                                        <TextInput
+                                            withAsterisk
+                                            label="Email"
+                                            placeholder="Nhập email"
+                                            {...form.getInputProps("email")}
+                                            className="w-[50%]"
                                         />
                                     </div>
                                     <div
@@ -99,9 +110,9 @@ const CheckoutPage = (props: Props) => {
                                         />
                                         <TextInput
                                             withAsterisk
-                                            label="Địa chỉ email"
-                                            placeholder="Nhập địa chỉ email"
-                                            {...form.getInputProps("email")}
+                                            label="Tỉnh/Thành phố"
+                                            placeholder="Nhập tỉnh/thành phố"
+                                            {...form.getInputProps("city")}
                                             className="w-[50%]"
                                         />
                                     </div>
@@ -110,28 +121,28 @@ const CheckoutPage = (props: Props) => {
                                     >
                                         <TextInput
                                             withAsterisk
-                                            label="Tỉnh/Thành phố"
-                                            placeholder="Nhập tỉnh/thành phố"
-                                            {...form.getInputProps("city")}
+                                            label="Quận / Huyện"
+                                            placeholder="Nhập quận/huyện"
+                                            {...form.getInputProps("district")}
                                             className="w-[50%]"
                                         />
                                         <TextInput
                                             withAsterisk
-                                            label="Quận / Huyện"
-                                            placeholder="Nhập quận/huyện"
-                                            {...form.getInputProps("district")}
+                                            label="Phường/Xã"
+                                            placeholder="Nhập phường/xã"
+                                            {...form.getInputProps("city")}
                                             className="w-[50%]"
                                         />
                                     </div>
                                     <div className={styles.inputGroup}>
                                         <TextInput
                                             withAsterisk
-                                            label="Địa chỉ"
+                                            label="Địa chỉ cụ thể"
                                             placeholder="Nhập địa chỉ"
                                             {...form.getInputProps("address")}
                                         />
                                     </div>
-                                    <div className="mb-[10px]">
+                                    {/* <div className="mb-[10px]">
                                         <Checkbox
                                             mt="md"
                                             label="Tạo tài khoản?"
@@ -142,7 +153,7 @@ const CheckoutPage = (props: Props) => {
                                                 },
                                             )}
                                         />
-                                    </div>
+                                    </div> */}
                                     <div>
                                         <h2
                                             className={`${styles.sectionTitle} font-medium pt-[10px] text-[20px] mb-[10px]`}
@@ -212,10 +223,96 @@ const CheckoutPage = (props: Props) => {
                                                 Tóm tắt đơn hàng
                                             </h2>
                                         </div>
-                                        <div className="flex flex-row justify-between mt-[5px]">
-                                            <p>Thành tiền</p>
-                                            <p>23,630,000đ</p>
+                                    </div>
+                                    <div className="mt-[5px]">
+                                        <div>
+                                            <h2 className="text-[16px] text-[#000] font-medium">
+                                                Sản phẩm
+                                            </h2>
                                         </div>
+                                        <div>
+                                            {location?.state.listchecked.map(
+                                                (item: CartItem) => {
+                                                    return (
+                                                        <div
+                                                            className={`${styles.productDetails} flex flex-row justify-between gap-3 items-center my-[9px]`}
+                                                        >
+                                                            <div
+                                                                className={`${styles.imgwp} `}
+                                                            >
+                                                                <img
+                                                                    src={
+                                                                        item
+                                                                            .product
+                                                                            .image_url
+                                                                    }
+                                                                    alt="Product"
+                                                                    className="max-w-[70px] max-h-[70px]"
+                                                                />
+                                                            </div>
+                                                            <Flex
+                                                                direction={
+                                                                    "column"
+                                                                }
+                                                            >
+                                                                <p>
+                                                                    {
+                                                                        item
+                                                                            .product
+                                                                            .name
+                                                                    }
+                                                                </p>
+                                                                <p
+                                                                    style={{
+                                                                        color: "#333",
+                                                                        fontSize:
+                                                                            "14px",
+                                                                        fontWeight:
+                                                                            "400",
+
+                                                                        marginTop:
+                                                                            "-5px",
+                                                                    }}
+                                                                >
+                                                                    {item.product_variant.attribute_values
+                                                                        .map(
+                                                                            (
+                                                                                item: any,
+                                                                            ) =>
+                                                                                item.name,
+                                                                        )
+                                                                        .join(
+                                                                            ", ",
+                                                                        )}
+                                                                </p>
+                                                            </Flex>
+                                                            <strong>
+                                                                x{item.quantity}
+                                                            </strong>
+                                                            <p
+                                                                className={
+                                                                    styles.productPrice
+                                                                }
+                                                            >
+                                                                {formatCurrencyVN(
+                                                                    item
+                                                                        .product_variant
+                                                                        .discount_price,
+                                                                )}
+                                                            </p>
+                                                        </div>
+                                                    );
+                                                },
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div className="flex flex-row justify-between mt-[5px]">
+                                        <p>Tạm tính</p>
+                                        <p>
+                                            {formatCurrencyVN(
+                                                location?.state.totalPrice,
+                                            )}
+                                        </p>
                                     </div>
                                     <div className="mt-[5px] border-b-[1px] pb-[10px]">
                                         <h2
@@ -243,69 +340,6 @@ const CheckoutPage = (props: Props) => {
                                             TỔNG CỘNG
                                         </h2>
                                         <p>23,630,000đ</p>
-                                    </div>
-                                    <div className="mt-[5px]">
-                                        <div className=" pb-[10px]">
-                                            <h2 className="text-[16px] text-[#000] font-medium">
-                                                Sản phẩm
-                                            </h2>
-                                        </div>
-                                        <div>
-                                            <div
-                                                className={`${styles.productDetails} flex flex-row justify-between gap-3 items-center my-[9px]`}
-                                            >
-                                                <div
-                                                    className={`${styles.imgwp} `}
-                                                >
-                                                    <img
-                                                        src={ban_an_6_cho2}
-                                                        alt="Product"
-                                                        className="max-w-[70px] "
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <p>
-                                                        Armchair Hùng King + Gối
-                                                        VACT3231{" "}
-                                                        <strong>× 1</strong>
-                                                    </p>
-                                                </div>
-                                                <p
-                                                    className={
-                                                        styles.productPrice
-                                                    }
-                                                >
-                                                    11,815,000₫
-                                                </p>
-                                            </div>
-                                            <div
-                                                className={`${styles.productDetails} flex flex-row justify-between gap-3 items-center my-[9px]`}
-                                            >
-                                                <div
-                                                    className={`${styles.imgwp} `}
-                                                >
-                                                    <img
-                                                        src={ban_an_6_cho2}
-                                                        alt="Product"
-                                                        className="max-w-[70px] "
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <p>
-                                                        Armchair Hùng King + Gối
-                                                        VACT3231{" "}
-                                                        <strong>× 1</strong>
-                                                    </p>
-                                                </div>
-                                                <p
-                                                    className={
-                                                        styles.productPrice
-                                                    }
-                                                >
-                                                    11,815,000₫
-                                                </p>
-                                            </div>
-                                        </div>
                                     </div>
 
                                     <div className="my-[7px] py-3">

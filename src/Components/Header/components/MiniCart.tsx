@@ -1,16 +1,33 @@
 import instance from "@/configs/axios";
 import { NotificationExtension } from "@/extension/NotificationExtension";
 import { formatCurrencyVN } from "@/model/_base/Number";
+import { CartItem } from "@/model/Cart";
 import { CloseCircleOutlined, ShoppingCartOutlined } from "@ant-design/icons";
-import { Skeleton } from "@mantine/core";
-import { Badge, Drawer } from "antd";
-import { useEffect, useState } from "react";
+import { Flex, Skeleton } from "@mantine/core";
+import { useQuery } from "@tanstack/react-query";
+import { Badge, Drawer, message } from "antd";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 type Props = {
     dataCart: any;
+    refetch: any;
 };
-const MiniCart = ({ dataCart }: Props) => {
-    const [totalPrice, setTotalPrice] = useState(0);
+const MiniCart = ({ dataCart, refetch }: Props) => {
+    if (!dataCart) {
+        return <div>Không có sản phẩm nào trong giỏ hàng</div>;
+    }
+    // Xóa sản phẩm
+    const handleDeleteProduct = async (ids: number) => {
+        try {
+            const response = await instance.delete(`/delete-cart?ids=${ids}`);
+            if (response && response.status === 200) {
+                refetch();
+                message.success("Xóa sản phẩm thành công");
+            }
+        } catch (error) {
+            message.error("Đã xảy ra lỗi khi xóa sản phẩm");
+        }
+    };
     return (
         <div className="flex flex-col justify-between h-full">
             <div className="text-center h-[10%]">
@@ -36,14 +53,36 @@ const MiniCart = ({ dataCart }: Props) => {
                             <h1 className="font-medium text-lg">
                                 {product.product.name}
                             </h1>
-                            <p className="text-base">
-                                {product.quantity} ×{" "}
-                                {formatCurrencyVN(product.product.price)}
-                            </p>
+                            <Flex direction={"row"} align={"center"}>
+                                <p
+                                    className="text-base"
+                                    style={{
+                                        fontSize: "16px",
+                                    }}
+                                >
+                                    {product.quantity} ×{" "}
+                                    {formatCurrencyVN(product.product.price)}
+                                </p>
+                                <p
+                                    style={{
+                                        color: "#333",
+                                        fontSize: "14px",
+                                        fontWeight: "400",
+                                        marginLeft: "10px",
+                                    }}
+                                >
+                                    {product.product_variant.attribute_values
+                                        .map((item: any) => item.name)
+                                        .join(", ")}
+                                </p>
+                            </Flex>
                         </div>
                         <div>
                             <CloseCircleOutlined
                                 style={{ fontSize: "24px", color: "red" }}
+                                onClick={() => {
+                                    handleDeleteProduct(product.id);
+                                }}
                             />
                         </div>
                     </div>
@@ -71,8 +110,25 @@ const MiniCart = ({ dataCart }: Props) => {
 
 const IconCart = () => {
     const [drawerVisible, setDrawerVisible] = useState(false);
-    const [dataCart, setDataCart] = useState([]);
-    const [isLoading, setIsLoading] = useState(false);
+    const fetchDataCart = async () => {
+        try {
+            const response = await instance.get("/cart");
+            if (response.status === 200) {
+                return response.data.data;
+            }
+        } catch (error) {
+            NotificationExtension.Fails("Đã xảy ra lỗi khi lấy dữ liệu");
+        }
+    };
+    const {
+        data: dataCart,
+        isLoading: isLoadingCart,
+        refetch,
+    } = useQuery<CartItem[]>({
+        queryKey: ["cart"],
+        queryFn: fetchDataCart,
+    });
+
     const showDrawer = () => {
         setDrawerVisible(true);
     };
@@ -80,22 +136,7 @@ const IconCart = () => {
     const onClose = () => {
         setDrawerVisible(false);
     };
-    const fetchData = async () => {
-        setIsLoading(true);
-        try {
-            const response = await instance.get("/cart");
-            if (response && response.status === 200) {
-                setDataCart(response.data.data);
-            }
-        } catch (error) {
-            NotificationExtension.Fails("Đã xảy ra lỗi khi lấy dữ liệu");
-        } finally {
-            setIsLoading(false);
-        }
-    };
-    useEffect(() => {
-        fetchData();
-    }, [setDrawerVisible]);
+
     return (
         <>
             <div className="items-center space-x-4">
@@ -113,8 +154,8 @@ const IconCart = () => {
                 open={drawerVisible}
                 width={500}
             >
-                <Skeleton visible={isLoading} />
-                <MiniCart dataCart={dataCart} />
+                <Skeleton visible={isLoadingCart} />
+                <MiniCart dataCart={dataCart} refetch={refetch} />
             </Drawer>
         </>
     );
