@@ -148,19 +148,20 @@ const RightProduct = ({ data, id }: Props) => {
 
     //add Cart
     const onhandleAddToCart = async (type: string) => {
-        if (!inforUser || inforUser === undefined) {
-            message.error("Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng");
-            setTimeout(() => {
-                navigate("/xac-thuc/dang-nhap");
-            }, 2000);
-            return;
-        }
+        // if (!inforUser || inforUser === undefined) {
+        //     message.error("Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng");
+        //     setTimeout(() => {
+        //         navigate("/xac-thuc/dang-nhap");
+        //     }, 2000);
+        //     return;
+        // }
         // Kiểm tra nếu selectedAttributes không đủ các thuộc tính cần thiết từ dataAttribute
         const missingAttributes = uniqueAttributes2.filter(
             (attribute: string) => !(attribute in selectedAttributes),
         );
         const token = localStorage.getItem("token");
-        if (!token) {
+        const UserProfile = localStorage.getItem("userProFile");
+        if (!token || !UserProfile) {
             message.error("Vui lòng đăng nhập thêm sản phẩm vào giở hàng");
             return; // Dừng lại không thực hiện hành động yêu thích
         }
