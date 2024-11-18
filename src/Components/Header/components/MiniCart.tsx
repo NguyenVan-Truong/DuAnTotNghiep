@@ -174,7 +174,14 @@ const IconCart = () => {
                                             >
                                                 {formatCurrencyVN(
                                                     product.product_variant
-                                                        .discount_price,
+                                                        .discount_price !==
+                                                        "0.00"
+                                                        ? product
+                                                              .product_variant
+                                                              .discount_price
+                                                        : product
+                                                              .product_variant
+                                                              .price,
                                                 )}{" "}
                                                 x {product.quantity}
                                             </p>

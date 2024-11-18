@@ -53,10 +53,6 @@ const ShoppingCart = () => {
             const response = await instance.get("/cart");
             if (response.status === 200) {
                 setDataCartRequest(response.data.data);
-                localStorage.setItem(
-                    "cartData",
-                    JSON.stringify(response.data.data),
-                );
                 return response.data.data;
             }
         } catch (error) {
@@ -167,14 +163,6 @@ const ShoppingCart = () => {
             setTotalPrice(0);
         }
     }, [dataCart, listchecked]);
-    useEffect(() => {
-        const savedCart = localStorage.getItem("cartData");
-        if (savedCart) {
-            setDataCartRequest(JSON.parse(savedCart));
-        } else {
-            fetchDataCart();
-        }
-    }, []);
 
     return (
         <div
