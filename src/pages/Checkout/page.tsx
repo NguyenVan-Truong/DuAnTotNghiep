@@ -5,22 +5,22 @@ import {
     Button,
     Checkbox,
     Flex,
+    Loader,
+    Modal,
     ScrollArea,
     Select,
     Textarea,
     TextInput,
+    Title,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import {
-    IconBuildingBank,
-    IconCashBanknote,
-    IconCircleLetterG,
-} from "@tabler/icons-react";
+import { IconBuildingBank, IconCashBanknote } from "@tabler/icons-react";
 import { message } from "antd";
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import DescriptionShipping from "./DescriptionShipping";
 import styles from "./checkoutPage.module.scss"; // Import CSS module
+import { modals } from "@mantine/modals";
 
 type UserInfo = {
     id: number;
@@ -45,9 +45,29 @@ type UserInfo = {
     status: number;
     avatar_url: string;
 };
+export interface Promotion {
+    id: number;
+    code: string;
+    discount_value: string; // Giá trị giảm giá (sử dụng string vì dữ liệu đầu vào là string)
+    discount_type: "fixed" | "percentage"; // Loại giảm giá: cố định hoặc theo phần trăm
+    status: "active" | "inactive"; // Trạng thái mã giảm giá
+    start_date: string; // Ngày bắt đầu (ISO format)
+    end_date: string; // Ngày kết thúc (ISO format)
+    max_uses: number; // Số lần sử dụng tối đa
+    used_count: number; // Số lần đã sử dụng
+    created_at: string; // Thời gian tạo (ISO format)
+    updated_at: string; // Thời gian cập nhật (ISO format)
+    deleted_at: string | null; // Thời gian xóa, có thể null
+}
 
 const CheckoutPage = () => {
     const location = useLocation();
+    if (!location.state) {
+        return <Navigate to="/san-pham" replace />;
+    }
+    const navigate = useNavigate();
+    //Sản phẩm order
+    const [orderItems, setOrderItems] = useState<[]>([]);
     // thông tin tỉnh thành phố
     const [valueCity, setValueCity] = useState([]);
     const [checkedValueCity, setCheckedValueCity] = useState();
@@ -68,7 +88,13 @@ const CheckoutPage = () => {
     const [dataPromotions, setDataPromotions] = useState([]);
     const [valuePromotions, setValuePromotions] = useState<string>();
     const [dataAllPromotions, setDataAllPromotions] = useState([]);
-    const [checkedPromotions, setCheckedPromotions] = useState();
+    const [checkedPromotions, setCheckedPromotions] = useState<Promotion>();
+    // Tiền cuối cùng
+    const [finalAmount, setFinalAmount] = useState<number>(0);
+    // LAODING KHI SUBMIT
+    const [loading, setLoading] = useState(false);
+    // checkked
+    const [checked, setChecked] = useState(false);
     const form = useForm({
         mode: "uncontrolled",
         initialValues: {
@@ -167,30 +193,119 @@ const CheckoutPage = () => {
             message.error("Lỗi không thể lấy dữ liệu");
         }
     };
-
+    //#region callorder
     // Xử lý submit form
     const onhandleSubmit = async (values: any) => {
         const dataSubmit = {
             customer_id: inforUser?.id,
             customer_name: inforUser?.full_name,
-            promotion_id: "id mã giảm giá ", //hỏi hoàn
+            promotion_id: checkedPromotions?.id, //hỏi hoàn
             total_amount: location?.state.totalPrice,
-            discount_amount: "Giảm giá", //chưa ai làm
-            shipping_fee: shippingFee,
-            final_amount: "Tổng tiền trừ các chi phí",
+            discount_amount: Number(checkedPromotions?.discount_value), //chưa ai làm
+            shipping_fee: shippingFee || 0,
+            final_amount: finalAmount,
             status: 1,
             payment_method_id: selectedPaymentMethod, //phương thức thanh toán
             payment_status: 1, //thanh toán off trạng thái là 1
-            shipping_address: form.getValues().description,
-            discount_code: "Mã code đã áp dụng", //chưa ai làm
-            email: form.getValues().email,
-            phone_number: form.getValues().sđt,
-            note: form.getValues().description,
-            order_items: [],
+            shipping_address: values.address || "",
+            discount_code: checkedPromotions?.code, //chưa ai làm
+            email: values.email,
+            phone_number: values.sđt,
+            note: values.description,
+            order_items: orderItems,
         };
-        console.log("values", values);
-        console.log("dataSubmit", dataSubmit);
+        if (dataSubmit) {
+            if (!checked) {
+                return message.error(
+                    "Vui lòng đọc và đồng ý điều khoản của chúng tôi",
+                );
+            }
+            setLoading(true);
+            try {
+                const response = await instance.post("/orders", dataSubmit);
+                if (response && response.status === 201) {
+                    // location.state = null;
+                    modals.openConfirmModal({
+                        title: (
+                            <Title
+                                order={4}
+                                style={{
+                                    marginLeft: "6px",
+                                }}
+                            >
+                                Cảm ơn bạn đã đặt hàng tại Morden Home
+                            </Title>
+                        ),
+                        size: "400px",
+                        centered: true, // Căn giữa modal
+                        withCloseButton: false, // Ẩn nút "x"
+                        closeOnClickOutside: false, // Không đóng khi click ra ngoài
+                        children: (
+                            <>
+                                <div style={{ textAlign: "center" }}>
+                                    {" "}
+                                    {/* Căn giữa nội dung */}
+                                    <p>Đơn hàng đã đặt thành công</p>
+                                </div>
+                                <Flex
+                                    direction={"row"}
+                                    justify={"space-evenly"}
+                                    style={{
+                                        marginTop: "20px",
+                                    }}
+                                >
+                                    <Button
+                                        style={{
+                                            minWidth: "150px",
+                                        }}
+                                        variant="light"
+                                        onClick={() => {
+                                            modals.closeAll();
+                                            navigate("/gio-hang", {
+                                                replace: true,
+                                            });
+                                        }}
+                                    >
+                                        Xem giỏ hàng
+                                    </Button>
+
+                                    <Button
+                                        onClick={() => {
+                                            modals.closeAll();
+                                            navigate("/san-pham", {
+                                                replace: true,
+                                            });
+                                        }}
+                                        style={{
+                                            minWidth: "150px",
+                                        }}
+                                        variant="filled"
+                                    >
+                                        Tiếp tục mua hàng{" "}
+                                    </Button>
+                                </Flex>
+                            </>
+                        ),
+                        confirmProps: { display: "none" },
+                        cancelProps: { display: "none" },
+                        classNames: {
+                            header: "custom-modal-header", // Tên class cho header
+                            root: "custom-modal-root", // Tên class cho modal
+                            title: "custom-modal-title", // Tên class cho tiêu đề
+                            body: "custom-modal-body", // Tên class cho phần nội dung
+                        },
+                    });
+                }
+            } catch (error) {
+                message.error("Lỗi không thể đặt hàng");
+                console.log("error", error);
+            } finally {
+                setLoading(false);
+            }
+        }
     };
+
+    // lấy thông tin user
     const fetchDataUser = async () => {
         try {
             const response = await instance.get("/auth/profile");
@@ -259,7 +374,27 @@ const CheckoutPage = () => {
 
     useEffect(() => {
         fetchDataUser();
+        const orderItems = location?.state.listchecked.map((item: any) => {
+            return {
+                product_id: item.product_id,
+                product_name: item.product.name,
+                quantity: item.quantity,
+                price: parseFloat(item.product_variant.price),
+                total: item.quantity * parseFloat(item.product_variant.price),
+                variant: JSON.stringify(
+                    item.product_variant.attribute_values.reduce(
+                        (acc: any, attr: any) => {
+                            acc[attr.attributes.name] = attr.name;
+                            return acc;
+                        },
+                        {},
+                    ),
+                ),
+            };
+        });
+        setOrderItems(orderItems);
     }, []);
+    // MÃ GIẢM GIÁ
     useEffect(() => {
         if (valuePromotions !== undefined) {
             const data = dataAllPromotions.find((item: any) => {
@@ -270,6 +405,18 @@ const CheckoutPage = () => {
             setCheckedPromotions(undefined);
         }
     }, [valuePromotions]);
+    // SÔs tiền cuối cùng
+    useEffect(() => {
+        const discountValue = (checkedPromotions as any)?.discount_value || 0;
+        console.log("discountValue", discountValue);
+        const calculatedFinalAmount =
+            Number(location?.state.totalPrice) +
+            Number(shippingFee) -
+            Number(discountValue);
+        console.log("calculatedFinalAmount", calculatedFinalAmount);
+        setFinalAmount(calculatedFinalAmount);
+    }, [location?.state.totalPrice, shippingFee, checkedPromotions]);
+
     return (
         <div className="padding my-[40px]">
             <div className="container">
@@ -685,8 +832,9 @@ const CheckoutPage = () => {
                                                 color: "red",
                                             }}
                                         >
-                                            {" "}
-                                            0
+                                            {formatCurrencyVN(
+                                                String(finalAmount),
+                                            )}
                                         </p>
                                     </div>
 
@@ -697,10 +845,15 @@ const CheckoutPage = () => {
                                     </div>
                                     <div className="mt-[20px]">
                                         <Checkbox
-                                            defaultChecked
                                             label="Tôi đã đọc và đồng ý điều kiện đổi trả hàng, giao hàng, chính sách bảo mật, điều khoản dịch vụ mua hàng online **"
                                             color="rgba(71, 71, 71, 1)"
                                             className={styles.terms}
+                                            checked={checked}
+                                            onChange={(event) =>
+                                                setChecked(
+                                                    event.currentTarget.checked,
+                                                )
+                                            }
                                         />
                                         <div
                                             className={`${styles.submitButton} w-[100%] mt-2`}
@@ -710,8 +863,16 @@ const CheckoutPage = () => {
                                                 color="blue"
                                                 type="submit"
                                                 style={{ width: "100%" }}
+                                                disabled={loading}
                                             >
-                                                HOÀN TẤT ĐƠN HÀNG
+                                                {loading ? (
+                                                    <Loader
+                                                        color="cyan"
+                                                        size="sm"
+                                                    />
+                                                ) : (
+                                                    "HOÀN TẤT ĐƠN HÀNG"
+                                                )}
                                             </Button>
                                         </div>
                                     </div>

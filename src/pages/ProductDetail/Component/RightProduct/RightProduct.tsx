@@ -17,6 +17,29 @@ import { formatCurrencyVN } from "@/model/_base/Number";
 import { message } from "antd";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
+type UserInfo = {
+    id: number;
+    username: string;
+    full_name: string;
+    email: string;
+    phone: string;
+    province_id: string;
+    district_id: string;
+    ward_id: string;
+    address: string;
+    birthday: string;
+    avatar: string;
+    description: string | null;
+    user_agent: string | null;
+    created_at: string;
+    updated_at: string;
+    rule_id: number;
+    google_id: string | null;
+    last_login: string | null;
+    deleted_at: string | null;
+    status: number;
+    avatar_url: string;
+};
 type Props = {
     data: TypeProductDetail | undefined;
     id: number;
@@ -50,6 +73,9 @@ const RightProduct = ({ data, id }: Props) => {
     const [isLoading, setisLoading] = useState(false);
     const queryClient = useQueryClient();
     const [isLoadingPaymentButton, setIsLoadingPaymentButton] = useState(false);
+    // Thông tin người dùng
+    const [inforUser, setInforfUser] = useState<UserInfo>();
+    console.log("inforUser", inforUser);
     const increaseQuantity = () => {
         if (
             quantity < (filteredVariant ? filteredVariant?.stock : data.stock)
@@ -122,6 +148,13 @@ const RightProduct = ({ data, id }: Props) => {
 
     //add Cart
     const onhandleAddToCart = async (type: string) => {
+        if (!inforUser || inforUser === undefined) {
+            message.error("Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng");
+            setTimeout(() => {
+                navigate("/xac-thuc/dang-nhap");
+            }, 2000);
+            return;
+        }
         // Kiểm tra nếu selectedAttributes không đủ các thuộc tính cần thiết từ dataAttribute
         const missingAttributes = uniqueAttributes2.filter(
             (attribute: string) => !(attribute in selectedAttributes),
@@ -225,6 +258,21 @@ const RightProduct = ({ data, id }: Props) => {
             ((originalPrice - discountPrice) / originalPrice) * 100,
         );
     };
+    useEffect(() => {
+        // lấy thông tin user
+        const fetchDataUser = async () => {
+            try {
+                const response = await instance.get("/auth/profile");
+                if (response && response.status === 200) {
+                    const data = response.data;
+                    setInforfUser(data);
+                }
+            } catch (error) {
+                console.error("Error fetching user data", error);
+            }
+        };
+        fetchDataUser();
+    }, []);
     return (
         <div className="product-details">
             <div className="product-header">
@@ -435,8 +483,11 @@ const RightProduct = ({ data, id }: Props) => {
                                         deg: 35,
                                     }}
                                     style={{
-                                        padding: "20px ",
-                                        cursor: "pointer",
+                                        padding: "20px",
+                                        cursor: isLoading
+                                            ? "not-allowed"
+                                            : "pointer",
+                                        opacity: isLoading ? 0.7 : 1,
                                     }}
                                     radius="xs"
                                     onClick={() => onhandleAddToCart("cart")}
@@ -460,8 +511,13 @@ const RightProduct = ({ data, id }: Props) => {
                                     }}
                                     radius="xs"
                                     style={{
-                                        padding: "20px ",
-                                        cursor: "pointer",
+                                        padding: "20px",
+                                        cursor: isLoadingPaymentButton
+                                            ? "not-allowed"
+                                            : "pointer",
+                                        opacity: isLoadingPaymentButton
+                                            ? 0.7
+                                            : 1,
                                     }}
                                     onClick={() => onhandleAddToCart("buy")}
                                 >

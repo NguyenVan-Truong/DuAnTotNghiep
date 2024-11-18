@@ -163,7 +163,7 @@ const ShoppingCart = () => {
             setTotalPrice(0);
         }
     }, [dataCart, listchecked]);
-    console.log("listchecked", listchecked);
+    console.log("dataCart", dataCart);
     return (
         <div
             className="container mx-auto padding"
@@ -191,227 +191,278 @@ const ShoppingCart = () => {
                             Xóa{" "}
                         </Button> */}
                     </Flex>
-                    {dataCartRequest?.map((item: CartItem) => {
-                        return (
-                            <Flex
-                                direction={"row"}
-                                justify={"space-between"}
-                                className="border-b-2 border-b-gray-200"
-                                key={item.id}
-                            >
-                                <div
-                                    className="flex "
-                                    style={{
-                                        alignItems: "start",
-                                    }}
+                    {dataCartRequest &&
+                        dataCartRequest.map((item: CartItem) => {
+                            return (
+                                <Flex
+                                    direction={"row"}
+                                    justify={"space-between"}
+                                    className="border-b-2 border-b-gray-200"
+                                    key={item.id}
                                 >
                                     <div
+                                        className="flex "
                                         style={{
-                                            marginTop: "35px",
+                                            alignItems: "start",
                                         }}
                                     >
-                                        <Checkbox
+                                        <div
                                             style={{
-                                                marginTop: "10px",
-                                            }}
-                                            onClick={() =>
-                                                onhandleChecked(item)
-                                            }
-                                        />
-                                    </div>
-                                    <div className="">
-                                        <img
-                                            src={item.product.image_url}
-                                            alt=""
-                                            style={{
-                                                padding: "10px",
-                                                maxHeight: "110px",
-                                                minHeight: "110px",
-                                                minWidth: "130px",
-                                                maxWidth: "130px",
-                                                objectFit: "cover",
-                                            }}
-                                        />
-                                    </div>
-                                    <div className={Style.Content}>
-                                        <div className={Style.Content_Title}>
-                                            <h4
-                                                style={{
-                                                    fontSize: "16px",
-                                                    fontWeight: "500",
-                                                    marginTop: "5px",
-                                                }}
-                                            >
-                                                {item.product.name}
-                                            </h4>
-                                        </div>
-
-                                        <Flex
-                                            direction="column"
-                                            style={{
-                                                margin: "5px 0",
+                                                marginTop: "35px",
                                             }}
                                         >
-                                            <p
+                                            <Checkbox
                                                 style={{
-                                                    color: "#333",
-                                                    fontSize: "14px",
-                                                    fontWeight: "400",
-                                                    marginTop: "-5px",
+                                                    marginTop: "10px",
                                                 }}
-                                            >
-                                                {item.product_variant.attribute_values
-                                                    .map(
-                                                        (item: any) =>
-                                                            item.name,
-                                                    )
-                                                    .join(", ")}
-                                            </p>
-                                            <span
-                                                className={Style.Content_Price}
+                                                onClick={() =>
+                                                    onhandleChecked(item)
+                                                }
+                                            />
+                                        </div>
+                                        <div className="">
+                                            <img
+                                                src={item.product.image_url}
+                                                alt=""
                                                 style={{
-                                                    marginTop: "2px",
+                                                    padding: "10px",
+                                                    maxHeight: "110px",
+                                                    minHeight: "110px",
+                                                    minWidth: "130px",
+                                                    maxWidth: "130px",
+                                                    objectFit: "cover",
                                                 }}
+                                            />
+                                        </div>
+                                        <div className={Style.Content}>
+                                            <div
+                                                className={Style.Content_Title}
                                             >
-                                                {item.product_variant
-                                                    .discount_price !==
-                                                "0.00" ? (
-                                                    <>
-                                                        {formatCurrencyVN(
-                                                            item.product_variant
-                                                                .discount_price,
-                                                        )}
+                                                <h4
+                                                    style={{
+                                                        fontSize: "16px",
+                                                        fontWeight: "500",
+                                                        marginTop: "5px",
+                                                    }}
+                                                >
+                                                    {item.product.name}
+                                                </h4>
+                                            </div>
 
-                                                        <del
-                                                            style={{
-                                                                margin: "0 7px",
-                                                                color: "#999",
-                                                                fontSize:
-                                                                    "14px",
-                                                                fontWeight:
-                                                                    "400",
-                                                            }}
-                                                        >
+                                            <Flex
+                                                direction="column"
+                                                style={{
+                                                    margin: "5px 0",
+                                                }}
+                                            >
+                                                <p
+                                                    style={{
+                                                        color: "#333",
+                                                        fontSize: "14px",
+                                                        fontWeight: "400",
+                                                        marginTop: "-5px",
+                                                    }}
+                                                >
+                                                    {item.product_variant.attribute_values
+                                                        .map(
+                                                            (item: any) =>
+                                                                item.name,
+                                                        )
+                                                        .join(", ")}
+                                                </p>
+                                                <span
+                                                    className={
+                                                        Style.Content_Price
+                                                    }
+                                                    style={{
+                                                        marginTop: "2px",
+                                                    }}
+                                                >
+                                                    {item.product_variant
+                                                        .discount_price !==
+                                                    "0.00" ? (
+                                                        <>
+                                                            {formatCurrencyVN(
+                                                                item
+                                                                    .product_variant
+                                                                    .discount_price,
+                                                            )}
+
+                                                            <del
+                                                                style={{
+                                                                    margin: "0 7px",
+                                                                    color: "#999",
+                                                                    fontSize:
+                                                                        "14px",
+                                                                    fontWeight:
+                                                                        "400",
+                                                                }}
+                                                            >
+                                                                {formatCurrencyVN(
+                                                                    item
+                                                                        .product_variant
+                                                                        .price,
+                                                                )}
+                                                            </del>
+                                                        </>
+                                                    ) : (
+                                                        <>
                                                             {formatCurrencyVN(
                                                                 item
                                                                     .product_variant
                                                                     .price,
                                                             )}
-                                                        </del>
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        {formatCurrencyVN(
-                                                            item.product_variant
-                                                                .price,
-                                                        )}
-                                                    </>
-                                                )}
-                                            </span>
-                                        </Flex>
+                                                        </>
+                                                    )}
+                                                </span>
+                                            </Flex>
 
-                                        <div className={Style.Content_Button}>
                                             <div
-                                                className={
-                                                    Style.Content_Button_Quantity
-                                                }
+                                                className={Style.Content_Button}
                                             >
-                                                <button
-                                                    className={Style.Button}
-                                                    onClick={() =>
-                                                        handleQuantityChange(
-                                                            item.id,
-                                                            "decrease",
-                                                        )
+                                                <div
+                                                    className={
+                                                        Style.Content_Button_Quantity
                                                     }
                                                 >
-                                                    -
-                                                </button>
+                                                    <button
+                                                        className={Style.Button}
+                                                        onClick={() =>
+                                                            handleQuantityChange(
+                                                                item.id,
+                                                                "decrease",
+                                                            )
+                                                        }
+                                                        disabled={
+                                                            item.quantity == 1
+                                                        }
+                                                        style={{
+                                                            cursor:
+                                                                item.quantity ==
+                                                                1
+                                                                    ? "not-allowed"
+                                                                    : "pointer",
+                                                            opacity:
+                                                                item.quantity ==
+                                                                1
+                                                                    ? 0.5
+                                                                    : 1,
+                                                        }}
+                                                    >
+                                                        -
+                                                    </button>
 
-                                                <input
-                                                    type="number"
-                                                    value={item.quantity}
-                                                    className={Style.quantity}
-                                                    disabled
-                                                />
+                                                    <input
+                                                        type="number"
+                                                        value={item.quantity}
+                                                        className={
+                                                            Style.quantity
+                                                        }
+                                                        disabled
+                                                    />
 
-                                                <button
-                                                    className={Style.Button}
-                                                    onClick={() =>
-                                                        handleQuantityChange(
-                                                            item.id,
-                                                            "increase",
-                                                        )
-                                                    }
-                                                >
-                                                    +
-                                                </button>
+                                                    <button
+                                                        className={Style.Button}
+                                                        onClick={() =>
+                                                            handleQuantityChange(
+                                                                item.id,
+                                                                "increase",
+                                                            )
+                                                        }
+                                                        disabled={
+                                                            item.quantity >=
+                                                            item.product_variant
+                                                                .stock
+                                                        }
+                                                        style={{
+                                                            cursor:
+                                                                item.quantity >=
+                                                                item
+                                                                    .product_variant
+                                                                    .stock
+                                                                    ? "not-allowed"
+                                                                    : "pointer",
+                                                            opacity:
+                                                                item.quantity >=
+                                                                item
+                                                                    .product_variant
+                                                                    .stock
+                                                                    ? 0.5
+                                                                    : 1,
+                                                        }}
+                                                    >
+                                                        +
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                                <Flex
-                                    direction={"column"}
-                                    justify={"space-between"}
-                                    align={"end"}
-                                    style={{
-                                        padding: "6px 0",
-                                    }}
-                                >
-                                    {/* Xóa sp */}
-                                    <div
+                                    <Flex
+                                        direction={"column"}
+                                        justify={"space-between"}
+                                        align={"end"}
                                         style={{
-                                            cursor: "pointer",
+                                            padding: "6px 0",
                                         }}
                                     >
-                                        <IconX
-                                            stroke={2}
-                                            onClick={() => {
-                                                handleDeleteProduct(item.id);
+                                        {/* Xóa sp */}
+                                        <div
+                                            style={{
+                                                cursor: "pointer",
                                             }}
-                                        />
-                                    </div>
-                                    {/* tổng tiền của 1 sản phẩm */}
-                                    <p
-                                        style={{
-                                            marginBottom: "10px",
-                                        }}
-                                    >
-                                        {item.product_variant.discount_price !==
-                                        "0.00" ? (
-                                            <>
-                                                {formatCurrencyVN(
-                                                    String(
-                                                        Number(
-                                                            item.product_variant
-                                                                .discount_price,
-                                                        ) *
+                                        >
+                                            <IconX
+                                                stroke={2}
+                                                onClick={() => {
+                                                    handleDeleteProduct(
+                                                        item.id,
+                                                    );
+                                                }}
+                                            />
+                                        </div>
+                                        {/* tổng tiền của 1 sản phẩm */}
+                                        <p
+                                            style={{
+                                                marginBottom: "10px",
+                                            }}
+                                        >
+                                            {item.product_variant
+                                                .discount_price !== "0.00" ? (
+                                                <>
+                                                    {formatCurrencyVN(
+                                                        String(
                                                             Number(
-                                                                item.quantity,
-                                                            ),
-                                                    ),
-                                                )}
-                                            </>
-                                        ) : (
-                                            <>
-                                                {formatCurrencyVN(
-                                                    String(
-                                                        Number(
-                                                            item.product_variant
-                                                                .price,
-                                                        ) *
+                                                                item
+                                                                    .product_variant
+                                                                    .discount_price,
+                                                            ) *
+                                                                Number(
+                                                                    item.quantity,
+                                                                ),
+                                                        ),
+                                                    )}
+                                                </>
+                                            ) : (
+                                                <>
+                                                    {formatCurrencyVN(
+                                                        String(
                                                             Number(
-                                                                item.quantity,
-                                                            ),
-                                                    ),
-                                                )}
-                                            </>
-                                        )}
-                                    </p>
+                                                                item
+                                                                    .product_variant
+                                                                    .price,
+                                                            ) *
+                                                                Number(
+                                                                    item.quantity,
+                                                                ),
+                                                        ),
+                                                    )}
+                                                </>
+                                            )}
+                                        </p>
+                                    </Flex>
                                 </Flex>
-                            </Flex>
-                        );
-                    })}
+                            );
+                        })}
                 </div>
                 <div className={Style.Right}>
                     <div className={Style.Right_Container}>

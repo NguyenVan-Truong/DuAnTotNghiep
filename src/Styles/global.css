@@ -39,3 +39,25 @@ body {
 .my-custom-modal-body {
     padding: 15px;
 }
+
+/* css cho modal khi thanh toán thành công */
+.custom-modal-header {
+    background-color: #228be6;
+    color: #fff;
+    font-size: 20px;
+    font-weight: bold;
+}
+/* Tùy chỉnh tiêu đề */
+.custom-modal-title {
+    text-align: center; /* Căn giữa tiêu đề */
+    font-size: 20px;
+    font-weight: bold;
+}
+
+/* Tùy chỉnh nội dung */
+.custom-modal-body {
+    margin-top: 5px;
+    text-align: center;
+    color: #161616;
+    font-size: 16px;
+}

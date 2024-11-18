@@ -19,7 +19,7 @@ const OrderDetail = ({ data }: OrderDetailProps) => {
                 {Number(item.total).toLocaleString("vi-VN")} VND
             </td>
             <td className="px-4 py-2 text-left">
-                {item.variant ? JSON.parse(item.variant).join(", ") : ""}
+                {/* {item.variant ? JSON.parse(item.variant).join(", ") : ""} */}
             </td>
         </tr>
     ));
