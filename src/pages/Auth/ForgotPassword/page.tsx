@@ -1,8 +1,10 @@
+import instance from "@/configs/axios";
 import { Button, Flex, Text, TextInput, Title } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { message } from "antd";
+import { useState } from "react";
 import { FaAt, FaChevronLeft } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 const ForgotPassword = () => {
@@ -11,14 +13,28 @@ const ForgotPassword = () => {
             email: "",
         },
         validate: {
-            email: (value) =>
-                /^\S+@\S+$/.test(value) ? null : "Email không hợp lệ",
+            email: (value) => {
+                if (!value) return "Email không được để trống";
+                if (value.includes(" "))
+                    return "Email không được chứa dấu cách";
+                if (!/^\S+@\S+$/.test(value)) return "Email không hợp lệ";
+                return null;
+            },
         },
     });
-
-    const handleSubmit = (values: typeof form.values) => {
-        message.success("Thành công");
-        toast.success("Thành công");
+    const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
+    const handleSubmit = async (values: typeof form.values) => {
+        try {
+            setLoading(true); // bật loading
+            await instance.post("auth/forgot-password", values);
+            message.success("Thành công, Mời bạn kiểm tra email");
+            navigate("/xac-thuc/dang-nhap");
+        } catch (error) {
+            message.error("Có lỗi xảy ra, vui lòng thử lại");
+        } finally {
+            setLoading(false); // tắt loading khi xong
+        }
     };
 
     return (
@@ -64,6 +80,7 @@ const ForgotPassword = () => {
                     size="md"
                     fullWidth
                     className="!bg-black !border-white !text-white hover:!bg-gray-800"
+                    loading={loading}
                 >
                     Gửi Mật Khẩu
                 </Button>

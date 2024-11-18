@@ -1,15 +1,49 @@
 import { NotificationExtension } from "@/extension/NotificationExtension";
 import { toTitleCase } from "@/model/_base/Text";
-import { Badge, Button, Flex, Rating } from "@mantine/core";
+import {
+    Badge,
+    Button,
+    Flex,
+    Loader,
+    LoadingOverlay,
+    Rating,
+} from "@mantine/core";
 import { IconCheck, IconMinus, IconPlus } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import "../../ProductDetail.scss";
 import WanrrantyTab from "../WarrantyTab/WanrrantyTab";
 import instance from "@/configs/axios";
 import { formatCurrencyVN } from "@/model/_base/Number";
+import { message } from "antd";
+import { useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
+type UserInfo = {
+    id: number;
+    username: string;
+    full_name: string;
+    email: string;
+    phone: string;
+    province_id: string;
+    district_id: string;
+    ward_id: string;
+    address: string;
+    birthday: string;
+    avatar: string;
+    description: string | null;
+    user_agent: string | null;
+    created_at: string;
+    updated_at: string;
+    rule_id: number;
+    google_id: string | null;
+    last_login: string | null;
+    deleted_at: string | null;
+    status: number;
+    avatar_url: string;
+};
 type Props = {
     data: TypeProductDetail | undefined;
     id: number;
+    // dataAttribute: any;
 };
 type AttributeValues = {
     [key: string]: string[] | any;
@@ -31,17 +65,24 @@ type TypeFilteredVariant = {
     updated_at: string;
     attributes: Attribute[];
 };
+
 const RightProduct = ({ data, id }: Props) => {
     if (!data) return null;
+    const navigate = useNavigate();
     const [quantity, setQuantity] = useState(1);
-
+    const [isLoading, setisLoading] = useState(false);
+    const queryClient = useQueryClient();
+    const [isLoadingPaymentButton, setIsLoadingPaymentButton] = useState(false);
+    // Thông tin người dùng
+    const [inforUser, setInforfUser] = useState<UserInfo>();
+    console.log("inforUser", inforUser);
     const increaseQuantity = () => {
         if (
             quantity < (filteredVariant ? filteredVariant?.stock : data.stock)
         ) {
             setQuantity(quantity + 1);
         } else {
-            NotificationExtension.Fails("Không thể vượt quá sản phẩm có sẵn");
+            message.error("Số lượng sản phẩm không đủ");
         }
     };
     const decreaseQuantity = () => {
@@ -50,33 +91,34 @@ const RightProduct = ({ data, id }: Props) => {
         }
     };
     //#region handleAttribute
-    const [selectedAttributes, setSelectedAttributes] = useState<any>({});
+    const dataAttribute2 = data?.variants.flatMap((variant: any) =>
+        variant.attributes.map((attr: any) => attr.attribute),
+    );
 
-    const attributes = ["Chất Liệu", "Màu Sắc", "Kích Thước"];
-    // Lôi những thuộc tính và value thuộc tính có trong sản phẩm
-    const uniqueAttributes: AttributeValues = attributes.reduce((acc, attr) => {
-        const values = Array.from(
-            new Set(
-                data.variants.flatMap(
-                    (variant: any) =>
+    // Loại bỏ các giá trị trùng lặp
+    const uniqueAttributes2 = [...new Set(dataAttribute2)];
+    const [selectedAttributes, setSelectedAttributes] = useState<any>({});
+    const uniqueAttributes: AttributeValues = uniqueAttributes2.reduce(
+        (acc: any, attr: any) => {
+            const values = Array.from(
+                new Set(
+                    data.variants.flatMap((variant: any) =>
                         variant.attributes
                             .filter(
                                 (attribute: any) =>
                                     attribute.attribute === attr,
                             )
-                            .map((attribute: any) => attribute.value), // Giả sử giá trị thuộc tính lưu trong `value`
+                            .map((attribute: any) => attribute.value),
+                    ),
                 ),
-            ),
-        );
-        acc[attr] = values;
-        return acc;
-    }, {} as AttributeValues);
+            );
+            acc[attr] = values;
+            return acc;
+        },
+        {} as AttributeValues,
+    );
     // xử lý khi chọn thuộc tính
     const handleAttributeSelect = (attribute: string, value: string) => {
-        // setSelectedAttributes({
-        //     ...selectedAttributes,
-        //     [attribute]: value,
-        // });
         setSelectedAttributes((prev: any) => {
             if (prev[attribute] === value) {
                 const updatedAttributes = { ...prev };
@@ -100,25 +142,138 @@ const RightProduct = ({ data, id }: Props) => {
             },
         );
     }) as TypeFilteredVariant | undefined;
-    // console.log("data", data);
-    // console.log("selectedAttributes", selectedAttributes);
     // console.log("filteredVariant", filteredVariant);
+    // console.log("selectedAttributes", selectedAttributes);
+    // console.log("dataAttribute", dataAttribute);
 
-    const onhandleAddToCart = async () => {
+    //add Cart
+    const onhandleAddToCart = async (type: string) => {
+        // if (!inforUser || inforUser === undefined) {
+        //     message.error("Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng");
+        //     setTimeout(() => {
+        //         navigate("/xac-thuc/dang-nhap");
+        //     }, 2000);
+        //     return;
+        // }
+        // Kiểm tra nếu selectedAttributes không đủ các thuộc tính cần thiết từ dataAttribute
+        const missingAttributes = uniqueAttributes2.filter(
+            (attribute: string) => !(attribute in selectedAttributes),
+        );
+        const token = localStorage.getItem("token");
+        const UserProfile = localStorage.getItem("userProFile");
+        if (!token || !UserProfile) {
+            message.error("Vui lòng đăng nhập thêm sản phẩm vào giở hàng");
+            return; // Dừng lại không thực hiện hành động yêu thích
+        }
+        // Nếu thiếu thuộc tính nào, hiển thị thông báo lỗi và dừng lại
+        if (missingAttributes.length > 0) {
+            message.error(
+                `Vui lòng chọn đầy đủ các thuộc tính: ${missingAttributes.join(", ")}`,
+            );
+            return; // Dừng lại nếu thiếu thuộc tính
+        }
+
+        // Kiểm tra nếu filteredVariant không có giá trị hợp lệ
+        if (!filteredVariant) {
+            message.error("Không tìm thấy biến thể sản phẩm phù hợp.");
+            return; // Dừng lại nếu không tìm thấy variant
+        }
         const dataAddToCart = {
             product_id: id,
             product_variant_id: filteredVariant?.id,
             quantity: quantity,
         };
+
         try {
-            const response = await instance.post("/cart", dataAddToCart);
-            if (response.status === 201) {
-                NotificationExtension.Success("Thêm vào giỏ hàng thành công");
+            if (type === "cart") {
+                setisLoading(true);
+                const response = await instance.post("/cart", dataAddToCart);
+                if (response.status === 201 || response.status === 200) {
+                    message.success("Thêm vào giỏ hàng thành công");
+                    queryClient.invalidateQueries({ queryKey: ["cart"] });
+                }
+            }
+            if (type === "buy") {
+                setIsLoadingPaymentButton(true);
+                const response = await instance.post("/cart", dataAddToCart);
+                if (response.status === 201 || response.status === 200) {
+                    queryClient.invalidateQueries({ queryKey: ["cart"] });
+                    // Lấy lại giỏ hàng để tìm sản phẩm vừa thêm
+                    const cartResponse = await instance.get("/cart");
+                    const cartItems = cartResponse.data.data || [];
+                    // Tìm sản phẩm vừa thêm trong giỏ hàng
+                    const addedProduct = cartItems.find((item: any) => {
+                        return (
+                            Number(item.product_id) ==
+                                Number(dataAddToCart.product_id) &&
+                            Number(item.product_variants_id) ==
+                                Number(dataAddToCart.product_variant_id)
+                        );
+                    });
+                    let TotalPrice = 0;
+                    if (
+                        addedProduct?.product_variant.discount_price !== "0.00"
+                    ) {
+                        TotalPrice =
+                            Number(
+                                addedProduct.product_variant.discount_price,
+                            ) * Number(addedProduct.quantity);
+                    } else {
+                        TotalPrice =
+                            Number(addedProduct.product_variant.price) *
+                            Number(addedProduct.quantity);
+                    }
+                    if (addedProduct && TotalPrice) {
+                        navigate("/thanh-toan", {
+                            state: {
+                                listchecked: [addedProduct],
+                                totalPrice: TotalPrice,
+                            },
+                        });
+                    }
+                } else {
+                    message.error("Đã xảy ra lỗi khi mua hàng");
+                }
             }
         } catch (error) {
-            NotificationExtension.Fails("Đã xảy ra lỗi khi thêm vào giỏ hàng");
+            message.error("Thêm vào giỏ hàng thất bại");
+        } finally {
+            setisLoading(false);
+            setIsLoadingPaymentButton(false);
         }
     };
+
+    // Tính phần trăm giảm giá
+    const calculateDiscountPercentage = (
+        originalPrice: number,
+        discountPrice: number,
+    ) => {
+        if (
+            !originalPrice ||
+            !discountPrice ||
+            originalPrice <= discountPrice
+        ) {
+            return 0; // Không giảm giá hoặc giá gốc không hợp lệ
+        }
+        return Math.round(
+            ((originalPrice - discountPrice) / originalPrice) * 100,
+        );
+    };
+    useEffect(() => {
+        // lấy thông tin user
+        const fetchDataUser = async () => {
+            try {
+                const response = await instance.get("/auth/profile");
+                if (response && response.status === 200) {
+                    const data = response.data;
+                    setInforfUser(data);
+                }
+            } catch (error) {
+                console.error("Error fetching user data", error);
+            }
+        };
+        fetchDataUser();
+    }, []);
     return (
         <div className="product-details">
             <div className="product-header">
@@ -137,39 +292,64 @@ const RightProduct = ({ data, id }: Props) => {
             </Flex>
             <div className="product-pricing my-[5px] py-[5px] ">
                 <Flex direction="row" align="center" gap="lg">
-                    {/* <Badge
-                        size="lg"
-                        radius="sm"
-                        style={{ backgroundColor: "red" }}
-                    >
-                        -35%
-                    </Badge>
-                    <span className="current-price text-[#ef683a] text-[17px] font-bold">
-                        {data?.discount_price}
-                    </span>
-                    <span className="original-price text-[#777a7b] text-[14px] ">
-                        <del>{data?.price}</del>
-                    </span> */}
-                    <span className="current-price text-[#ef683a] text-[17px] font-bold">
-                        {formatCurrencyVN(
-                            filteredVariant
-                                ? filteredVariant?.discount_price
-                                : data?.discount_price,
-                        )}
-                    </span>
-                    <span className="original-price text-[#777a7b] text-[14px] ">
-                        <del>
-                            {formatCurrencyVN(
-                                filteredVariant
-                                    ? filteredVariant?.price
-                                    : data?.price,
-                            )}
-                        </del>
-                    </span>
+                    {/* NẾU CÓ DISCOUNT_PRICE */}
+                    {filteredVariant?.discount_price !== "0.00" ? (
+                        <>
+                            {/* phần trăm được giảm */}
+                            <Badge
+                                size="lg"
+                                radius="sm"
+                                style={{ backgroundColor: "red" }}
+                            >
+                                {calculateDiscountPercentage(
+                                    filteredVariant
+                                        ? Number(filteredVariant?.price)
+                                        : Number(data?.price),
+                                    filteredVariant
+                                        ? Number(
+                                              filteredVariant?.discount_price,
+                                          )
+                                        : Number(data?.discount_price),
+                                )}
+                                %
+                            </Badge>
+
+                            <span className="current-price text-[#ef683a] text-[17px] font-bold">
+                                {/* giá sau khi được giảm */}
+                                {formatCurrencyVN(
+                                    filteredVariant
+                                        ? filteredVariant?.discount_price
+                                        : data?.discount_price,
+                                )}
+                            </span>
+                            <span className="original-price text-[#777a7b] text-[14px] ">
+                                <del>
+                                    {/* giá gốc */}
+                                    {formatCurrencyVN(
+                                        filteredVariant
+                                            ? filteredVariant?.price
+                                            : data?.price,
+                                    )}
+                                </del>
+                            </span>
+                        </>
+                    ) : (
+                        // NẾU KHÔNG CÓ DISCOUNT_PRICE
+                        <>
+                            <span className="current-price text-[#ef683a] text-[17px] font-bold">
+                                {/* giá gốc */}
+                                {formatCurrencyVN(
+                                    filteredVariant
+                                        ? filteredVariant?.price
+                                        : data?.price,
+                                )}
+                            </span>
+                        </>
+                    )}
                 </Flex>
             </div>
             <Flex direction="column" gap="sm" className="product-attributes">
-                {attributes.map((attribute) => (
+                {uniqueAttributes2.map((attribute: any) => (
                     <div key={attribute}>
                         <h4 style={{ fontWeight: "600" }}>{attribute}</h4>
                         <Flex direction="row" gap="lg">
@@ -304,13 +484,20 @@ const RightProduct = ({ data, id }: Props) => {
                                         deg: 35,
                                     }}
                                     style={{
-                                        padding: "20px ",
-                                        cursor: "pointer",
+                                        padding: "20px",
+                                        cursor: isLoading
+                                            ? "not-allowed"
+                                            : "pointer",
+                                        opacity: isLoading ? 0.7 : 1,
                                     }}
                                     radius="xs"
-                                    onClick={() => onhandleAddToCart()}
+                                    onClick={() => onhandleAddToCart("cart")}
                                 >
-                                    Thêm vào giỏ hàng
+                                    {isLoading ? (
+                                        <Loader color="blue" size="xs" />
+                                    ) : (
+                                        "Thêm vào giỏ hàng"
+                                    )}
                                 </Badge>
                             </div>
                             <div style={{ width: "50%" }}>
@@ -325,11 +512,21 @@ const RightProduct = ({ data, id }: Props) => {
                                     }}
                                     radius="xs"
                                     style={{
-                                        padding: "20px ",
-                                        cursor: "pointer",
+                                        padding: "20px",
+                                        cursor: isLoadingPaymentButton
+                                            ? "not-allowed"
+                                            : "pointer",
+                                        opacity: isLoadingPaymentButton
+                                            ? 0.7
+                                            : 1,
                                     }}
+                                    onClick={() => onhandleAddToCart("buy")}
                                 >
-                                    Mua ngay
+                                    {isLoadingPaymentButton ? (
+                                        <Loader color="#fff" size="xs" />
+                                    ) : (
+                                        "Mua ngay"
+                                    )}{" "}
                                 </Badge>
                             </div>
                         </>
@@ -344,143 +541,3 @@ const RightProduct = ({ data, id }: Props) => {
 };
 
 export default RightProduct;
-
-// const RightProduct = ({ data: product }: any) => {
-//     const [selectedMaterial, setSelectedMaterial] = useState("");
-//     const [selectedColor, setSelectedColor] = useState("");
-//     console.log("data", product);
-//     // Lấy tất cả giá trị unique của "Chất Liệu" và "Màu Sắc" từ dữ liệu
-//     const materials = Array.from(
-//         new Set(
-//             product.variants.flatMap((variant: any) =>
-//                 variant.attributes
-//                     .filter(
-//                         (attr: any) =>
-//                             attr.attribute_value.attributes.name ===
-//                             "Chất Liệu",
-//                     )
-
-//                     .map((attr: any) => attr.attribute_value.name),
-//             ),
-//         ),
-//     );
-//     console.log("materials", materials);
-//     // Tìm các màu khả dụng dựa trên chất liệu đã chọn
-//     const availableColorsForMaterial = selectedMaterial
-//         ? Array.from(
-//               new Set(
-//                   product.variants
-//                       .filter((variant: any) =>
-//                           variant.attributes.some(
-//                               (attr: any) =>
-//                                   attr.attribute_value.attributes.name ===
-//                                       "Chất Liệu" &&
-//                                   attr.attribute_value.name ===
-//                                       selectedMaterial,
-//                           ),
-//                       )
-//                       .flatMap((variant: any) =>
-//                           variant.attributes
-//                               .filter(
-//                                   (attr: any) =>
-//                                       attr.attribute_value.attributes.name ===
-//                                       "Màu Sắc",
-//                               )
-//                               .map((attr: any) => attr.attribute_value.name),
-//                       ),
-//               ),
-//           )
-//         : [];
-//     console.log("availableColorsForMaterial", availableColorsForMaterial);
-//     const colors = Array.from(
-//         new Set(
-//             product.variants.flatMap((variant: any) =>
-//                 variant.attributes
-//                     .filter(
-//                         (attr: any) =>
-//                             attr.attribute_value.attributes.name === "Màu Sắc",
-//                     )
-//                     .map((attr: any) => attr.attribute_value.name),
-//             ),
-//         ),
-//     );
-//     console.log("colors", colors);
-//     // Lọc variant theo lựa chọn của người dùng
-//     const filteredVariant = product.variants.find((variant: any) => {
-//         const material = variant.attributes.find(
-//             (attr: any) => attr.attribute_value.attributes.name === "Chất Liệu",
-//         )?.attribute_value.name;
-//         const color = variant.attributes.find(
-//             (attr: any) => attr.attribute_value.attributes.name === "Màu Sắc",
-//         )?.attribute_value.name;
-
-//         return material === selectedMaterial && color === selectedColor;
-//     });
-//     console.log("filteredVariant", filteredVariant);
-//     return (
-//         <div>
-//             <div>
-//                 <h3>Chọn thuộc tính</h3>
-//                 <div>
-//                     <label>Chất Liệu: </label>
-//                     <select
-//                         value={selectedMaterial}
-//                         onChange={(e) => {
-//                             setSelectedMaterial(e.target.value);
-//                             setSelectedColor(""); // Reset màu sắc khi thay đổi chất liệu
-//                         }}
-//                     >
-//                         <option value="">Chọn Chất Liệu</option>
-//                         {materials.map((material: any) => (
-//                             <option key={material} value={material}>
-//                                 {material}
-//                             </option>
-//                         ))}
-//                     </select>
-//                 </div>
-
-//                 <div>
-//                     <label>Màu Sắc: </label>
-//                     <select
-//                         value={selectedColor}
-//                         onChange={(e) => setSelectedColor(e.target.value)}
-//                     >
-//                         <option value="">Chọn Màu Sắc</option>
-//                         {colors.map((color: any) => (
-//                             <option
-//                                 key={color}
-//                                 value={color}
-//                                 style={{
-//                                     color: availableColorsForMaterial.includes(
-//                                         color,
-//                                     )
-//                                         ? "red"
-//                                         : "black",
-//                                 }}
-//                                 disabled={
-//                                     !availableColorsForMaterial.includes(color)
-//                                 }
-//                             >
-//                                 {color}
-//                             </option>
-//                         ))}
-//                     </select>
-//                 </div>
-
-//                 {filteredVariant ? (
-//                     <div>
-//                         <h4>Thông tin sản phẩm</h4>
-//                         <p>SKU: {filteredVariant.sku}</p>
-//                         <p>Giá: {filteredVariant.price}</p>
-//                         <p>Giảm giá: {filteredVariant.discount_price}</p>
-//                         <p>Tồn kho: {filteredVariant.stock}</p>
-//                     </div>
-//                 ) : (
-//                     <p>Không tìm thấy sản phẩm với cặp thuộc tính đã chọn.</p>
-//                 )}
-//             </div>
-//         </div>
-//     );
-// };
-
-// export default RightProduct;

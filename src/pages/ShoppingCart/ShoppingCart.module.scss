@@ -1,6 +1,6 @@
 .Title {
-    margin-top: 50px;
-    padding: 0 15px;
+    // margin-top: 50px;
+
     font-size: 24px;
     font-weight: 500;
     display: flex;
@@ -9,19 +9,19 @@
         width: 24px;
         height: 24px;
         font-size: 12px;
-        background-color: #bc5b64;
+        background-color: #ff041d;
         display: inline-block;
         border-radius: 100%;
         justify-content: center;
         align-items: center;
         color: #fff;
-        margin-left: 8px;
+        margin-left: 5px;
         padding: 3px 9px;
     }
 }
 .Main {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 2.5fr 1fr;
     gap: 20px;
     @media screen and (max-width: 1100px) {
         grid-template-columns: 1fr;
@@ -60,8 +60,8 @@
                 }
             }
             .Content_Price {
-                margin: 10px 0;
                 font-size: 16px;
+                margin-bottom: 6px;
                 font-weight: 600;
                 color: #d93344;
                 @media screen and (max-width: 600px) {
@@ -123,39 +123,12 @@
         }
     }
     .Right {
-        border: 1px solid #a9a9b2;
-        padding: 30px;
         .Right_Container {
-            padding: 0 30px;
             .Right_Title {
                 text-transform: none;
-                font-size: 24px;
-                font-weight: 700;
-                color: #0a0a0b;
-            }
-            .Right_Price {
-                display: flex;
-                justify-content: space-between;
-                .Right_Price_Title {
-                    font-size: 16px;
-                    font-weight: 400;
-                    letter-spacing: 0;
-                    text-transform: inherit;
-                }
-                .Right_Price_Value {
-                    font-size: 16px;
-                    font-weight: 600;
-                    line-height: 1.2;
-                    display: flex;
-                    align-items: center;
-                    justify-content: space-between;
-                    .Right_Price_Value_Unit {
-                        margin-top: 2px;
-                        font-size: 20px;
-                        font-weight: 600;
-                        line-height: 1.2;
-                    }
-                }
+                font-size: 18px;
+                font-weight: 600;
+                color: #000;
             }
         }
     }

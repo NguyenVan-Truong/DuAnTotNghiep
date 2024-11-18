@@ -45,13 +45,13 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     <React.StrictMode>
         <MantineProvider theme={theme}>
             <Notifications />
-            <ModalsProvider>
-                <QueryClientProvider client={queryClient}>
-                    <BrowserRouter>
+            <QueryClientProvider client={queryClient}>
+                <BrowserRouter>
+                    <ModalsProvider>
                         <App />
-                    </BrowserRouter>
-                </QueryClientProvider>
-            </ModalsProvider>
+                    </ModalsProvider>
+                </BrowserRouter>
+            </QueryClientProvider>
         </MantineProvider>
     </React.StrictMode>,
 );

@@ -19,7 +19,7 @@ const OrderDetail = ({ data }: OrderDetailProps) => {
                 {Number(item.total).toLocaleString("vi-VN")} VND
             </td>
             <td className="px-4 py-2 text-left">
-                {item.variant ? JSON.parse(item.variant).join(", ") : ""}
+                {/* {item.variant ? JSON.parse(item.variant).join(", ") : ""} */}
             </td>
         </tr>
     ));
@@ -57,7 +57,7 @@ const OrderDetail = ({ data }: OrderDetailProps) => {
                 In hóa đơn
             </button>
             <div ref={componentPDF}>
-                <h2>Mã đơn hàng : {data.id}</h2>
+                <h2>Mã đơn hàng : {data.order_code}</h2>
                 <div
                     style={{
                         display: "flex",
@@ -139,15 +139,7 @@ const OrderDetail = ({ data }: OrderDetailProps) => {
                         </p>
                         <p>
                             <strong>Ngày tạo:</strong>{" "}
-                            {new Date(data.created_at).toLocaleDateString(
-                                "vi-VN",
-                            )}
-                        </p>
-                        <p>
-                            <strong>Ngày cập nhật:</strong>{" "}
-                            {new Date(data.updated_at).toLocaleDateString(
-                                "vi-VN",
-                            )}
+                            <span>{data.created_at}</span>
                         </p>
                     </div>
                 </div>

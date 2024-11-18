@@ -3,5 +3,6 @@ export function formatCurrencyVN(price: string): string {
     return new Intl.NumberFormat("vi-VN", {
         style: "currency",
         currency: "VND",
+        currencyDisplay: "narrowSymbol", // Hiển thị ký hiệu ngắn gọn hoặc không có ký hiệu
     }).format(numberPrice);
 }

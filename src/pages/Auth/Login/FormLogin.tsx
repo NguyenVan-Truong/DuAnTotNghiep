@@ -11,6 +11,7 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { message } from "antd";
+import { useState } from "react";
 import { FaUser } from "react-icons/fa";
 import { FiLock } from "react-icons/fi";
 import { Link, useNavigate } from "react-router-dom";
@@ -23,15 +24,28 @@ const Login = () => {
         },
 
         validate: {
-            username: (value) =>
-                value.length >= 6 ? null : "Tài khoản phải có ít nhất 6 ký tự",
-            password: (value) =>
-                value.length >= 5 ? null : "Mật khẩu phải có ít nhất 6 ký tự",
+            username: (value) => {
+                if (!value) return "Tài khoản không được để trống";
+                if (value.includes(" "))
+                    return "Tài khoản không được chứa dấu cách";
+                if (value.length < 6)
+                    return "Tài khoản phải có ít nhất 6 ký tự";
+                return null;
+            },
+            password: (value) => {
+                if (!value) return "Mật khẩu không được để trống";
+                if (value.includes(" "))
+                    return "Mật khẩu không được chứa dấu cách";
+                if (value.length < 6) return "Mật khẩu phải có ít nhất 6 ký tự";
+                return null;
+            },
         },
     });
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
     const onSubmit = async (user: UserLogin) => {
         try {
+            setLoading(true);
             const response = await instance.post(`/auth/login`, user);
             localStorage.setItem("token", response.data.access_token);
             localStorage.setItem(
@@ -45,6 +59,8 @@ const Login = () => {
         } catch (error) {
             message.error("Tài Khoản hoặc Mật Khẩu không chính xác");
             console.error("Error:", error);
+        } finally {
+            setLoading(false); // tắt loading khi xong
         }
     };
 
@@ -101,6 +117,7 @@ const Login = () => {
                     size="md"
                     fullWidth
                     className="!bg-black !text-white hover:!bg-gray-800"
+                    loading={loading}
                 >
                     Đăng Nhập
                 </Button>
