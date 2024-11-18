@@ -1,6 +1,6 @@
 import instance from "@/configs/axios";
 import { NotificationExtension } from "@/extension/NotificationExtension";
-import { UserRegister } from "@/model/User";
+import { ChangePasswordNew } from "@/model/User";
 import {
     Button,
     Flex,
@@ -112,7 +112,7 @@ const ChangePassword = () => {
     const color = strength === 100 ? "teal" : strength > 50 ? "yellow" : "red";
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
-    const onSubmit = async (user: any) => {
+    const onSubmit = async (user: ChangePasswordNew) => {
         try {
             setLoading(true);
             await instance.post(`/auth/change-password`, user);
