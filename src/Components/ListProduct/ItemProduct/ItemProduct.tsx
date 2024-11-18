@@ -8,16 +8,28 @@ import style from "../ListProduct.module.scss";
 import { useNavigate } from "react-router-dom";
 import instance from "@/configs/axios";
 import { useQueryClient } from "@tanstack/react-query";
-import { toast } from "react-toastify";
+import { message } from "antd";
+
 type props = {
     product: Product;
 };
+
 type FavoritesData = number[];
+
 const ItemProduct = ({ product }: props) => {
     const navigate = useNavigate();
     const [tym, setTym] = useState(false);
     const queryClient = useQueryClient();
+
     const onhandleTymItem = async () => {
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+            message.error("Vui lòng đăng nhập thêm sản phẩm yêu thích");
+            navigate("/xac-thuc/dang-nhap");
+            return; // Dừng lại không thực hiện hành động yêu thích
+        }
+
         setTym(!tym);
         try {
             const response = await instance.post("/favorites/toggle", {
@@ -39,8 +51,6 @@ const ItemProduct = ({ product }: props) => {
                         return updatedData;
                     },
                 );
-
-                // Yêu cầu fetch lại dữ liệu yêu thích
             } else {
                 console.error("Error toggling favorite status:", response.data);
             }
@@ -53,6 +63,7 @@ const ItemProduct = ({ product }: props) => {
     const onhandleTurnPage = (id: number, slug: string) => {
         navigate(`/chi-tiet-san-pham/${slug}`, { state: { id: id } });
     };
+
     return (
         <div className={style.listProductsItemMain}>
             <div className={style.listProductsItem}>
@@ -120,20 +131,16 @@ const ItemProduct = ({ product }: props) => {
                     gap="xs"
                 >
                     {tym ? (
-                        <>
-                            <IconHeartFilled
-                                color="red"
-                                onClick={onhandleTymItem}
-                            />
-                        </>
+                        <IconHeartFilled
+                            color="red"
+                            onClick={onhandleTymItem}
+                        />
                     ) : (
-                        <>
-                            <CiHeart
-                                className={`${style.listProductsFavoriteIcon} text-[24px]`}
-                                onClick={onhandleTymItem}
-                                style={{ cursor: "pointer" }}
-                            />
-                        </>
+                        <CiHeart
+                            className={`${style.listProductsFavoriteIcon} text-[24px]`}
+                            onClick={onhandleTymItem}
+                            style={{ cursor: "pointer" }}
+                        />
                     )}
                     <div className={`${style.LinkButtonWrapper}`}>
                         <Button

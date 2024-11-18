@@ -12,11 +12,13 @@ import { SubmitHandler } from "react-hook-form";
 import { Supports } from "@/model/Supports";
 import { NotificationExtension } from "@/extension/NotificationExtension";
 import Loading from "@/extension/Loading";
+import { message } from "antd";
+import { useNavigate } from "react-router-dom";
 
 const FormSupport = () => {
     const [files, setFiles] = useState<File[]>([]);
     const [visible, { toggle }] = useDisclosure(true);
-
+    const navigate = useNavigate();
     const fetchData = async () => {
         await new Promise((resolve) => setTimeout(resolve, 500));
         const response = await instance.get("/contacts");
@@ -27,24 +29,41 @@ const FormSupport = () => {
         queryKey: ["contacts"],
         queryFn: fetchData,
     });
-
+    const [loading, setLoading] = useState(false);
     const mutation = useMutation({
         mutationFn: async (formData: FormData) => {
+            const token = localStorage.getItem("token");
+
+            if (!token) {
+                message.error("Vui lòng đăng nhập gửi hỗ trợ");
+                return; // Dừng lại không thực hiện hành động yêu thích
+            }
+            setLoading(true);
             const { data } = await instance.post("/contacts", formData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
                 },
             });
+            setLoading(false);
             return data;
         },
         onSuccess: () => {
-            NotificationExtension.Success("Thêm thành công ");
-            form.reset();
-            setFiles([]);
+            const token = localStorage.getItem("token");
+
+            // Chỉ thực hiện nếu người dùng đã đăng nhập
+            if (token) {
+                message.success("Gửi hõ trợ thành công ");
+                form.reset();
+                setFiles([]);
+            }
         },
     });
 
     const OnSubmit = (product: any) => {
+        if (!product.content || product.content.trim() === "") {
+            message.error("Vui lòng nhập nội dung hỗ trợ.");
+            return;
+        }
         const formData = new FormData();
         formData.append("content", product.content);
         files.forEach((file) => {
@@ -59,7 +78,12 @@ const FormSupport = () => {
             content: "",
             image: "",
         },
+        validate: {
+            content: (value) =>
+                value.trim() === "" ? "Nội dung không được để trống" : null,
+        },
     });
+
     if (isLoading) {
         return <Loading />;
     }
@@ -70,6 +94,7 @@ const FormSupport = () => {
             </div>
         );
     }
+
     return (
         <div className={Style.container}>
             <div className={Style.bannerLeft}>
@@ -114,7 +139,11 @@ const FormSupport = () => {
                             placeholder="Your comment"
                             {...form.getInputProps("content")}
                         />
-
+                        {/* {form.errors.content && (
+                            <Text color="red" size="sm">
+                                {form.errors.content}
+                            </Text>
+                        )} */}
                         <Group justify="space-between" mt="md">
                             <Group>
                                 <FileButton
@@ -143,7 +172,9 @@ const FormSupport = () => {
                                     ))}
                                 </ul>
                             </Group>
-                            <Button type="submit">Gửi Yêu Cầu</Button>
+                            <Button loading={loading} type="submit">
+                                Gửi Yêu Cầu
+                            </Button>
                         </Group>
                     </form>
                 </div>

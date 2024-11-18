@@ -106,7 +106,11 @@ const ProductsHomeNew = () => {
         queryFn: fetchData,
     });
     if (isLoading) {
-        return <Loading />;
+        return (
+            <div className="flex items-center justify-center h-[362px]">
+                <Loading />
+            </div>
+        );
     }
     if (error) return <div>Error: {error.message}</div>;
     return (

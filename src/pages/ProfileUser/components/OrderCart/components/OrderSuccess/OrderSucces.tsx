@@ -1,17 +1,29 @@
 import { AvatarUtils } from "@/common/ColorByName/AvatarUtils";
 import instance from "@/configs/axios";
-import { Badge, Box, Button, Input, Select } from "@mantine/core";
+import {
+    ActionIcon,
+    Badge,
+    Box,
+    Button,
+    Input,
+    Select,
+    Tooltip,
+} from "@mantine/core";
 import { DateInput } from "@mantine/dates";
 import { modals } from "@mantine/modals";
 import {
     IconCalendar,
     IconEye,
     IconFileExport,
+    IconMessageCircle,
+    IconMessageCircleStar,
     IconSearch,
     IconSwitch,
+    IconThumbUp,
 } from "@tabler/icons-react";
 import {
     MantineReactTable,
+    MRT_Row,
     MRT_RowSelectionState,
     useMantineReactTable,
     type MRT_ColumnDef,
@@ -78,9 +90,6 @@ const OrderSucces = () => {
         }
     };
 
-    // Hook gọi fetchData khi pagination thay đổi
-
-    // Hàm lấy màu cho trạng thái đơn hàng
     function getColorStatus(text: any) {
         switch (text) {
             case "Chờ xử lý":
@@ -98,7 +107,26 @@ const OrderSucces = () => {
     function getColorStatusPayment(text: any) {
         return text === "Đã thanh toán" ? "green" : "red";
     }
-
+    function processTaskActionMenu(row: MRT_Row<any>): any {
+        return (
+            <>
+                <Tooltip label="Đánh giá">
+                    <ActionIcon
+                        variant="light"
+                        aria-label="Settings"
+                        color="green"
+                        disabled={
+                            row.original.status !== "Hoàn thành" ||
+                            (row.original.reviews &&
+                                row.original.reviews.length > 0)
+                        }
+                    >
+                        <IconMessageCircleStar size={20} />
+                    </ActionIcon>
+                </Tooltip>
+            </>
+        );
+    }
     // Cấu hình các cột của bảng
     const columns = useMemo<MRT_ColumnDef<any>[]>(
         () => [
@@ -183,6 +211,22 @@ const OrderSucces = () => {
                         : "₫0";
                 },
             },
+            {
+                accessorKey: "action",
+                header: "Thao tác",
+                size: 10,
+                Cell: ({ row }) => (
+                    <Box
+                        style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "4px",
+                        }}
+                    >
+                        {processTaskActionMenu(row)}
+                    </Box>
+                ),
+            },
         ],
         [],
     );
@@ -227,7 +271,7 @@ const OrderSucces = () => {
             showColumnFilters: false,
             columnPinning: {
                 left: ["mrt-row-select", "order_code"],
-                right: ["status"],
+                right: ["action"],
             },
             density: "xs",
         },
