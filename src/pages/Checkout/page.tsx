@@ -1,11 +1,10 @@
+import instance from "@/configs/axios";
 import { CartItem } from "@/model/Cart";
 import { formatCurrencyVN } from "@/model/_base/Number";
 import {
     Button,
     Checkbox,
     Flex,
-    Group,
-    Radio,
     ScrollArea,
     Select,
     Textarea,
@@ -13,16 +12,37 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { IconBuildingBank, IconCashBanknote } from "@tabler/icons-react";
+import { message } from "antd";
+import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import DescriptionShipping from "./DescriptionShipping";
 import styles from "./checkoutPage.module.scss"; // Import CSS module
-import instance from "@/configs/axios";
-import { useState } from "react";
-import { message } from "antd";
 
-type Props = {};
+type UserInfo = {
+    id: number;
+    username: string;
+    full_name: string;
+    email: string;
+    phone: string;
+    province_id: string;
+    district_id: string;
+    ward_id: string;
+    address: string;
+    birthday: string;
+    avatar: string;
+    description: string | null;
+    user_agent: string | null;
+    created_at: string;
+    updated_at: string;
+    rule_id: number;
+    google_id: string | null;
+    last_login: string | null;
+    deleted_at: string | null;
+    status: number;
+    avatar_url: string;
+};
 
-const CheckoutPage = (props: Props) => {
+const CheckoutPage = () => {
     const location = useLocation();
     // thông tin tỉnh thành phố
     const [valueCity, setValueCity] = useState([]);
@@ -36,6 +56,7 @@ const CheckoutPage = (props: Props) => {
     // Phương thức thanh toán
     const [selectedPaymentMethod, setSelectedPaymentMethod] =
         useState<Number>(3);
+    const [inforUser, setInforfUser] = useState<UserInfo>();
     const form = useForm({
         mode: "uncontrolled",
         initialValues: {
@@ -51,7 +72,17 @@ const CheckoutPage = (props: Props) => {
 
         validate: {
             email: (value) =>
-                /^\S+@\S+$/.test(value) ? null : "Invalid email",
+                !value
+                    ? "Email là bắt buộc"
+                    : /^\S+@\S+$/.test(value)
+                      ? null
+                      : "Email phải đúng định dạng",
+            name: (value) => (!value ? "Tên là bắt buộc" : null),
+            sđt: (value) => (!value ? "Số điện thoại là bắt buộc" : null),
+            city: (value) => (!value ? "Thành phố là bắt buộc" : null),
+            district: (value) => (!value ? "Quận/Huyện là bắt buộc" : null),
+            ward: (value) => (!value ? "Phường/Xã là bắt buộc" : null),
+            address: (value) => (!value ? "Địa chỉ là bắt buộc" : null),
         },
     });
     // CHọn tỉnh
@@ -127,8 +158,41 @@ const CheckoutPage = (props: Props) => {
 
     // Xử lý submit form
     const onhandleSubmit = async (values: any) => {
+        const dataSubmit = {
+            customer_id: inforUser?.id,
+            customer_name: inforUser?.full_name,
+            promotion_id: "id mã giảm giá ", //hỏi hoàn
+            total_amount: location?.state.totalPrice,
+            discount_amount: "phí giảm giá",
+            shipping_fee: "phí ship",
+            final_amount: "Tổng tiền trừ các chi phí",
+            status: 1,
+            payment_method_id: selectedPaymentMethod,
+            payment_status: 1, //thanh toán off trạng thái là 1
+            shipping_address: form.getValues().description,
+            discount_code: "Mã code đã áp dụng", //chưa ai làm
+            email: form.getValues().email,
+            phone_number: form.getValues().sđt,
+            note: form.getValues().description,
+            order_items:[]
+        };
         console.log("values", values);
+        console.log("dataSubmit", dataSubmit);
     };
+    const fetchDataUser = async () => {
+        try {
+            const response = await instance.get("/auth/profile");
+            if (response && response.status === 200) {
+                const data = response.data;
+                setInforfUser(data);
+            }
+        } catch (error) {
+            console.error("Error fetching user data", error);
+        }
+    };
+    useEffect(() => {
+        fetchDataUser();
+    }, []);
     return (
         <div className="padding my-[40px]">
             <div className="container">
@@ -176,8 +240,9 @@ const CheckoutPage = (props: Props) => {
                                             withAsterisk
                                             label="Số điện thoại"
                                             placeholder="Nhập họ và tên"
-                                            {...form.getInputProps("name")}
+                                            {...form.getInputProps("sđt")}
                                             className="w-[50%]"
+                                            type="number"
                                         />
                                         <Select
                                             withAsterisk
@@ -185,6 +250,7 @@ const CheckoutPage = (props: Props) => {
                                             data={valueCity}
                                             placeholder="Nhập tỉnh/thành phố"
                                             className="w-[50%]"
+                                            {...form.getInputProps("city")}
                                             onClick={() => {
                                                 if (valueCity.length === 0) {
                                                     onhandleSelectCity();
@@ -208,6 +274,7 @@ const CheckoutPage = (props: Props) => {
                                             placeholder="Nhập quận/huyện"
                                             data={valueDistrict}
                                             className="w-[50%]"
+                                            {...form.getInputProps("district")}
                                             onClick={() => {
                                                 if (
                                                     valueCity.length === 0 ||
@@ -269,18 +336,6 @@ const CheckoutPage = (props: Props) => {
                                             {...form.getInputProps("address")}
                                         />
                                     </div>
-                                    {/* <div className="mb-[10px]">
-                                        <Checkbox
-                                            mt="md"
-                                            label="Tạo tài khoản?"
-                                            {...form.getInputProps(
-                                                "termsOfService",
-                                                {
-                                                    type: "checkbox",
-                                                },
-                                            )}
-                                        />
-                                    </div> */}
                                     <div>
                                         <h2
                                             className={`${styles.sectionTitle} font-medium pt-[10px] text-[20px] mb-[10px]`}

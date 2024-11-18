@@ -20,7 +20,7 @@ import { useNavigate } from "react-router-dom";
 type Props = {
     data: TypeProductDetail | undefined;
     id: number;
-    dataAttribute: any;
+    // dataAttribute: any;
 };
 type AttributeValues = {
     [key: string]: string[] | any;
@@ -43,7 +43,7 @@ type TypeFilteredVariant = {
     attributes: Attribute[];
 };
 
-const RightProduct = ({ data, id, dataAttribute }: Props) => {
+const RightProduct = ({ data, id }: Props) => {
     if (!data) return null;
     const navigate = useNavigate();
     const [quantity, setQuantity] = useState(1);
@@ -56,7 +56,7 @@ const RightProduct = ({ data, id, dataAttribute }: Props) => {
         ) {
             setQuantity(quantity + 1);
         } else {
-            NotificationExtension.Fails("Không thể vượt quá sản phẩm có sẵn");
+            message.error("Số lượng sản phẩm không đủ");
         }
     };
     const decreaseQuantity = () => {
@@ -65,8 +65,14 @@ const RightProduct = ({ data, id, dataAttribute }: Props) => {
         }
     };
     //#region handleAttribute
+    const dataAttribute2 = data?.variants.flatMap((variant: any) =>
+        variant.attributes.map((attr: any) => attr.attribute),
+    );
+
+    // Loại bỏ các giá trị trùng lặp
+    const uniqueAttributes2 = [...new Set(dataAttribute2)];
     const [selectedAttributes, setSelectedAttributes] = useState<any>({});
-    const uniqueAttributes: AttributeValues = dataAttribute.reduce(
+    const uniqueAttributes: AttributeValues = uniqueAttributes2.reduce(
         (acc: any, attr: any) => {
             const values = Array.from(
                 new Set(
@@ -117,7 +123,7 @@ const RightProduct = ({ data, id, dataAttribute }: Props) => {
     //add Cart
     const onhandleAddToCart = async (type: string) => {
         // Kiểm tra nếu selectedAttributes không đủ các thuộc tính cần thiết từ dataAttribute
-        const missingAttributes = dataAttribute.filter(
+        const missingAttributes = uniqueAttributes2.filter(
             (attribute: string) => !(attribute in selectedAttributes),
         );
 
@@ -166,9 +172,19 @@ const RightProduct = ({ data, id, dataAttribute }: Props) => {
                                 Number(dataAddToCart.product_variant_id)
                         );
                     });
-                    const TotalPrice =
-                        Number(addedProduct.product_variant.discount_price) *
-                        Number(addedProduct.quantity);
+                    let TotalPrice = 0;
+                    if (
+                        addedProduct?.product_variant.discount_price !== "0.00"
+                    ) {
+                        TotalPrice =
+                            Number(
+                                addedProduct.product_variant.discount_price,
+                            ) * Number(addedProduct.quantity);
+                    } else {
+                        TotalPrice =
+                            Number(addedProduct.product_variant.price) *
+                            Number(addedProduct.quantity);
+                    }
                     if (addedProduct && TotalPrice) {
                         navigate("/thanh-toan", {
                             state: {
@@ -223,44 +239,64 @@ const RightProduct = ({ data, id, dataAttribute }: Props) => {
             </Flex>
             <div className="product-pricing my-[5px] py-[5px] ">
                 <Flex direction="row" align="center" gap="lg">
-                    {/* phần trăm được giảm */}
-                    <Badge
-                        size="lg"
-                        radius="sm"
-                        style={{ backgroundColor: "red" }}
-                    >
-                        {calculateDiscountPercentage(
-                            filteredVariant
-                                ? Number(filteredVariant?.price)
-                                : Number(data?.price),
-                            filteredVariant
-                                ? Number(filteredVariant?.discount_price)
-                                : Number(data?.discount_price),
-                        )}
-                        %
-                    </Badge>
-                    <span className="current-price text-[#ef683a] text-[17px] font-bold">
-                        {/* giá sau khi được giảm */}
-                        {formatCurrencyVN(
-                            filteredVariant
-                                ? filteredVariant?.discount_price
-                                : data?.discount_price,
-                        )}
-                    </span>
-                    <span className="original-price text-[#777a7b] text-[14px] ">
-                        <del>
-                            {/* giá gốc */}
-                            {formatCurrencyVN(
-                                filteredVariant
-                                    ? filteredVariant?.price
-                                    : data?.price,
-                            )}
-                        </del>
-                    </span>
+                    {/* NẾU CÓ DISCOUNT_PRICE */}
+                    {filteredVariant?.discount_price !== "0.00" ? (
+                        <>
+                            {/* phần trăm được giảm */}
+                            <Badge
+                                size="lg"
+                                radius="sm"
+                                style={{ backgroundColor: "red" }}
+                            >
+                                {calculateDiscountPercentage(
+                                    filteredVariant
+                                        ? Number(filteredVariant?.price)
+                                        : Number(data?.price),
+                                    filteredVariant
+                                        ? Number(
+                                              filteredVariant?.discount_price,
+                                          )
+                                        : Number(data?.discount_price),
+                                )}
+                                %
+                            </Badge>
+
+                            <span className="current-price text-[#ef683a] text-[17px] font-bold">
+                                {/* giá sau khi được giảm */}
+                                {formatCurrencyVN(
+                                    filteredVariant
+                                        ? filteredVariant?.discount_price
+                                        : data?.discount_price,
+                                )}
+                            </span>
+                            <span className="original-price text-[#777a7b] text-[14px] ">
+                                <del>
+                                    {/* giá gốc */}
+                                    {formatCurrencyVN(
+                                        filteredVariant
+                                            ? filteredVariant?.price
+                                            : data?.price,
+                                    )}
+                                </del>
+                            </span>
+                        </>
+                    ) : (
+                        // NẾU KHÔNG CÓ DISCOUNT_PRICE
+                        <>
+                            <span className="current-price text-[#ef683a] text-[17px] font-bold">
+                                {/* giá gốc */}
+                                {formatCurrencyVN(
+                                    filteredVariant
+                                        ? filteredVariant?.price
+                                        : data?.price,
+                                )}
+                            </span>
+                        </>
+                    )}
                 </Flex>
             </div>
             <Flex direction="column" gap="sm" className="product-attributes">
-                {dataAttribute.map((attribute: any) => (
+                {uniqueAttributes2.map((attribute: any) => (
                     <div key={attribute}>
                         <h4 style={{ fontWeight: "600" }}>{attribute}</h4>
                         <Flex direction="row" gap="lg">

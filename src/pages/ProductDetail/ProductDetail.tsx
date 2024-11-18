@@ -19,7 +19,7 @@ const ProductDetail = () => {
     const [dataCategory, setDataCategory] = useState();
     const [isLoading, setisLoading] = useState(false);
     //attribute
-    const [dataAttribute, setDataAttribute] = useState([]);
+    // const [dataAttribute, setDataAttribute] = useState([]);
     //loading comment
     const [loadingComment, setLoadingComment] = useState(false);
 
@@ -60,23 +60,23 @@ const ProductDetail = () => {
             setLoadingComment(false);
         }
     };
-    const fetchAttribute = async () => {
-        try {
-            const response = await instance.get(`/attribute`);
-            if (response.status === 200) {
-                // setDataAttribute(response.data.data);
-                const attributeNames = response.data.data.map(
-                    (item: any) => item.name,
-                );
-                setDataAttribute(attributeNames);
-            }
-        } catch (error) {
-            NotificationExtension.Fails("Đã xảy ra lỗi khi lấy dữ liệu");
-        }
-    };
+    // const fetchAttribute = async () => {
+    //     try {
+    //         const response = await instance.get(`/attribute`);
+    //         if (response.status === 200) {
+    //             // setDataAttribute(response.data.data);
+    //             const attributeNames = response.data.data.map(
+    //                 (item: any) => item.name,
+    //             );
+    //             setDataAttribute(attributeNames);
+    //         }
+    //     } catch (error) {
+    //         NotificationExtension.Fails("Đã xảy ra lỗi khi lấy dữ liệu");
+    //     }
+    // };
 
     useEffect(() => {
-        Promise.all([fetchData(), fetchDataComment(), fetchAttribute()]);
+        Promise.all([fetchData(), fetchDataComment()]);
         window.scrollTo(0, 0);
     }, [location.state.id]);
     useEffect(() => {
@@ -156,7 +156,7 @@ const ProductDetail = () => {
                                 <RightProduct
                                     data={data}
                                     id={location.state.id}
-                                    dataAttribute={dataAttribute}
+                                    // dataAttribute={dataAttribute}
                                 />
                             </div>
                             <div className="mt-[30px]">
@@ -176,7 +176,7 @@ const ProductDetail = () => {
                             <RightProduct
                                 data={data}
                                 id={location.state.id}
-                                dataAttribute={dataAttribute}
+                                // dataAttribute={dataAttribute}
                             />
                         </div>
                     </div>
