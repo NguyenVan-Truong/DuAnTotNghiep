@@ -22,7 +22,7 @@ const IconCart = () => {
                 return response.data.data;
             }
         } catch (error) {
-            NotificationExtension.Fails("Đã xảy ra lỗi khi lấy dữ liệu");
+            console.log(error);
         }
     };
     const {
@@ -112,62 +112,88 @@ const IconCart = () => {
                     </div>
                     <div className="max-h-[80%] overflow-auto custom-scrollbar">
                         {dataCart?.map((product: any, index: number) => (
-                            <div key={index} className="flex space-x-4 mb-2">
-                                <div>
-                                    <img
-                                        src={product.product.image_url}
-                                        alt=""
-                                        width={100}
-                                        style={{
-                                            maxHeight: "70px",
-                                            objectFit: "cover",
-                                        }}
-                                    />
-                                </div>
-                                <div>
-                                    <h1 className="font-medium text-lg">
-                                        {product.product.name}
-                                    </h1>
+                            <Flex
+                                direction={"row"}
+                                key={index}
+                                justify={"space-between"}
+                                align={"start"}
+                                gap={"sm"}
+                                style={{
+                                    borderBottom: "1px solid #f0f0f0",
+                                    padding: "10px 0",
+                                }}
+                            >
+                                <Flex
+                                    direction="row"
+                                    gap={"sm"}
+                                    align={"center"}
+                                >
                                     <div>
-                                        <p
+                                        <img
+                                            src={product.product.image_url}
+                                            alt=""
+                                            width={100}
                                             style={{
-                                                color: "#333",
-                                                fontSize: "14px",
-                                                fontWeight: "400",
+                                                maxHeight: "60px",
+                                                minHeight: "60px",
+                                                maxWidth: "80px",
+                                                minWidth: "80px",
+                                                objectFit: "cover",
                                             }}
-                                        >
-                                            {product.product_variant.attribute_values
-                                                .map((item: any) => item.name)
-                                                .join(", ")}
-                                        </p>
+                                        />
                                     </div>
-                                    <Flex direction={"row"} align={"center"}>
-                                        <p
-                                            className="text-base"
-                                            style={{
-                                                fontSize: "16px",
-                                            }}
+                                    <div>
+                                        <h1 className="font-medium text-lg">
+                                            {product.product.name}
+                                        </h1>
+                                        <div>
+                                            <p
+                                                style={{
+                                                    color: "#333",
+                                                    fontSize: "14px",
+                                                    fontWeight: "400",
+                                                }}
+                                            >
+                                                {product.product_variant.attribute_values
+                                                    .map(
+                                                        (item: any) =>
+                                                            item.name,
+                                                    )
+                                                    .join(", ")}
+                                            </p>
+                                        </div>
+                                        <Flex
+                                            direction={"row"}
+                                            align={"center"}
                                         >
-                                            {formatCurrencyVN(
-                                                product.product_variant
-                                                    .discount_price,
-                                            )}{" "}
-                                            x {product.quantity}
-                                        </p>
-                                    </Flex>
-                                </div>
+                                            <p
+                                                className="text-base"
+                                                style={{
+                                                    fontSize: "16px",
+                                                }}
+                                            >
+                                                {formatCurrencyVN(
+                                                    product.product_variant
+                                                        .discount_price,
+                                                )}{" "}
+                                                x {product.quantity}
+                                            </p>
+                                        </Flex>
+                                    </div>
+                                </Flex>
                                 <div>
                                     <CloseCircleOutlined
                                         style={{
                                             fontSize: "24px",
                                             color: "red",
+                                            marginTop: "5px",
                                         }}
                                         onClick={() => {
                                             handleDeleteProduct(product.id);
                                         }}
                                     />
                                 </div>
-                            </div>
+                            </Flex>
                         ))}
                     </div>
                     <div className="border-t border-t-gray-300 p-3 h-[20%] flex flex-col justify-between">

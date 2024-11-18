@@ -56,7 +56,7 @@ const ShoppingCart = () => {
                 return response.data.data;
             }
         } catch (error) {
-            NotificationExtension.Fails("Đã xảy ra lỗi khi lấy dữ liệu");
+            console.log(error);
         } finally {
             // setisLoading(false);
         }
