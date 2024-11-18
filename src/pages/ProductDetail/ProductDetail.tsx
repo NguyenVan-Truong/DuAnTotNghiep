@@ -34,7 +34,7 @@ const ProductDetail = () => {
                 setDataCategory(response.data.catalogue_id.join(","));
             }
         } catch (error) {
-            NotificationExtension.Fails("Đã xảy ra lỗi khi lấy dữ liệu");
+            console.log(error);
         } finally {
             setisLoading(false);
         }
@@ -53,9 +53,7 @@ const ProductDetail = () => {
                 setDataComment(response.data);
             }
         } catch (error) {
-            NotificationExtension.Fails(
-                "Đã xảy ra lỗi khi lấy dữ liệu đánh giá",
-            );
+            console.log(error);
         } finally {
             setLoadingComment(false);
         }

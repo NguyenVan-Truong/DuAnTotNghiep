@@ -126,7 +126,11 @@ const RightProduct = ({ data, id }: Props) => {
         const missingAttributes = uniqueAttributes2.filter(
             (attribute: string) => !(attribute in selectedAttributes),
         );
-
+        const token = localStorage.getItem("token");
+        if (!token) {
+            message.error("Vui lòng đăng nhập thêm sản phẩm vào giở hàng");
+            return; // Dừng lại không thực hiện hành động yêu thích
+        }
         // Nếu thiếu thuộc tính nào, hiển thị thông báo lỗi và dừng lại
         if (missingAttributes.length > 0) {
             message.error(

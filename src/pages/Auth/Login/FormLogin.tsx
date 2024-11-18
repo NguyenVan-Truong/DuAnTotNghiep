@@ -24,10 +24,21 @@ const Login = () => {
         },
 
         validate: {
-            username: (value) =>
-                value.length >= 6 ? null : "Tài khoản phải có ít nhất 6 ký tự",
-            password: (value) =>
-                value.length >= 5 ? null : "Mật khẩu phải có ít nhất 6 ký tự",
+            username: (value) => {
+                if (!value) return "Tài khoản không được để trống";
+                if (value.includes(" "))
+                    return "Tài khoản không được chứa dấu cách";
+                if (value.length < 6)
+                    return "Tài khoản phải có ít nhất 6 ký tự";
+                return null;
+            },
+            password: (value) => {
+                if (!value) return "Mật khẩu không được để trống";
+                if (value.includes(" "))
+                    return "Mật khẩu không được chứa dấu cách";
+                if (value.length < 6) return "Mật khẩu phải có ít nhất 6 ký tự";
+                return null;
+            },
         },
     });
     const navigate = useNavigate();

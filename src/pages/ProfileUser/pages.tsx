@@ -68,6 +68,15 @@ const ProfileUser = () => {
                             }
                         />
                         <NavLink
+                            leftSection={<IconUser size="1.4rem" />}
+                            href="/nguoi-dung/doi-mat-khau"
+                            label={
+                                <span style={{ fontSize: "14.20px" }}>
+                                    Đổi mật khẩu
+                                </span>
+                            }
+                        />
+                        <NavLink
                             leftSection={<IconShoppingCart size="1.3rem" />}
                             href="/nguoi-dung/don-hang"
                             label={

@@ -1,3 +1,4 @@
+import ChangePassword from "@/pages/Auth/ChangePassword/ChangePassword";
 import ForgotPassword from "@/pages/Auth/ForgotPassword/page";
 import Login from "@/pages/Auth/Login/FormLogin";
 import Auth from "@/pages/Auth/page";
@@ -18,7 +19,13 @@ import WishList from "@/pages/ProfileUser/components/Wishlist/WishList";
 import ProfileUser from "@/pages/ProfileUser/pages";
 import ShoppingCart from "@/pages/ShoppingCart/page";
 import { useEffect } from "react";
-import { Navigate, Route, Routes, useLocation } from "react-router-dom";
+import {
+    Navigate,
+    Route,
+    Routes,
+    useLocation,
+    useNavigate,
+} from "react-router-dom";
 
 const Index = () => {
     const { pathname } = useLocation();
@@ -40,7 +47,17 @@ const Index = () => {
                         path="chi-tiet-san-pham/:slug"
                         element={<ProductDetail />}
                     />
-                    <Route path="/nguoi-dung" element={<ProfileUser />}>
+
+                    <Route
+                        path="nguoi-dung"
+                        element={
+                            localStorage.getItem("token") ? (
+                                <ProfileUser />
+                            ) : (
+                                <Navigate to="/xac-thuc" replace />
+                            )
+                        }
+                    >
                         <Route
                             index
                             element={
@@ -53,12 +70,17 @@ const Index = () => {
                             element={<UserAccount />}
                         />
                         <Route
+                            path="doi-mat-khau"
+                            element={<ChangePassword />}
+                        />
+                        <Route
                             path="thu-ho-tro"
                             element={<SupportFeedback />}
                         />
                         <Route path="don-hang" element={<OrderCart />} />
                     </Route>
                 </Route>
+
                 <Route path="/xac-thuc" element={<Auth />}>
                     <Route
                         index
@@ -68,6 +90,7 @@ const Index = () => {
                     <Route path="dang-ky" element={<Register />} />
                     <Route path="quen-mat-khau" element={<ForgotPassword />} />
                 </Route>
+
                 <Route path="*" element={<PageNotFound />} />
             </Routes>
         </>

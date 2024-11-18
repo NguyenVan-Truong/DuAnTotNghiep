@@ -16,9 +16,9 @@ import {
     IconCheck,
     IconEye,
     IconFileExport,
+    IconMessageCircleStar,
     IconSearch,
     IconSwitch,
-    IconTrash,
     IconX,
 } from "@tabler/icons-react";
 import {
@@ -31,11 +31,11 @@ import {
 
 import { formatDateNotTimeZone } from "@/model/_base/Date";
 import { Order } from "@/model/Order";
+import { message, Popconfirm } from "antd";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import * as xlsx from "xlsx";
 import DetailOrder from "../DetailOrder";
-import { message, Popconfirm } from "antd";
 
 const OrderAll = () => {
     const [data, setData] = useState<Order[]>([]); // Cập nhật kiểu dữ liệu
@@ -251,10 +251,24 @@ const OrderAll = () => {
                             aria-label="Settings"
                             disabled={row.original.status !== "Chờ xử lý"}
                         >
-                            <IconX />
+                            <IconX size={20} />
                         </ActionIcon>
                     </Tooltip>
                 </Popconfirm>
+                <Tooltip label="Đánh giá">
+                    <ActionIcon
+                        variant="light"
+                        aria-label="Settings"
+                        color="green"
+                        disabled={
+                            row.original.status !== "Hoàn thành" ||
+                            (row.original.reviews &&
+                                row.original.reviews.length > 0)
+                        }
+                    >
+                        <IconMessageCircleStar size={20} />
+                    </ActionIcon>
+                </Tooltip>
             </>
         );
     }
