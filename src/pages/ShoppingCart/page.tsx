@@ -70,7 +70,6 @@ const ShoppingCart = () => {
         queryKey: ["cart"],
         queryFn: fetchDataCart,
     });
-
     // #endregion
     // click checkbox
     const onhandleChecked = (item: CartItem) => {
@@ -109,22 +108,6 @@ const ShoppingCart = () => {
                             ? item.quantity + 1
                             : item.quantity - 1;
                     if (newQuantity < 1) {
-                        // const openModal = () =>
-                        //     modals.openConfirmModal({
-                        //         title: "Bạn chắc chắn muốn bỏ sản phẩm này?",
-                        //         children: (
-                        //             <Text size="lg">{debouncedName}</Text>
-                        //         ),
-                        //         labels: { confirm: "Xác nhận", cancel: "Hủy" },
-                        //         // onCancel: () => console.log("Hủy bỏ"),
-                        //         onConfirm: () => {},
-                        //         classNames: {
-                        //             title: "my-custom-modal-title",
-                        //             body: "my-custom-modal-body",
-                        //             header: "my-custom-modal-header",
-                        //         },
-                        //     });
-                        // openModal();
                         return item;
                     }
                     setDebouncedQuantity(newQuantity);
@@ -167,7 +150,8 @@ const ShoppingCart = () => {
                     ) {
                         acc.totalQuantity += item.quantity;
                         acc.totalPrice +=
-                            Number(item.product_variant.discount_price) *
+                            (Number(item.product_variant.discount_price) ||
+                                Number(item.product_variant.price)) *
                             Number(item.quantity);
                     }
                     return acc;
@@ -179,6 +163,7 @@ const ShoppingCart = () => {
             setTotalPrice(0);
         }
     }, [dataCart, listchecked]);
+    console.log("listchecked", listchecked);
     return (
         <div
             className="container mx-auto padding"
@@ -288,24 +273,40 @@ const ShoppingCart = () => {
                                                     marginTop: "2px",
                                                 }}
                                             >
-                                                {formatCurrencyVN(
-                                                    item.product_variant
-                                                        .discount_price,
-                                                )}
+                                                {item.product_variant
+                                                    .discount_price !==
+                                                "0.00" ? (
+                                                    <>
+                                                        {formatCurrencyVN(
+                                                            item.product_variant
+                                                                .discount_price,
+                                                        )}
 
-                                                <del
-                                                    style={{
-                                                        margin: "0 7px",
-                                                        color: "#999",
-                                                        fontSize: "14px",
-                                                        fontWeight: "400",
-                                                    }}
-                                                >
-                                                    {formatCurrencyVN(
-                                                        item.product_variant
-                                                            .price,
-                                                    )}
-                                                </del>
+                                                        <del
+                                                            style={{
+                                                                margin: "0 7px",
+                                                                color: "#999",
+                                                                fontSize:
+                                                                    "14px",
+                                                                fontWeight:
+                                                                    "400",
+                                                            }}
+                                                        >
+                                                            {formatCurrencyVN(
+                                                                item
+                                                                    .product_variant
+                                                                    .price,
+                                                            )}
+                                                        </del>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        {formatCurrencyVN(
+                                                            item.product_variant
+                                                                .price,
+                                                        )}
+                                                    </>
+                                                )}
                                             </span>
                                         </Flex>
 
@@ -376,13 +377,35 @@ const ShoppingCart = () => {
                                             marginBottom: "10px",
                                         }}
                                     >
-                                        {formatCurrencyVN(
-                                            String(
-                                                Number(
-                                                    item.product_variant
-                                                        .discount_price,
-                                                ) * Number(item.quantity),
-                                            ),
+                                        {item.product_variant.discount_price !==
+                                        "0.00" ? (
+                                            <>
+                                                {formatCurrencyVN(
+                                                    String(
+                                                        Number(
+                                                            item.product_variant
+                                                                .discount_price,
+                                                        ) *
+                                                            Number(
+                                                                item.quantity,
+                                                            ),
+                                                    ),
+                                                )}
+                                            </>
+                                        ) : (
+                                            <>
+                                                {formatCurrencyVN(
+                                                    String(
+                                                        Number(
+                                                            item.product_variant
+                                                                .price,
+                                                        ) *
+                                                            Number(
+                                                                item.quantity,
+                                                            ),
+                                                    ),
+                                                )}
+                                            </>
                                         )}
                                     </p>
                                 </Flex>

@@ -11,7 +11,11 @@ import {
     TextInput,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { IconBuildingBank, IconCashBanknote } from "@tabler/icons-react";
+import {
+    IconBuildingBank,
+    IconCashBanknote,
+    IconCircleLetterG,
+} from "@tabler/icons-react";
 import { message } from "antd";
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
@@ -56,7 +60,15 @@ const CheckoutPage = () => {
     // Phương thức thanh toán
     const [selectedPaymentMethod, setSelectedPaymentMethod] =
         useState<Number>(3);
+    // Thông tin người dùng
     const [inforUser, setInforfUser] = useState<UserInfo>();
+    // Phí ship
+    const [shippingFee, setShippingFee] = useState<number>(0);
+    // Mã giảm giá
+    const [dataPromotions, setDataPromotions] = useState([]);
+    const [valuePromotions, setValuePromotions] = useState<string>();
+    const [dataAllPromotions, setDataAllPromotions] = useState([]);
+    const [checkedPromotions, setCheckedPromotions] = useState();
     const form = useForm({
         mode: "uncontrolled",
         initialValues: {
@@ -163,18 +175,18 @@ const CheckoutPage = () => {
             customer_name: inforUser?.full_name,
             promotion_id: "id mã giảm giá ", //hỏi hoàn
             total_amount: location?.state.totalPrice,
-            discount_amount: "phí giảm giá",
-            shipping_fee: "phí ship",
+            discount_amount: "Giảm giá", //chưa ai làm
+            shipping_fee: shippingFee,
             final_amount: "Tổng tiền trừ các chi phí",
             status: 1,
-            payment_method_id: selectedPaymentMethod,
+            payment_method_id: selectedPaymentMethod, //phương thức thanh toán
             payment_status: 1, //thanh toán off trạng thái là 1
             shipping_address: form.getValues().description,
             discount_code: "Mã code đã áp dụng", //chưa ai làm
             email: form.getValues().email,
             phone_number: form.getValues().sđt,
             note: form.getValues().description,
-            order_items:[]
+            order_items: [],
         };
         console.log("values", values);
         console.log("dataSubmit", dataSubmit);
@@ -190,9 +202,74 @@ const CheckoutPage = () => {
             console.error("Error fetching user data", error);
         }
     };
+    // Hàm lấy phí vận chuyển
+    const getShippingFee = async () => {
+        try {
+            const response = await instance.get("/shipping-fees");
+            if (response.status === 200) {
+                return response.data;
+            }
+            console.warn("Unexpected response:", response);
+            return [];
+        } catch (error) {
+            console.error("Error fetching shipping fee", error);
+            return [];
+        }
+    };
+    //lấy mã giảm giá
+    const onhandlePromotions = async () => {
+        try {
+            const response = await instance.get("/promotions");
+            if (response && response.status === 200) {
+                setDataAllPromotions(response.data);
+                const transformedData = response.data.map((item: any) => ({
+                    value: String(item.id),
+                    label: item.code,
+                }));
+                setDataPromotions(transformedData);
+            }
+        } catch (error) {
+            message.error("Lỗi không thể lấy dữ liệu");
+        }
+    };
+    useEffect(() => {
+        const fetchData = async () => {
+            if (checkedValueCity !== undefined && checkedValueCity !== null) {
+                const data = await getShippingFee(); // Đợi dữ liệu từ API
+
+                // Xử lý logic tìm kiếm phí vận chuyển
+                const shippingFee = data.find((item: any) => {
+                    return item.province_code === String(checkedValueCity);
+                });
+
+                if (shippingFee) {
+                    setShippingFee(shippingFee.fee);
+                } else {
+                    console.warn(
+                        "No shipping fee found for the selected city.",
+                    );
+                }
+            } else {
+                setShippingFee(0);
+            }
+        };
+
+        fetchData(); // Gọi hàm bất đồng bộ
+    }, [checkedValueCity, checkedValueCity]);
+
     useEffect(() => {
         fetchDataUser();
     }, []);
+    useEffect(() => {
+        if (valuePromotions !== undefined) {
+            const data = dataAllPromotions.find((item: any) => {
+                return item.id === Number(valuePromotions);
+            });
+            setCheckedPromotions(data);
+        } else {
+            setCheckedPromotions(undefined);
+        }
+    }, [valuePromotions]);
     return (
         <div className="padding my-[40px]">
             <div className="container">
@@ -364,7 +441,33 @@ const CheckoutPage = () => {
                                         <h2 className={styles.sectionTitle}>
                                             PHƯƠNG THỨC THANH TOÁN
                                         </h2>
-                                        <Flex className={styles.paymentMethod}>
+                                        <Flex
+                                            className={styles.paymentMethod}
+                                            gap={"md"}
+                                        >
+                                            <div
+                                                className="px-[20px] py-[20px] flex flex-col border border-spacing-1"
+                                                style={{
+                                                    alignItems: "center",
+                                                    cursor: "pointer",
+                                                    border:
+                                                        selectedPaymentMethod ===
+                                                        3
+                                                            ? "1px solid #000"
+                                                            : "1px solid #e5e5e5",
+                                                }}
+                                                onClick={() =>
+                                                    setSelectedPaymentMethod(3)
+                                                }
+                                            >
+                                                <IconCashBanknote
+                                                    stroke={1.25}
+                                                    size={50}
+                                                />
+                                                <span className="text-[12px] text-[#656565]">
+                                                    Thanh toán khi nhận hàng
+                                                </span>
+                                            </div>
                                             <div
                                                 className="px-[20px] py-[20px] flex flex-col border border-spacing-1 mr-[10px] "
                                                 style={{
@@ -387,29 +490,6 @@ const CheckoutPage = () => {
 
                                                 <span className="text-[12px] text-[#656565]">
                                                     Chuyển khoản ngân hàng
-                                                </span>
-                                            </div>
-                                            <div
-                                                className="px-[20px] py-[20px] flex flex-col border border-spacing-1"
-                                                style={{
-                                                    alignItems: "center",
-                                                    cursor: "pointer",
-                                                    border:
-                                                        selectedPaymentMethod ===
-                                                        3
-                                                            ? "1px solid #000"
-                                                            : "1px solid #e5e5e5",
-                                                }}
-                                                onClick={() =>
-                                                    setSelectedPaymentMethod(3)
-                                                }
-                                            >
-                                                <IconCashBanknote
-                                                    stroke={1.25}
-                                                    size={50}
-                                                />
-                                                <span className="text-[12px] text-[#656565]">
-                                                    Thanh toán khi nhận hàng
                                                 </span>
                                             </div>
                                         </Flex>
@@ -499,10 +579,25 @@ const CheckoutPage = () => {
                                                                     styles.productPrice
                                                                 }
                                                             >
-                                                                {formatCurrencyVN(
-                                                                    item
-                                                                        .product_variant
-                                                                        .discount_price,
+                                                                {item
+                                                                    .product_variant
+                                                                    .discount_price !==
+                                                                "0.00" ? (
+                                                                    <>
+                                                                        {formatCurrencyVN(
+                                                                            item
+                                                                                .product_variant
+                                                                                .discount_price,
+                                                                        )}
+                                                                    </>
+                                                                ) : (
+                                                                    <>
+                                                                        {formatCurrencyVN(
+                                                                            item
+                                                                                .product_variant
+                                                                                .price,
+                                                                        )}
+                                                                    </>
                                                                 )}
                                                             </p>
                                                         </div>
@@ -521,11 +616,63 @@ const CheckoutPage = () => {
                                     </div>
                                     <div className="flex flex-row justify-between mt-[5px]">
                                         <p>Vận chuyển</p>
-                                        <p>0</p>
+                                        <p>
+                                            {formatCurrencyVN(
+                                                String(shippingFee),
+                                            )}
+                                        </p>
                                     </div>
-                                    <div className="flex flex-row justify-between mt-[5px]">
+                                    <div
+                                        className="flex flex-row justify-between  mt-[5px]"
+                                        style={{
+                                            alignItems: "center",
+                                        }}
+                                    >
                                         <p>Giảm giá</p>
-                                        <p>0</p>
+                                        <Select
+                                            w={150}
+                                            placeholder="Chọn mã giảm giá"
+                                            data={dataPromotions}
+                                            onClick={() => onhandlePromotions()}
+                                            onChange={(value) => {
+                                                if (value) {
+                                                    setValuePromotions(value);
+                                                } else {
+                                                    setValuePromotions(
+                                                        undefined,
+                                                    );
+                                                }
+                                            }}
+                                        ></Select>
+                                        <div
+                                            style={{
+                                                width: "100px",
+                                                display: "flex",
+                                                justifyContent: "flex-end",
+                                            }}
+                                        >
+                                            <p>
+                                                {checkedPromotions !==
+                                                undefined ? (
+                                                    <>
+                                                        {formatCurrencyVN(
+                                                            String(
+                                                                (
+                                                                    checkedPromotions as any
+                                                                )
+                                                                    .discount_value,
+                                                            ),
+                                                        )}
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        {formatCurrencyVN(
+                                                            String(0),
+                                                        )}
+                                                    </>
+                                                )}
+                                            </p>
+                                        </div>
                                     </div>
                                     <div className="flex flex-row justify-between mt-[5px]">
                                         <h2
