@@ -75,7 +75,6 @@ const RightProduct = ({ data, id }: Props) => {
     const [isLoadingPaymentButton, setIsLoadingPaymentButton] = useState(false);
     // Thông tin người dùng
     const [inforUser, setInforfUser] = useState<UserInfo>();
-    console.log("inforUser", inforUser);
     const increaseQuantity = () => {
         if (
             quantity < (filteredVariant ? filteredVariant?.stock : data.stock)
@@ -162,7 +161,7 @@ const RightProduct = ({ data, id }: Props) => {
         const token = localStorage.getItem("token");
         const UserProfile = localStorage.getItem("userProFile");
         if (!token || !UserProfile) {
-            message.error("Vui lòng đăng nhập thêm sản phẩm vào giở hàng");
+            message.error("Vui lòng đăng nhập thêm sản phẩm vào giỏ hàng");
             return; // Dừng lại không thực hiện hành động yêu thích
         }
         // Nếu thiếu thuộc tính nào, hiển thị thông báo lỗi và dừng lại
@@ -259,21 +258,21 @@ const RightProduct = ({ data, id }: Props) => {
             ((originalPrice - discountPrice) / originalPrice) * 100,
         );
     };
-    useEffect(() => {
-        // lấy thông tin user
-        const fetchDataUser = async () => {
-            try {
-                const response = await instance.get("/auth/profile");
-                if (response && response.status === 200) {
-                    const data = response.data;
-                    setInforfUser(data);
-                }
-            } catch (error) {
-                console.error("Error fetching user data", error);
-            }
-        };
-        fetchDataUser();
-    }, []);
+    // useEffect(() => {
+    //     // lấy thông tin user
+    //     const fetchDataUser = async () => {
+    //         try {
+    //             const response = await instance.get("/auth/profile");
+    //             if (response && response.status === 200) {
+    //                 const data = response.data;
+    //                 setInforfUser(data);
+    //             }
+    //         } catch (error) {
+    //             console.error("Error fetching user data", error);
+    //         }
+    //     };
+    //     fetchDataUser();
+    // }, []);
     return (
         <div className="product-details">
             <div className="product-header">
