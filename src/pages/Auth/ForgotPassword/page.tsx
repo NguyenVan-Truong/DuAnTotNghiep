@@ -13,8 +13,13 @@ const ForgotPassword = () => {
             email: "",
         },
         validate: {
-            email: (value) =>
-                /^\S+@\S+$/.test(value) ? null : "Email không hợp lệ",
+            email: (value) => {
+                if (!value) return "Email không được để trống";
+                if (value.includes(" "))
+                    return "Email không được chứa dấu cách";
+                if (!/^\S+@\S+$/.test(value)) return "Email không hợp lệ";
+                return null;
+            },
         },
     });
     const navigate = useNavigate();

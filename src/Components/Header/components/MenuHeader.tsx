@@ -2,6 +2,7 @@ import instance from "@/configs/axios";
 import { Category } from "@/model/Category";
 import { Menu } from "@mantine/core";
 import { useQuery } from "@tanstack/react-query";
+import { Link } from "react-router-dom";
 
 const MenuHeader = () => {
     const buildCategoryTree = (categories: Category[]) => {
@@ -74,7 +75,10 @@ const MenuHeader = () => {
                 closeDelay={100}
             >
                 <Menu.Target>
-                    <button>Sản Phẩm</button>
+                    <Link to={"/san-pham"}>
+                        {" "}
+                        <button>Sản Phẩm</button>
+                    </Link>
                 </Menu.Target>
                 <Menu.Dropdown>{renderMenuItems(categoryTree)}</Menu.Dropdown>
             </Menu>

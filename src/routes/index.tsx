@@ -1,3 +1,4 @@
+import ChangePassword from "@/pages/Auth/ChangePassword/ChangePassword";
 import ForgotPassword from "@/pages/Auth/ForgotPassword/page";
 import Login from "@/pages/Auth/Login/FormLogin";
 import Auth from "@/pages/Auth/page";
@@ -46,13 +47,14 @@ const Index = () => {
                         path="chi-tiet-san-pham/:slug"
                         element={<ProductDetail />}
                     />
+
                     <Route
                         path="nguoi-dung"
                         element={
                             localStorage.getItem("token") ? (
                                 <ProfileUser />
                             ) : (
-                                <Route path="/xac-thuc" element={<Auth />} />
+                                <Navigate to="/xac-thuc" replace />
                             )
                         }
                     >
@@ -68,12 +70,17 @@ const Index = () => {
                             element={<UserAccount />}
                         />
                         <Route
+                            path="doi-mat-khau"
+                            element={<ChangePassword />}
+                        />
+                        <Route
                             path="thu-ho-tro"
                             element={<SupportFeedback />}
                         />
                         <Route path="don-hang" element={<OrderCart />} />
                     </Route>
                 </Route>
+
                 <Route path="/xac-thuc" element={<Auth />}>
                     <Route
                         index
@@ -83,6 +90,7 @@ const Index = () => {
                     <Route path="dang-ky" element={<Register />} />
                     <Route path="quen-mat-khau" element={<ForgotPassword />} />
                 </Route>
+
                 <Route path="*" element={<PageNotFound />} />
             </Routes>
         </>

@@ -1,25 +1,52 @@
-import { ban_an_6_cho2 } from "@/assets/img";
-import { ActionIcon, Flex, Radio, ScrollArea, Textarea } from "@mantine/core";
-import { Button, Checkbox, Group, TextInput } from "@mantine/core";
+import { CartItem } from "@/model/Cart";
+import { formatCurrencyVN } from "@/model/_base/Number";
+import {
+    Button,
+    Checkbox,
+    Flex,
+    Group,
+    Radio,
+    ScrollArea,
+    Select,
+    Textarea,
+    TextInput,
+} from "@mantine/core";
 import { useForm } from "@mantine/form";
-import styles from "./checkoutPage.module.scss"; // Import CSS module
 import { IconBuildingBank, IconCashBanknote } from "@tabler/icons-react";
+import { useLocation } from "react-router-dom";
 import DescriptionShipping from "./DescriptionShipping";
+import styles from "./checkoutPage.module.scss"; // Import CSS module
+import instance from "@/configs/axios";
+import { useState } from "react";
+import { message } from "antd";
 
 type Props = {};
 
 const CheckoutPage = (props: Props) => {
+    const location = useLocation();
+    // thông tin tỉnh thành phố
+    const [valueCity, setValueCity] = useState([]);
+    const [checkedValueCity, setCheckedValueCity] = useState();
+    // thông tin quận huyện
+    const [valueDistrict, setValueDistrict] = useState([]);
+    const [checkedValueDistrict, setCheckedValueDistrict] = useState();
+    // thông tin phường xã
+    const [valueWard, setValueWard] = useState([]);
+    const [checkedValueWard, setCheckedValueWard] = useState();
+    // Phương thức thanh toán
+    const [selectedPaymentMethod, setSelectedPaymentMethod] =
+        useState<Number>(3);
     const form = useForm({
         mode: "uncontrolled",
         initialValues: {
             email: "",
             name: "",
             sđt: "",
-            city: "",
-            district: "",
+            city: null,
+            district: null,
+            ward: null,
             address: "",
             description: "",
-            termsOfService: false,
         },
 
         validate: {
@@ -27,15 +54,89 @@ const CheckoutPage = (props: Props) => {
                 /^\S+@\S+$/.test(value) ? null : "Invalid email",
         },
     });
+    // CHọn tỉnh
+    const onhandleSelectCity = async () => {
+        try {
+            const response = await instance.get("/getAllProvinces");
+            if (response && response.status === 200) {
+                // setValueCity(response.data.content);
+                const transformedData = response.data.content.map(
+                    (item: any) => ({
+                        value: item.code,
+                        label: item.name,
+                    }),
+                );
+                setValueCity(transformedData);
+            }
+        } catch (error) {
+            message.error("Lỗi không thể lấy dữ liệu");
+        }
+    };
+    // Chọn quận huyện
+    const onhandleSelectDistrict = async () => {
+        try {
+            const response = await instance.get(
+                `/getLocaion?target=district&data[province_id]=${checkedValueCity}`,
+            );
+            if (response && response.status === 200) {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(
+                    response.data.content,
+                    "text/html",
+                );
 
+                // Lấy tất cả các phần tử <option>
+                const options = Array.from(doc.querySelectorAll("option"));
+                // Chuyển đổi thành mảng các đối tượng với code và name
+                const transformedData = options.map((option) => ({
+                    value: option.value,
+                    label: option.text.trim(),
+                }));
+                setValueDistrict(transformedData as []);
+            }
+        } catch (error) {
+            message.error("Lỗi không thể lấy dữ liệu");
+        }
+    };
+    // Chọn phường xã
+    const onhandleSelectWart = async () => {
+        try {
+            const response = await instance.get(
+                `/getLocaion?target=ward&data[district_id]=${checkedValueDistrict}`,
+            );
+            if (response && response.status === 200) {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(
+                    response.data.content,
+                    "text/html",
+                );
+
+                // Lấy tất cả các phần tử <option>
+                const options = Array.from(doc.querySelectorAll("option"));
+                // Chuyển đổi thành mảng các đối tượng với code và name
+                const transformedData = options.map((option) => ({
+                    value: option.value,
+                    label: option.text.trim(),
+                }));
+                setValueWard(transformedData as []);
+            }
+        } catch (error) {
+            message.error("Lỗi không thể lấy dữ liệu");
+        }
+    };
+
+    // Xử lý submit form
+    const onhandleSubmit = async (values: any) => {
+        console.log("values", values);
+    };
     return (
-        <div className="padding my-[80px]">
+        <div className="padding my-[40px]">
             <div className="container">
                 <div className={styles.checkoutForm}>
                     <div className={styles.container}>
                         <form
                             onSubmit={form.onSubmit((values) =>
-                                console.log(values),
+                                onhandleSubmit(values),
                             )}
                         >
                             <Flex
@@ -49,42 +150,23 @@ const CheckoutPage = (props: Props) => {
                                         >
                                             ĐỊA CHỈ GIAO HÀNG
                                         </h2>
-
-                                        <ActionIcon
-                                            size="input-sm"
-                                            variant="default"
-                                            aria-label="ActionIcon the same size as inputs"
-                                            className="my-[10px]"
-                                        >
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                width="24"
-                                                height="24"
-                                                viewBox="0 0 24 24"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                strokeWidth="2"
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                className="icon icon-tabler icons-tabler-outline icon-tabler-plus"
-                                            >
-                                                <path
-                                                    stroke="none"
-                                                    d="M0 0h24v24H0z"
-                                                    fill="none"
-                                                />
-                                                <path d="M12 5l0 14" />
-                                                <path d="M5 12l14 0" />
-                                            </svg>
-                                        </ActionIcon>
                                     </div>
-                                    <div className="mb-[10px]">
+                                    <div
+                                        className={`${styles.inputGroup} flex w-[100%] justify-between gap-3 mb-[10px] `}
+                                    >
                                         <TextInput
                                             withAsterisk
                                             label="Họ và tên"
                                             placeholder="Nhập họ và tên"
                                             {...form.getInputProps("name")}
-                                            className="w-[100%]"
+                                            className="w-[50%]"
+                                        />
+                                        <TextInput
+                                            withAsterisk
+                                            label="Email"
+                                            placeholder="Nhập email"
+                                            {...form.getInputProps("email")}
+                                            className="w-[50%]"
                                         />
                                     </div>
                                     <div
@@ -97,41 +179,97 @@ const CheckoutPage = (props: Props) => {
                                             {...form.getInputProps("name")}
                                             className="w-[50%]"
                                         />
-                                        <TextInput
+                                        <Select
                                             withAsterisk
-                                            label="Địa chỉ email"
-                                            placeholder="Nhập địa chỉ email"
-                                            {...form.getInputProps("email")}
+                                            label="Tỉnh/Thành phố"
+                                            data={valueCity}
+                                            placeholder="Nhập tỉnh/thành phố"
                                             className="w-[50%]"
+                                            onClick={() => {
+                                                if (valueCity.length === 0) {
+                                                    onhandleSelectCity();
+                                                }
+                                            }}
+                                            onChange={(value: any) => {
+                                                form.setFieldValue(
+                                                    "city",
+                                                    value,
+                                                );
+                                                setCheckedValueCity(value);
+                                            }}
                                         />
                                     </div>
                                     <div
                                         className={`${styles.inputGroup} flex w-[100%] justify-between gap-3 mb-[10px] `}
                                     >
-                                        <TextInput
-                                            withAsterisk
-                                            label="Tỉnh/Thành phố"
-                                            placeholder="Nhập tỉnh/thành phố"
-                                            {...form.getInputProps("city")}
-                                            className="w-[50%]"
-                                        />
-                                        <TextInput
+                                        <Select
                                             withAsterisk
                                             label="Quận / Huyện"
                                             placeholder="Nhập quận/huyện"
-                                            {...form.getInputProps("district")}
+                                            data={valueDistrict}
                                             className="w-[50%]"
+                                            onClick={() => {
+                                                if (
+                                                    valueCity.length === 0 ||
+                                                    !checkedValueCity
+                                                ) {
+                                                    return message.error(
+                                                        "Vui lòng chọn tỉnh/thành phố trước",
+                                                    );
+                                                }
+                                                if (
+                                                    valueDistrict.length === 0
+                                                ) {
+                                                    onhandleSelectDistrict();
+                                                }
+                                            }}
+                                            onChange={(value: any) => {
+                                                form.setFieldValue(
+                                                    "district",
+                                                    value,
+                                                );
+                                                setCheckedValueDistrict(value);
+                                            }}
+                                        />
+                                        <Select
+                                            withAsterisk
+                                            label="Phường/Xã"
+                                            placeholder="Nhập phường/xã"
+                                            data={valueWard}
+                                            {...form.getInputProps("ward")}
+                                            className="w-[50%]"
+                                            onClick={() => {
+                                                if (
+                                                    valueDistrict.length ===
+                                                        0 ||
+                                                    !checkedValueDistrict
+                                                ) {
+                                                    return message.error(
+                                                        "Vui lòng chọn quận huyện trước",
+                                                    );
+                                                }
+                                                if (valueWard.length === 0) {
+                                                    onhandleSelectWart();
+                                                }
+                                            }}
+                                            onChange={(value: any) => {
+                                                form.setFieldValue(
+                                                    "ward",
+                                                    value,
+                                                );
+                                                setCheckedValueWard(value);
+                                            }}
                                         />
                                     </div>
                                     <div className={styles.inputGroup}>
                                         <TextInput
                                             withAsterisk
-                                            label="Địa chỉ"
+                                            label="Địa chỉ cụ thể"
                                             placeholder="Nhập địa chỉ"
                                             {...form.getInputProps("address")}
                                         />
                                     </div>
-                                    <div className="mb-[10px]">
+                                    {/* <div className="mb-[10px]">
                                         <Checkbox
                                             mt="md"
                                             label="Tạo tài khoản?"
@@ -142,7 +280,7 @@ const CheckoutPage = (props: Props) => {
                                                 },
                                             )}
                                         />
-                                    </div>
+                                    </div> */}
                                     <div>
                                         <h2
                                             className={`${styles.sectionTitle} font-medium pt-[10px] text-[20px] mb-[10px]`}
@@ -174,7 +312,18 @@ const CheckoutPage = (props: Props) => {
                                         <Flex className={styles.paymentMethod}>
                                             <div
                                                 className="px-[20px] py-[20px] flex flex-col border border-spacing-1 mr-[10px] "
-                                                style={{ alignItems: "center" }}
+                                                style={{
+                                                    alignItems: "center",
+                                                    cursor: "pointer",
+                                                    border:
+                                                        selectedPaymentMethod ===
+                                                        2
+                                                            ? "1px solid #000"
+                                                            : "1px solid #e5e5e5",
+                                                }}
+                                                onClick={() =>
+                                                    setSelectedPaymentMethod(2)
+                                                }
                                             >
                                                 <IconBuildingBank
                                                     stroke={1.25}
@@ -187,7 +336,18 @@ const CheckoutPage = (props: Props) => {
                                             </div>
                                             <div
                                                 className="px-[20px] py-[20px] flex flex-col border border-spacing-1"
-                                                style={{ alignItems: "center" }}
+                                                style={{
+                                                    alignItems: "center",
+                                                    cursor: "pointer",
+                                                    border:
+                                                        selectedPaymentMethod ===
+                                                        3
+                                                            ? "1px solid #000"
+                                                            : "1px solid #e5e5e5",
+                                                }}
+                                                onClick={() =>
+                                                    setSelectedPaymentMethod(3)
+                                                }
                                             >
                                                 <IconCashBanknote
                                                     stroke={1.25}
@@ -212,100 +372,120 @@ const CheckoutPage = (props: Props) => {
                                                 Tóm tắt đơn hàng
                                             </h2>
                                         </div>
-                                        <div className="flex flex-row justify-between mt-[5px]">
-                                            <p>Thành tiền</p>
-                                            <p>23,630,000đ</p>
-                                        </div>
-                                    </div>
-                                    <div className="mt-[5px] border-b-[1px] pb-[10px]">
-                                        <h2
-                                            className={`${styles.sectionTitle} text-[#7b7b7b] font-semibold text-[16px]`}
-                                        >
-                                            VẬN CHUYỂN
-                                        </h2>
-                                        <Radio.Group name="favoriteFramework">
-                                            <Group mt="xs">
-                                                <Radio
-                                                    value="react"
-                                                    label="Liên hệ phí vận chuyển sau"
-                                                />
-                                                <Radio
-                                                    value="svelte"
-                                                    label="Phí vận chuyển"
-                                                />
-                                            </Group>
-                                        </Radio.Group>
-                                    </div>
-                                    <div className="flex flex-row justify-between mt-[5px]">
-                                        <h2
-                                            className={`${styles.sectionTitle} text-[#7b7b7b] font-semibold`}
-                                        >
-                                            TỔNG CỘNG
-                                        </h2>
-                                        <p>23,630,000đ</p>
                                     </div>
                                     <div className="mt-[5px]">
-                                        <div className=" pb-[10px]">
+                                        <div>
                                             <h2 className="text-[16px] text-[#000] font-medium">
                                                 Sản phẩm
                                             </h2>
                                         </div>
                                         <div>
-                                            <div
-                                                className={`${styles.productDetails} flex flex-row justify-between gap-3 items-center my-[9px]`}
-                                            >
-                                                <div
-                                                    className={`${styles.imgwp} `}
-                                                >
-                                                    <img
-                                                        src={ban_an_6_cho2}
-                                                        alt="Product"
-                                                        className="max-w-[70px] "
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <p>
-                                                        Armchair Hùng King + Gối
-                                                        VACT3231{" "}
-                                                        <strong>× 1</strong>
-                                                    </p>
-                                                </div>
-                                                <p
-                                                    className={
-                                                        styles.productPrice
-                                                    }
-                                                >
-                                                    11,815,000₫
-                                                </p>
-                                            </div>
-                                            <div
-                                                className={`${styles.productDetails} flex flex-row justify-between gap-3 items-center my-[9px]`}
-                                            >
-                                                <div
-                                                    className={`${styles.imgwp} `}
-                                                >
-                                                    <img
-                                                        src={ban_an_6_cho2}
-                                                        alt="Product"
-                                                        className="max-w-[70px] "
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <p>
-                                                        Armchair Hùng King + Gối
-                                                        VACT3231{" "}
-                                                        <strong>× 1</strong>
-                                                    </p>
-                                                </div>
-                                                <p
-                                                    className={
-                                                        styles.productPrice
-                                                    }
-                                                >
-                                                    11,815,000₫
-                                                </p>
-                                            </div>
+                                            {location?.state.listchecked.map(
+                                                (item: CartItem) => {
+                                                    return (
+                                                        <div
+                                                            className={`${styles.productDetails} flex flex-row justify-between gap-3 items-center my-[9px]`}
+                                                            key={item.id}
+                                                        >
+                                                            <div
+                                                                className={`${styles.imgwp} `}
+                                                            >
+                                                                <img
+                                                                    src={
+                                                                        item
+                                                                            .product
+                                                                            .image_url
+                                                                    }
+                                                                    alt="Product"
+                                                                    className="max-w-[70px] max-h-[70px]"
+                                                                />
+                                                            </div>
+                                                            <Flex
+                                                                direction={
+                                                                    "column"
+                                                                }
+                                                            >
+                                                                <p>
+                                                                    {
+                                                                        item
+                                                                            .product
+                                                                            .name
+                                                                    }
+                                                                </p>
+                                                                <p
+                                                                    style={{
+                                                                        color: "#333",
+                                                                        fontSize:
+                                                                            "14px",
+                                                                        fontWeight:
+                                                                            "400",
+
+                                                                        marginTop:
+                                                                            "-5px",
+                                                                    }}
+                                                                >
+                                                                    {item.product_variant.attribute_values
+                                                                        .map(
+                                                                            (
+                                                                                item: any,
+                                                                            ) =>
+                                                                                item.name,
+                                                                        )
+                                                                        .join(
+                                                                            ", ",
+                                                                        )}
+                                                                </p>
+                                                            </Flex>
+                                                            <strong>
+                                                                {item.quantity}x
+                                                            </strong>
+                                                            <p
+                                                                className={
+                                                                    styles.productPrice
+                                                                }
+                                                            >
+                                                                {formatCurrencyVN(
+                                                                    item
+                                                                        .product_variant
+                                                                        .discount_price,
+                                                                )}
+                                                            </p>
+                                                        </div>
+                                                    );
+                                                },
+                                            )}
                                         </div>
+                                    </div>
+                                    <div className="flex flex-row justify-between mt-[5px]">
+                                        <p>Tạm tính</p>
+                                        <p>
+                                            {formatCurrencyVN(
+                                                location?.state.totalPrice,
+                                            )}
+                                        </p>
+                                    </div>
+                                    <div className="flex flex-row justify-between mt-[5px]">
+                                        <p>Vận chuyển</p>
+                                        <p>0</p>
+                                    </div>
+                                    <div className="flex flex-row justify-between mt-[5px]">
+                                        <p>Giảm giá</p>
+                                        <p>0</p>
+                                    </div>
+                                    <div className="flex flex-row justify-between mt-[5px]">
+                                        <h2
+                                            className={`${styles.sectionTitle} text-[#000000] font-semibold`}
+                                        >
+                                            TỔNG CỘNG
+                                        </h2>
+                                        <p
+                                            style={{
+                                                color: "red",
+                                            }}
+                                        >
+                                            {" "}
+                                            0
+                                        </p>
                                     </div>
 
                                     <div className="my-[7px] py-3">
@@ -317,7 +497,7 @@ const CheckoutPage = (props: Props) => {
                                         <Checkbox
                                             defaultChecked
                                             label="Tôi đã đọc và đồng ý điều kiện đổi trả hàng, giao hàng, chính sách bảo mật, điều khoản dịch vụ mua hàng online **"
-                                            color="rgba(0, 0, 0, 1)"
+                                            color="rgba(71, 71, 71, 1)"
                                             className={styles.terms}
                                         />
                                         <div
@@ -325,11 +505,11 @@ const CheckoutPage = (props: Props) => {
                                         >
                                             <Button
                                                 variant="filled"
-                                                color="rgba(0, 0, 0, 1)"
+                                                color="blue"
                                                 type="submit"
                                                 style={{ width: "100%" }}
                                             >
-                                                ĐẶT MUA
+                                                HOÀN TẤT ĐƠN HÀNG
                                             </Button>
                                         </div>
                                     </div>
