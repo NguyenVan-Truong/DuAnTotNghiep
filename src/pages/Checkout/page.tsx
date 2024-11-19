@@ -16,7 +16,7 @@ import { useForm } from "@mantine/form";
 import { modals } from "@mantine/modals";
 import { IconBuildingBank, IconCashBanknote } from "@tabler/icons-react";
 import { message } from "antd";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import DescriptionShipping from "./DescriptionShipping";
 import styles from "./checkoutPage.module.scss"; // Import CSS module
@@ -61,40 +61,12 @@ export interface Promotion {
 
 const CheckoutPage = () => {
     const location = useLocation();
-    // if (!location.state) {
-    //     return <Navigate to="/san-pham" replace />;
-    // }
-    const dataCart = JSON.parse(localStorage.getItem("dataCart") || "{}");
-
-    const params = new URLSearchParams(location.search);
-    const status = params.get("status");
-    console.log("status", status);
-    useEffect(() => {
-        if (status === "success") {
-            handleOrder(); // Gọi hàm chỉ khi status là "success"
-        }
-    }, [status]);
-    // Xử lý thông tin order
-    const handleOrder = async () => {
-        try {
-            // const response = await instance.post("/orders", dataCart);
-            // // Xử lý phản hồi từ API nếu cần
-            // console.log("response", response);
-            // if (response && response.status === 201) {
-            //     navigate("/order-success", {
-            //         state: { status: "success" },
-            //     });
-            // }
-            console.log("dataCartdddd");
-        } catch (error) {
-            message.error("Lỗi không thể đặt hàng");
-            console.log("Error:", error);
-        }
-    };
-    // if (status === "success") {
-    //     handleOrder();
-    // }
     const navigate = useNavigate();
+
+    if (!location.state) {
+        return <Navigate to="/san-pham" replace />;
+    }
+
     //Sản phẩm order
     const [orderItems, setOrderItems] = useState<[]>([]);
     // thông tin tỉnh thành phố
@@ -257,81 +229,81 @@ const CheckoutPage = () => {
                 try {
                     const response = await instance.post("/orders", dataSubmit);
                     if (response && response.status === 201) {
-                        // modals.openConfirmModal({
-                        //     title: (
-                        //         <Title
-                        //             order={4}
-                        //             style={{
-                        //                 marginLeft: "6px",
-                        //             }}
-                        //         >
-                        //             Cảm ơn bạn đã đặt hàng tại Morden Home
-                        //         </Title>
-                        //     ),
-                        //     size: "400px",
-                        //     centered: true, // Căn giữa modal
-                        //     withCloseButton: false, // Ẩn nút "x"
-                        //     closeOnClickOutside: false, // Không đóng khi click ra ngoài
-                        //     children: (
-                        //         <>
-                        //             <div style={{ textAlign: "center" }}>
-                        //                 {" "}
-                        //                 {/* Căn giữa nội dung */}
-                        //                 <p>Đơn hàng đã đặt thành công</p>
-                        //             </div>
-                        //             <Flex
-                        //                 direction={"row"}
-                        //                 justify={"space-evenly"}
-                        //                 style={{
-                        //                     marginTop: "20px",
-                        //                 }}
-                        //             >
-                        //                 <Button
-                        //                     style={{
-                        //                         minWidth: "150px",
-                        //                     }}
-                        //                     variant="light"
-                        //                     onClick={() => {
-                        //                         modals.closeAll();
-                        //                         navigate(
-                        //                             "/nguoi-dung/don-hang",
-                        //                             {
-                        //                                 replace: true,
-                        //                             },
-                        //                         );
-                        //                     }}
-                        //                 >
-                        //                     Xem đơn hàng
-                        //                 </Button>
-                        //                 <Button
-                        //                     onClick={() => {
-                        //                         modals.closeAll();
-                        //                         navigate("/san-pham", {
-                        //                             replace: true,
-                        //                         });
-                        //                     }}
-                        //                     style={{
-                        //                         minWidth: "150px",
-                        //                     }}
-                        //                     variant="filled"
-                        //                 >
-                        //                     Tiếp tục mua hàng{" "}
-                        //                 </Button>
-                        //             </Flex>
-                        //         </>
-                        //     ),
-                        //     confirmProps: { display: "none" },
-                        //     cancelProps: { display: "none" },
-                        //     classNames: {
-                        //         header: "custom-modal-header", // Tên class cho header
-                        //         root: "custom-modal-root", // Tên class cho modal
-                        //         title: "custom-modal-title", // Tên class cho tiêu đề
-                        //         body: "custom-modal-body", // Tên class cho phần nội dung
-                        //     },
-                        // });
-                        navigate("/order-success", {
-                            state: { status: "success" },
+                        modals.openConfirmModal({
+                            title: (
+                                <Title
+                                    order={4}
+                                    style={{
+                                        marginLeft: "6px",
+                                    }}
+                                >
+                                    Cảm ơn bạn đã đặt hàng tại Morden Home
+                                </Title>
+                            ),
+                            size: "400px",
+                            centered: true, // Căn giữa modal
+                            withCloseButton: false, // Ẩn nút "x"
+                            closeOnClickOutside: false, // Không đóng khi click ra ngoài
+                            children: (
+                                <>
+                                    <div style={{ textAlign: "center" }}>
+                                        {" "}
+                                        {/* Căn giữa nội dung */}
+                                        <p>Đơn hàng đã đặt thành công</p>
+                                    </div>
+                                    <Flex
+                                        direction={"row"}
+                                        justify={"space-evenly"}
+                                        style={{
+                                            marginTop: "20px",
+                                        }}
+                                    >
+                                        <Button
+                                            style={{
+                                                minWidth: "150px",
+                                            }}
+                                            variant="light"
+                                            onClick={() => {
+                                                modals.closeAll();
+                                                navigate(
+                                                    "/nguoi-dung/don-hang",
+                                                    {
+                                                        replace: true,
+                                                    },
+                                                );
+                                            }}
+                                        >
+                                            Xem đơn hàng
+                                        </Button>
+                                        <Button
+                                            onClick={() => {
+                                                modals.closeAll();
+                                                navigate("/san-pham", {
+                                                    replace: true,
+                                                });
+                                            }}
+                                            style={{
+                                                minWidth: "150px",
+                                            }}
+                                            variant="filled"
+                                        >
+                                            Tiếp tục mua hàng{" "}
+                                        </Button>
+                                    </Flex>
+                                </>
+                            ),
+                            confirmProps: { display: "none" },
+                            cancelProps: { display: "none" },
+                            classNames: {
+                                header: "custom-modal-header", // Tên class cho header
+                                root: "custom-modal-root", // Tên class cho modal
+                                title: "custom-modal-title", // Tên class cho tiêu đề
+                                body: "custom-modal-body", // Tên class cho phần nội dung
+                            },
                         });
+                        // navigate("/order-success", {
+                        //     state: { status: "success" },
+                        // });
                     }
                 } catch (error) {
                     message.error("Lỗi không thể đặt hàng");

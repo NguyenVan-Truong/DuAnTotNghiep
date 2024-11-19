@@ -1,25 +1,29 @@
+import instance from "@/configs/axios";
 import { Box, Button } from "@mantine/core";
-import React, { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import ProductsHome from "../Home/components/ProductsHome/ProductsHome";
 
 const PaymentResult = () => {
-    const location = useLocation();
-    console.log("location", location.state);
+    // const location = useLocation();
+    const [orderStatus, setOrderStatus] = useState(false);
     const params = new URLSearchParams(location.search);
-
     const status = params.get("status");
-    const message = params.get("message");
-    const orderId = params.get("orderId");
-    const amount = params.get("amount");
 
-    // useEffect(() => {
-    //     // Có thể thêm code để cập nhật UI hoặc store của bạn ở đây
-    //     if (status === "success") {
-    //         // Xử lý khi thanh toán thành công
-    //         console.log("Payment successful", { orderId, amount });
-    //     }
-    // }, [status]);
+    useEffect(() => {
+        const dataCart = JSON.parse(localStorage.getItem("dataCart") || "{}");
+
+        if (status === "success" && orderStatus === false) {
+            const fetchData = async () => {
+                const response = await instance.post("/orders", dataCart);
+                setOrderStatus(true);
+                if (response.status === 201) {
+                    localStorage.removeItem("dataCart");
+                }
+            };
+            fetchData();
+        }
+    }, []);
 
     return (
         <div className="container">
@@ -54,7 +58,7 @@ const PaymentResult = () => {
                                 đến bạn."
                             </p>
                             <div>
-                                <Link to={"/don-hang"}>
+                                <Link to={"/nguoi-dung/don-hang"}>
                                     <Button
                                         style={{
                                             margin: "0 auto",
