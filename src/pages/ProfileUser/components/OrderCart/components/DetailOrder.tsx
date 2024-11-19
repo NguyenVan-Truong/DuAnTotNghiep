@@ -1,12 +1,26 @@
 import React, { useEffect, useRef, useState } from "react";
 import instance from "@/configs/axios";
 import { useReactToPrint } from "react-to-print";
+import { ActionIcon, Tooltip } from "@mantine/core";
+import { IconMessageCircleStar } from "@tabler/icons-react";
+import { modals } from "@mantine/modals";
+import ProductReviews from "./ProductReviews";
+import { message } from "antd";
 
 type OrderDetailProps = {
     data: any;
 };
 
 const OrderDetail = ({ data }: OrderDetailProps) => {
+    const Reviews = async (item: number) => {
+        modals.openConfirmModal({
+            title: "Chi tiết đơn hàng",
+            size: "1000px",
+            children: <ProductReviews data={item} />,
+            confirmProps: { display: "none" },
+            cancelProps: { display: "none" },
+        });
+    };
     const componentPDF = useRef<HTMLDivElement>(null);
     const rows = data.order_items.map((item: any) => (
         <tr key={item.id} className="border-b border-gray-200">
@@ -19,7 +33,33 @@ const OrderDetail = ({ data }: OrderDetailProps) => {
                 {Number(item.total).toLocaleString("vi-VN")} VND
             </td>
             <td className="px-4 py-2 text-left">
-                {/* {item.variant ? JSON.parse(item.variant).join(", ") : ""} */}
+                {item.variant
+                    ? (() => {
+                          try {
+                              const parsedVariant = JSON.parse(item.variant);
+                              return Object.values(parsedVariant).join(", ");
+                          } catch (e) {
+                              console.error("Invalid JSON:", e);
+                              return "";
+                          }
+                      })()
+                    : ""}
+            </td>
+            <td className="px-4 py-2 text-left">
+                <Tooltip label="Đánh giá">
+                    <ActionIcon
+                        variant="light"
+                        aria-label="Settings"
+                        color="green"
+                        disabled={
+                            item.is_reviewed === "Đã có đánh giá" ||
+                            data.status !== "Hoàn thành"
+                        }
+                        onClick={() => Reviews(item)}
+                    >
+                        <IconMessageCircleStar size={20} />
+                    </ActionIcon>
+                </Tooltip>
             </td>
         </tr>
     ));
@@ -29,7 +69,7 @@ const OrderDetail = ({ data }: OrderDetailProps) => {
         contentRef: componentPDF,
         documentTitle: `Order`,
         onAfterPrint: () => {
-            console.log("Printed successfully");
+            message.success("In hóa đơn thành công!");
         },
     });
 
@@ -193,7 +233,15 @@ const OrderDetail = ({ data }: OrderDetailProps) => {
                                     padding: "8px",
                                 }}
                             >
-                                Biến thể
+                                Mô tả sản phẩm
+                            </th>
+                            <th
+                                style={{
+                                    border: "1px solid #ddd",
+                                    padding: "8px",
+                                }}
+                            >
+                                Thao tác
                             </th>
                         </tr>
                     </thead>

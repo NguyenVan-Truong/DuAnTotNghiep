@@ -166,10 +166,6 @@ const OrderAll = () => {
                 header: "Địa chỉ giao hàng",
             },
             {
-                accessorKey: "shipping_address",
-                header: "Địa chỉ giao hàng",
-            },
-            {
                 accessorKey: "created_at",
                 header: "Ngày đặt",
             },
@@ -278,20 +274,6 @@ const OrderAll = () => {
                         </ActionIcon>
                     </Tooltip>
                 </Popconfirm>
-                <Tooltip label="Đánh giá">
-                    <ActionIcon
-                        variant="light"
-                        aria-label="Settings"
-                        color="green"
-                        disabled={
-                            row.original.status !== "Hoàn thành" ||
-                            (row.original.reviews &&
-                                row.original.reviews.length > 0)
-                        }
-                    >
-                        <IconMessageCircleStar size={20} />
-                    </ActionIcon>
-                </Tooltip>
             </>
         );
     }
