@@ -475,6 +475,7 @@ const CheckoutPage = () => {
                                             data={valueCity}
                                             placeholder="Nhập tỉnh/thành phố"
                                             className="w-[50%]"
+                                            searchable
                                             {...form.getInputProps("city")}
                                             onClick={() => {
                                                 if (valueCity.length === 0) {
@@ -499,6 +500,7 @@ const CheckoutPage = () => {
                                             placeholder="Nhập quận/huyện"
                                             data={valueDistrict}
                                             className="w-[50%]"
+                                            searchable
                                             {...form.getInputProps("district")}
                                             onClick={() => {
                                                 if (
@@ -528,6 +530,7 @@ const CheckoutPage = () => {
                                             label="Phường/Xã"
                                             placeholder="Nhập phường/xã"
                                             data={valueWard}
+                                            searchable
                                             {...form.getInputProps("ward")}
                                             className="w-[50%]"
                                             onClick={() => {
