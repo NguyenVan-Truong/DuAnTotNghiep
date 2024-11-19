@@ -20,6 +20,7 @@ import { useEffect, useRef, useState } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import DescriptionShipping from "./DescriptionShipping";
 import styles from "./checkoutPage.module.scss"; // Import CSS module
+import { useQueryClient } from "@tanstack/react-query";
 
 type UserInfo = {
     id: number;
@@ -62,6 +63,7 @@ export interface Promotion {
 const CheckoutPage = () => {
     const location = useLocation();
     const navigate = useNavigate();
+    const queryClient = useQueryClient();
 
     if (!location.state) {
         return <Navigate to="/san-pham" replace />;
@@ -304,6 +306,8 @@ const CheckoutPage = () => {
                         navigate("/order-success", {
                             state: { status: "thanhcong" },
                         });
+                    queryClient.invalidateQueries({ queryKey: ["cart"] });
+
                     }
                 } catch (error) {
                     message.error("Lỗi không thể đặt hàng");
