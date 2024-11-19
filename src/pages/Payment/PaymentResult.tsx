@@ -5,15 +5,15 @@ import { Link, useLocation } from "react-router-dom";
 import ProductsHome from "../Home/components/ProductsHome/ProductsHome";
 
 const PaymentResult = () => {
-    // const location = useLocation();
+    const location = useLocation();
     const [orderStatus, setOrderStatus] = useState(false);
     const params = new URLSearchParams(location.search);
-    const status = params.get("status");
-
+    const statuss = params.get("status");
+    console.log("location", location.state);
     useEffect(() => {
         const dataCart = JSON.parse(localStorage.getItem("dataCart") || "{}");
 
-        if (status === "success" && orderStatus === false) {
+        if (statuss === "success" && orderStatus === false) {
             const fetchData = async () => {
                 const response = await instance.post("/orders", dataCart);
                 setOrderStatus(true);
@@ -28,7 +28,7 @@ const PaymentResult = () => {
     return (
         <div className="container">
             <Box bg="red.5" my="xl" component="a">
-                {status === "thanhcong" && (
+                {location?.state?.status === "thanhcong" && (
                     <div className="thanhcong">
                         <div
                             style={{
@@ -74,7 +74,7 @@ const PaymentResult = () => {
                         </div>
                     </div>
                 )}
-                {status === "success" && (
+                {statuss === "success" && (
                     <div className="success">
                         <div
                             style={{
@@ -120,7 +120,7 @@ const PaymentResult = () => {
                         </div>
                     </div>
                 )}
-                {status === "failure" && (
+                {statuss === "failure" && (
                     <div className="failure">
                         <div
                             style={{
@@ -164,7 +164,7 @@ const PaymentResult = () => {
                         </div>
                     </div>
                 )}
-                {status === "invalid" && (
+                {statuss === "invalid" && (
                     <div className="invalid">
                         <div
                             style={{
