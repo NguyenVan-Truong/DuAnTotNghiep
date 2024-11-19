@@ -198,7 +198,7 @@ const CheckoutPage = () => {
     const onhandleSubmit = async (values: any) => {
         const dataSubmit = {
             customer_id: inforUser?.id,
-            customer_name: inforUser?.full_name,
+            customer_name: values?.name,
             promotion_id: checkedPromotions?.id, //hỏi hoàn
             total_amount: location?.state.totalPrice,
             discount_amount: Number(checkedPromotions?.discount_value), //chưa ai làm
@@ -213,6 +213,7 @@ const CheckoutPage = () => {
             phone_number: values.sđt,
             note: values.description,
             order_items: orderItems,
+            // cart_id:"1,2,3", Thêm trường này
         };
         if (dataSubmit) {
             if (!checked) {
@@ -261,12 +262,12 @@ const CheckoutPage = () => {
                                         variant="light"
                                         onClick={() => {
                                             modals.closeAll();
-                                            navigate("/gio-hang", {
+                                            navigate("/nguoi-dung/don-hang", {
                                                 replace: true,
                                             });
                                         }}
                                     >
-                                        Xem giỏ hàng
+                                        Xem đơn hàng
                                     </Button>
 
                                     <Button
@@ -474,6 +475,7 @@ const CheckoutPage = () => {
                                             data={valueCity}
                                             placeholder="Nhập tỉnh/thành phố"
                                             className="w-[50%]"
+                                            searchable
                                             {...form.getInputProps("city")}
                                             onClick={() => {
                                                 if (valueCity.length === 0) {
@@ -498,6 +500,7 @@ const CheckoutPage = () => {
                                             placeholder="Nhập quận/huyện"
                                             data={valueDistrict}
                                             className="w-[50%]"
+                                            searchable
                                             {...form.getInputProps("district")}
                                             onClick={() => {
                                                 if (
@@ -527,6 +530,7 @@ const CheckoutPage = () => {
                                             label="Phường/Xã"
                                             placeholder="Nhập phường/xã"
                                             data={valueWard}
+                                            searchable
                                             {...form.getInputProps("ward")}
                                             className="w-[50%]"
                                             onClick={() => {
