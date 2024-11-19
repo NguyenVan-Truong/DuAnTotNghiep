@@ -42,16 +42,16 @@ const theme = createTheme({
     },
 });
 ReactDOM.createRoot(document.getElementById("root")!).render(
-    <React.StrictMode>
-        <MantineProvider theme={theme}>
-            <Notifications />
-            <QueryClientProvider client={queryClient}>
-                <BrowserRouter>
-                    <ModalsProvider>
-                        <App />
-                    </ModalsProvider>
-                </BrowserRouter>
-            </QueryClientProvider>
-        </MantineProvider>
-    </React.StrictMode>,
+    // <React.StrictMode>
+    <MantineProvider theme={theme}>
+        <Notifications />
+        <QueryClientProvider client={queryClient}>
+            <BrowserRouter>
+                <ModalsProvider>
+                    <App />
+                </ModalsProvider>
+            </BrowserRouter>
+        </QueryClientProvider>
+    </MantineProvider>,
+    // </React.StrictMode>,
 );

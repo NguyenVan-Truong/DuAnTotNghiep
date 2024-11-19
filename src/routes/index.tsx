@@ -11,6 +11,7 @@ import Introduce from "@/pages/Introduce/Introduce";
 import LayoutWeb from "@/pages/Layout";
 import PageNotFound from "@/pages/NotFound/page";
 import PaymentPage from "@/pages/Payment/Payment";
+import PaymentResult from "@/pages/Payment/PaymentResult";
 import ProductDetail from "@/pages/ProductDetail/ProductDetail";
 import ProductCategory from "@/pages/ProductsCategory/page";
 import OrderCart from "@/pages/ProfileUser/components/OrderCart/OrderCart";
@@ -45,6 +46,7 @@ const Index = () => {
                     <Route path="gch" element={<InspirationCorner />} />
                     <Route path="lien-he" element={<Contact />} />
                     <Route path="payment" element={<PaymentPage />} />
+                    <Route path="order-success" element={<PaymentResult />} />
                     <Route
                         path="chi-tiet-san-pham/:slug"
                         element={<ProductDetail />}
