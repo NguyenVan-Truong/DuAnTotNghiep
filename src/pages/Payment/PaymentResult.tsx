@@ -104,7 +104,7 @@ const PaymentResult = () => {
                                 sớm được giao đến bạn."
                             </p>
                             <div>
-                                <Link to={"/don-hang"}>
+                                <Link to={"nguoi-dung/don-hang"}>
                                     <Button
                                         style={{
                                             margin: "0 auto",
