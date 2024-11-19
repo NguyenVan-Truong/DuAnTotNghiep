@@ -8,46 +8,99 @@ import {
     Checkbox,
     Flex,
     Grid,
-    GridCol,
     LoadingOverlay,
     Text,
 } from "@mantine/core";
 import { useDebouncedState } from "@mantine/hooks";
 import { modals } from "@mantine/modals";
+import {
+    IconAB2,
+    IconAlertOctagon,
+    IconPhoneCall,
+    IconShoppingCart,
+    IconX,
+} from "@tabler/icons-react";
+import { useQuery } from "@tanstack/react-query";
 import { message } from "antd";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Style from "./ShoppingCart.module.scss";
-import { IconShoppingCart } from "@tabler/icons-react";
 const ShoppingCart = () => {
-    const [data, setData] = useState<any>([]);
+    const navigate = useNavigate();
     const [debouncedQuantity, setDebouncedQuantity] = useDebouncedState<
         number | null
     >(null, 400); // Sử dụng hook debounced state để giảm số lần gọi API
     const [debouncedId, setDebouncedId] = useState<number | null>();
     const [debouncedName, setDebouncedName] = useState<string | null>();
-    const [isLoading, setisLoading] = useState(false);
+    const [dataCartRequest, setDataCartRequest] = useState<CartItem[]>([]);
     //   tỔNG TIỀN
     const [totalPrice, setTotalPrice] = useState<number>(0);
-    const fetchData = async () => {
-        setisLoading(true);
+    // click select checkbox
+    const [listchecked, setListChecked] = useState<[]>([]);
+    //chuyển trang Thanh toán
+    const handlePayment = () => {
+        if (listchecked.length === 0) {
+            message.error("Vui lòng chọn sản phẩm để thanh toán");
+            return;
+        }
+        navigate("/thanh-toan", {
+            state: { listchecked: listchecked, totalPrice: totalPrice },
+        });
+    };
+    // #region Lấy dl giỏ hàng
+    const fetchDataCart = async () => {
         try {
             const response = await instance.get("/cart");
             if (response.status === 200) {
-                setData(response.data.data);
+                setDataCartRequest(response.data.data);
+                return response.data.data;
             }
         } catch (error) {
-            NotificationExtension.Fails("Đã xảy ra lỗi khi lấy dữ liệu");
+            console.log(error);
         } finally {
-            setisLoading(false);
+            // setisLoading(false);
         }
     };
 
+    const {
+        data: dataCart,
+        isLoading: isLoadingCart,
+        refetch,
+    } = useQuery<CartItem[]>({
+        queryKey: ["cart"],
+        queryFn: fetchDataCart,
+    });
+    // #endregion
+    // click checkbox
+    const onhandleChecked = (item: CartItem) => {
+        setListChecked((prevList: any) => {
+            // Kiểm tra nếu item.id đã tồn tại trong listchecked
+            if (prevList.some((prev: CartItem) => prev.id === item.id)) {
+                // Loại bỏ item khỏi danh sách
+                return prevList.filter((prev: CartItem) => prev.id !== item.id);
+            } else {
+                // Thêm item vào danh sách
+                return [...prevList, item];
+            }
+        });
+    };
+    // Xóa sản phẩm
+    const handleDeleteProduct = async (ids: number) => {
+        try {
+            const response = await instance.delete(`/delete-cart?ids=${ids}`);
+            if (response && response.status === 200) {
+                refetch();
+                message.success("Xóa sản phẩm thành công");
+            }
+        } catch (error) {
+            message.error("Đã xảy ra lỗi khi xóa sản phẩm");
+        }
+    };
     const handleQuantityChange = (
         id: number,
         type: "increase" | "decrease",
     ) => {
-        setData((prevData: any) =>
+        setDataCartRequest((prevData: any) =>
             prevData.map((item: CartItem) => {
                 if (item.id === id) {
                     const newQuantity =
@@ -55,22 +108,6 @@ const ShoppingCart = () => {
                             ? item.quantity + 1
                             : item.quantity - 1;
                     if (newQuantity < 1) {
-                        const openModal = () =>
-                            modals.openConfirmModal({
-                                title: "Bạn chắc chắn muốn bỏ sản phẩm này?",
-                                children: (
-                                    <Text size="lg">{debouncedName}</Text>
-                                ),
-                                labels: { confirm: "Xác nhận", cancel: "Hủy" },
-                                // onCancel: () => console.log("Hủy bỏ"),
-                                onConfirm: () => {},
-                                classNames: {
-                                    title: "my-custom-modal-title",
-                                    body: "my-custom-modal-body",
-                                    header: "my-custom-modal-header",
-                                },
-                            });
-                        openModal();
                         return item;
                     }
                     setDebouncedQuantity(newQuantity);
@@ -83,16 +120,6 @@ const ShoppingCart = () => {
         );
     };
 
-    // Xóa sản phẩm
-    const handleDeleteProduct = async (id: number) => {
-        console.log("id", id);
-        try {
-            const response = await instance.delete(`/cart/${id}`);
-            console.log("response", response);
-        } catch (error) {
-            message.error("Đã xảy ra lỗi khi xóa sản phẩm");
-        }
-    };
     useEffect(() => {
         if (debouncedQuantity !== null && debouncedQuantity >= 1) {
             const updateQuantity = async () => {
@@ -102,30 +129,40 @@ const ShoppingCart = () => {
                     });
                 } catch (error) {
                     message.error("Đã xảy ra lỗi khi cập nhật số lượng");
+                } finally {
+                    refetch();
                 }
             };
             updateQuantity();
         }
-    }, [debouncedQuantity]);
+    }, [debouncedQuantity, debouncedId]);
     useEffect(() => {
-        fetchData();
-    }, []);
-    // Tính tổng số lượng và tổng tiền
-    useEffect(() => {
-        if (data?.length > 0) {
-            const total = data.reduce(
+        if (!dataCart) return;
+        if (dataCart?.length > 0 && listchecked.length > 0) {
+            const total = dataCart.reduce(
                 (acc: any, item: CartItem) => {
-                    acc.totalQuantity += item.quantity;
-                    acc.totalPrice +=
-                        Number(item.product_variant.discount_price) *
-                        Number(item.quantity);
+                    // Kiểm tra xem sản phẩm có được chọn không
+                    if (
+                        listchecked.some(
+                            (checkedItem: CartItem) =>
+                                checkedItem.id === item.id,
+                        )
+                    ) {
+                        acc.totalQuantity += item.quantity;
+                        acc.totalPrice +=
+                            (Number(item.product_variant.discount_price) ||
+                                Number(item.product_variant.price)) *
+                            Number(item.quantity);
+                    }
                     return acc;
                 },
                 { totalQuantity: 0, totalPrice: 0 },
             );
             setTotalPrice(total.totalPrice);
+        } else {
+            setTotalPrice(0);
         }
-    }, [data]);
+    }, [dataCart, listchecked]);
 
     return (
         <div
@@ -137,7 +174,7 @@ const ShoppingCart = () => {
         >
             <div className={Style.Main}>
                 <LoadingOverlay
-                    visible={isLoading}
+                    visible={isLoadingCart}
                     zIndex={1000}
                     overlayProps={{ radius: "sm", blur: 2 }}
                 />
@@ -147,158 +184,285 @@ const ShoppingCart = () => {
                         <h1 className={Style.Title}>
                             Giỏ Hàng
                             <span className={Style.Total_count}>
-                                {data.length}
+                                {dataCart?.length}
                             </span>
                         </h1>
-                        <Button variant="filled" color="red" disabled>
+                        {/* <Button variant="filled" color="red" disabled>
                             Xóa{" "}
-                        </Button>
+                        </Button> */}
                     </Flex>
-                    {data?.map((item: CartItem) => {
-                        return (
-                            <Flex
-                                direction={"row"}
-                                justify={"space-between"}
-                                className="border-b-2 border-b-gray-200"
-                            >
-                                <div
-                                    className="flex "
-                                    style={{
-                                        alignItems: "start",
-                                    }}
+                    {dataCartRequest &&
+                        dataCartRequest.map((item: CartItem) => {
+                            return (
+                                <Flex
+                                    direction={"row"}
+                                    justify={"space-between"}
+                                    className="border-b-2 border-b-gray-200"
+                                    key={item.id}
                                 >
                                     <div
+                                        className="flex "
                                         style={{
-                                            marginTop: "35px",
+                                            alignItems: "start",
                                         }}
                                     >
-                                        <Checkbox
-                                            defaultChecked
+                                        <div
                                             style={{
-                                                marginTop: "10px",
+                                                marginTop: "35px",
                                             }}
-                                        />
-                                    </div>
-                                    <div className="">
-                                        <img
-                                            src={item.product.image_url}
-                                            alt=""
-                                            style={{
-                                                padding: "10px",
-                                                maxHeight: "110px",
-                                                minHeight: "110px",
-                                                minWidth: "130px",
-                                                maxWidth: "130px",
-                                                objectFit: "cover",
-                                            }}
-                                        />
-                                    </div>
-                                    <div className={Style.Content}>
-                                        <div className={Style.Content_Title}>
-                                            <h4
-                                                style={{
-                                                    fontSize: "16px",
-                                                    fontWeight: "500",
-                                                    marginTop: "5px",
-                                                }}
-                                            >
-                                                {item.product.name}
-                                            </h4>
-                                        </div>
-
-                                        <Flex
-                                            direction="row"
-                                            style={{
-                                                margin: "5px 0",
-                                            }}
-                                            align={"center"}
                                         >
-                                            <span
-                                                className={Style.Content_Price}
-                                            >
-                                                {formatCurrencyVN(
-                                                    item.product_variant
-                                                        .discount_price,
-                                                )}
-                                            </span>
-                                            <p
+                                            <Checkbox
                                                 style={{
-                                                    color: "#333",
-                                                    fontSize: "14px",
-                                                    fontWeight: "400",
-                                                    marginLeft: "10px",
-                                                    marginTop: "-5px",
+                                                    marginTop: "10px",
+                                                }}
+                                                onClick={() =>
+                                                    onhandleChecked(item)
+                                                }
+                                            />
+                                        </div>
+                                        <div className="">
+                                            <img
+                                                src={item.product.image_url}
+                                                alt=""
+                                                style={{
+                                                    padding: "10px",
+                                                    maxHeight: "110px",
+                                                    minHeight: "110px",
+                                                    minWidth: "130px",
+                                                    maxWidth: "130px",
+                                                    objectFit: "cover",
+                                                }}
+                                            />
+                                        </div>
+                                        <div className={Style.Content}>
+                                            <div
+                                                className={Style.Content_Title}
+                                            >
+                                                <h4
+                                                    style={{
+                                                        fontSize: "16px",
+                                                        fontWeight: "500",
+                                                        marginTop: "5px",
+                                                    }}
+                                                >
+                                                    {item.product.name}
+                                                </h4>
+                                            </div>
+
+                                            <Flex
+                                                direction="column"
+                                                style={{
+                                                    margin: "5px 0",
                                                 }}
                                             >
-                                                Thuộc tính
-                                            </p>
-                                        </Flex>
+                                                <p
+                                                    style={{
+                                                        color: "#333",
+                                                        fontSize: "14px",
+                                                        fontWeight: "400",
+                                                        marginTop: "-5px",
+                                                    }}
+                                                >
+                                                    {item.product_variant.attribute_values
+                                                        .map(
+                                                            (item: any) =>
+                                                                item.name,
+                                                        )
+                                                        .join(", ")}
+                                                </p>
+                                                <span
+                                                    className={
+                                                        Style.Content_Price
+                                                    }
+                                                    style={{
+                                                        marginTop: "2px",
+                                                    }}
+                                                >
+                                                    {item.product_variant
+                                                        .discount_price !==
+                                                    "0.00" ? (
+                                                        <>
+                                                            {formatCurrencyVN(
+                                                                item
+                                                                    .product_variant
+                                                                    .discount_price,
+                                                            )}
 
-                                        <div className={Style.Content_Button}>
+                                                            <del
+                                                                style={{
+                                                                    margin: "0 7px",
+                                                                    color: "#999",
+                                                                    fontSize:
+                                                                        "14px",
+                                                                    fontWeight:
+                                                                        "400",
+                                                                }}
+                                                            >
+                                                                {formatCurrencyVN(
+                                                                    item
+                                                                        .product_variant
+                                                                        .price,
+                                                                )}
+                                                            </del>
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            {formatCurrencyVN(
+                                                                item
+                                                                    .product_variant
+                                                                    .price,
+                                                            )}
+                                                        </>
+                                                    )}
+                                                </span>
+                                            </Flex>
+
                                             <div
-                                                className={
-                                                    Style.Content_Button_Quantity
-                                                }
+                                                className={Style.Content_Button}
                                             >
-                                                <button
-                                                    className={Style.Button}
-                                                    onClick={() =>
-                                                        handleQuantityChange(
-                                                            item.id,
-                                                            "decrease",
-                                                        )
+                                                <div
+                                                    className={
+                                                        Style.Content_Button_Quantity
                                                     }
                                                 >
-                                                    -
-                                                </button>
+                                                    <button
+                                                        className={Style.Button}
+                                                        onClick={() =>
+                                                            handleQuantityChange(
+                                                                item.id,
+                                                                "decrease",
+                                                            )
+                                                        }
+                                                        disabled={
+                                                            item.quantity == 1
+                                                        }
+                                                        style={{
+                                                            cursor:
+                                                                item.quantity ==
+                                                                1
+                                                                    ? "not-allowed"
+                                                                    : "pointer",
+                                                            opacity:
+                                                                item.quantity ==
+                                                                1
+                                                                    ? 0.5
+                                                                    : 1,
+                                                        }}
+                                                    >
+                                                        -
+                                                    </button>
 
-                                                <input
-                                                    type="number"
-                                                    value={item.quantity}
-                                                    className={Style.quantity}
-                                                    disabled
-                                                />
+                                                    <input
+                                                        type="number"
+                                                        value={item.quantity}
+                                                        className={
+                                                            Style.quantity
+                                                        }
+                                                        disabled
+                                                    />
 
-                                                <button
-                                                    className={Style.Button}
-                                                    onClick={() =>
-                                                        handleQuantityChange(
-                                                            item.id,
-                                                            "increase",
-                                                        )
-                                                    }
-                                                >
-                                                    +
-                                                </button>
+                                                    <button
+                                                        className={Style.Button}
+                                                        onClick={() =>
+                                                            handleQuantityChange(
+                                                                item.id,
+                                                                "increase",
+                                                            )
+                                                        }
+                                                        disabled={
+                                                            item.quantity >=
+                                                            item.product_variant
+                                                                .stock
+                                                        }
+                                                        style={{
+                                                            cursor:
+                                                                item.quantity >=
+                                                                item
+                                                                    .product_variant
+                                                                    .stock
+                                                                    ? "not-allowed"
+                                                                    : "pointer",
+                                                            opacity:
+                                                                item.quantity >=
+                                                                item
+                                                                    .product_variant
+                                                                    .stock
+                                                                    ? 0.5
+                                                                    : 1,
+                                                        }}
+                                                    >
+                                                        +
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div
-                                    style={{
-                                        display: "flex",
-                                        flexDirection: "column-reverse",
-                                    }}
-                                >
-                                    {/* tổng tiền của 1 sản phẩm */}
-                                    <p
+                                    <Flex
+                                        direction={"column"}
+                                        justify={"space-between"}
+                                        align={"end"}
                                         style={{
-                                            marginBottom: "10px",
+                                            padding: "6px 0",
                                         }}
                                     >
-                                        {formatCurrencyVN(
-                                            String(
-                                                Number(
-                                                    item.product_variant
-                                                        .discount_price,
-                                                ) * Number(item.quantity),
-                                            ),
-                                        )}
-                                    </p>
-                                </div>
-                            </Flex>
-                        );
-                    })}
+                                        {/* Xóa sp */}
+                                        <div
+                                            style={{
+                                                cursor: "pointer",
+                                            }}
+                                        >
+                                            <IconX
+                                                stroke={2}
+                                                onClick={() => {
+                                                    handleDeleteProduct(
+                                                        item.id,
+                                                    );
+                                                }}
+                                            />
+                                        </div>
+                                        {/* tổng tiền của 1 sản phẩm */}
+                                        <p
+                                            style={{
+                                                marginBottom: "10px",
+                                            }}
+                                        >
+                                            {item.product_variant
+                                                .discount_price !== "0.00" ? (
+                                                <>
+                                                    {formatCurrencyVN(
+                                                        String(
+                                                            Number(
+                                                                item
+                                                                    .product_variant
+                                                                    .discount_price,
+                                                            ) *
+                                                                Number(
+                                                                    item.quantity,
+                                                                ),
+                                                        ),
+                                                    )}
+                                                </>
+                                            ) : (
+                                                <>
+                                                    {formatCurrencyVN(
+                                                        String(
+                                                            Number(
+                                                                item
+                                                                    .product_variant
+                                                                    .price,
+                                                            ) *
+                                                                Number(
+                                                                    item.quantity,
+                                                                ),
+                                                        ),
+                                                    )}
+                                                </>
+                                            )}
+                                        </p>
+                                    </Flex>
+                                </Flex>
+                            );
+                        })}
                 </div>
                 <div className={Style.Right}>
                     <div className={Style.Right_Container}>
@@ -350,6 +514,7 @@ const ShoppingCart = () => {
                                         width: "100%",
                                         fontSize: "16px",
                                     }}
+                                    onClick={() => handlePayment()}
                                 >
                                     THANH TOÁN
                                 </Button>
@@ -374,60 +539,193 @@ const ShoppingCart = () => {
             <div
                 style={{
                     position: "relative",
+                    marginTop: "100px",
                 }}
             >
                 <Grid>
                     <Grid.Col span={{ base: 6, md: 4, lg: 3 }}>
-                        <Flex direction="column" justify={"center"}>
-                            <div>
-                                <IconShoppingCart stroke={2} />
-                            </div>
-                            <div>
-                                <p>Giao hàng và lắp đặt</p>
-                            </div>
-                            <div>
-                                <p>Miễn phí</p>
-                            </div>
-                        </Flex>
+                        <Box
+                            c="blue.6"
+                            bg="#fff"
+                            my="xl"
+                            style={{
+                                borderRadius: "10px",
+                                boxShadow: "0 0 10px 0 rgba(0,0,0,.1)",
+                                padding: "20px",
+                            }}
+                        >
+                            <Flex
+                                direction="column"
+                                justify={"center"}
+                                align={"center"}
+                                style={{
+                                    color: "rgb(85 85 85)",
+                                }}
+                                gap={4}
+                            >
+                                <div>
+                                    <IconShoppingCart
+                                        stroke={2}
+                                        style={{
+                                            height: "48px",
+                                            width: "48px",
+                                            color: "rgb(85 85 85)",
+                                        }}
+                                    />
+                                </div>
+                                <div>
+                                    <p
+                                        style={{
+                                            fontSize: "16px",
+                                            fontWeight: 400,
+                                        }}
+                                    >
+                                        Giao hàng và lắp đặt
+                                    </p>
+                                </div>
+                                <div>
+                                    <p>Miễn phí</p>
+                                </div>
+                            </Flex>
+                        </Box>
                     </Grid.Col>
                     <Grid.Col span={{ base: 6, md: 4, lg: 3 }}>
-                        <Flex direction="column" justify={"center"}>
-                            <div>
-                                <IconShoppingCart stroke={2} />
-                            </div>
-                            <div>
-                                <p>Giao hàng và lắp đặt</p>
-                            </div>
-                            <div>
-                                <p>Miễn phí</p>
-                            </div>
-                        </Flex>
-                    </Grid.Col>
+                        <Box
+                            c="blue.6"
+                            bg="#fff"
+                            my="xl"
+                            style={{
+                                borderRadius: "10px",
+                                boxShadow: "0 0 10px 0 rgba(0,0,0,.1)",
+                                padding: "20px",
+                            }}
+                        >
+                            <Flex
+                                direction="column"
+                                justify={"center"}
+                                align={"center"}
+                                style={{
+                                    color: "rgb(85 85 85)",
+                                }}
+                                gap={4}
+                            >
+                                <div>
+                                    <IconAB2
+                                        stroke={2}
+                                        style={{
+                                            height: "48px",
+                                            width: "48px",
+                                            color: "rgb(85 85 85)",
+                                        }}
+                                    />
+                                </div>
+                                <div>
+                                    <p
+                                        style={{
+                                            fontSize: "16px",
+                                            fontWeight: 400,
+                                        }}
+                                    >
+                                        Đổi trả 1-1
+                                    </p>
+                                </div>
+                                <div>
+                                    <p>Miễn phí</p>
+                                </div>
+                            </Flex>
+                        </Box>
+                    </Grid.Col>{" "}
                     <Grid.Col span={{ base: 6, md: 4, lg: 3 }}>
-                        <Flex direction="column" justify={"center"}>
-                            <div>
-                                <IconShoppingCart stroke={2} />
-                            </div>
-                            <div>
-                                <p>Giao hàng và lắp đặt</p>
-                            </div>
-                            <div>
-                                <p>Miễn phí</p>
-                            </div>
-                        </Flex>
-                    </Grid.Col>
+                        <Box
+                            c="blue.6"
+                            bg="#fff"
+                            my="xl"
+                            style={{
+                                borderRadius: "10px",
+                                boxShadow: "0 0 10px 0 rgba(0,0,0,.1)",
+                                padding: "20px",
+                            }}
+                        >
+                            <Flex
+                                direction="column"
+                                justify={"center"}
+                                align={"center"}
+                                style={{
+                                    color: "rgb(85 85 85)",
+                                }}
+                                gap={4}
+                            >
+                                <div>
+                                    <IconAlertOctagon
+                                        stroke={2}
+                                        style={{
+                                            height: "48px",
+                                            width: "48px",
+                                            color: "rgb(85 85 85)",
+                                        }}
+                                    />
+                                </div>
+                                <div>
+                                    <p
+                                        style={{
+                                            fontSize: "16px",
+                                            fontWeight: 400,
+                                        }}
+                                    >
+                                        Bảo hành 2 năm
+                                    </p>
+                                </div>
+                                <div>
+                                    <p>Miễn phí</p>
+                                </div>
+                            </Flex>
+                        </Box>
+                    </Grid.Col>{" "}
                     <Grid.Col span={{ base: 6, md: 4, lg: 3 }}>
-                        <Flex direction="column" justify={"center"}>
-                            <div>
-                                <IconShoppingCart stroke={2} />
-                            </div>
-                            <div>
-                                <p>Giao hàng và lắp đặt</p>
-                            </div>
-                            <div>
-                                <p>Miễn phí</p>
-                            </div>
-                        </Flex>
+                        <Box
+                            c="blue.6"
+                            bg="#fff"
+                            my="xl"
+                            style={{
+                                borderRadius: "10px",
+                                boxShadow: "0 0 10px 0 rgba(0,0,0,.1)",
+                                padding: "20px",
+                            }}
+                        >
+                            <Flex
+                                direction="column"
+                                justify={"center"}
+                                align={"center"}
+                                style={{
+                                    color: "rgb(85 85 85)",
+                                }}
+                                gap={4}
+                            >
+                                <div>
+                                    <IconPhoneCall
+                                        stroke={2}
+                                        style={{
+                                            height: "48px",
+                                            width: "48px",
+                                            color: "rgb(85 85 85)",
+                                        }}
+                                    />
+                                </div>
+                                <div>
+                                    <p
+                                        style={{
+                                            fontSize: "16px",
+                                            fontWeight: 400,
+                                        }}
+                                    >
+                                        Tư vấn miễn phí
+                                    </p>
+                                </div>
+                                <div>
+                                    <p>Miễn phí</p>
+                                </div>
+                            </Flex>
+                        </Box>
                     </Grid.Col>
                 </Grid>
             </div>

@@ -98,7 +98,9 @@ const OrderLoader = () => {
     function getColorStatusPayment(text: any) {
         return text === "Đã thanh toán" ? "green" : "red";
     }
-
+    function getColorStatusPay(text: any) {
+        return text === "Chuyển khoản ngân hàng" ? "blue" : "pink";
+    }
     // Cấu hình các cột của bảng
     const columns = useMemo<MRT_ColumnDef<any>[]>(
         () => [
@@ -115,6 +117,7 @@ const OrderLoader = () => {
                         {renderedCellValue || null}
                     </Badge>
                 ),
+                size: 20,
             },
             {
                 accessorKey: "customer.customer_name",
@@ -137,17 +140,33 @@ const OrderLoader = () => {
                 ),
             },
             {
+                accessorKey: "email",
+                header: "Email người nhận",
+            },
+            {
                 accessorKey: "shipping_address",
                 header: "Địa chỉ giao hàng",
             },
+
             {
                 accessorKey: "created_at",
                 header: "Ngày đặt",
             },
             {
+                accessorKey: "note",
+                header: "Ghi chú",
+            },
+            {
                 accessorKey: "payment_method.payment_method_name",
                 header: "Phương thức thanh toán",
                 size: 250,
+                Cell: ({ renderedCellValue }) => (
+                    <Badge color={getColorStatusPay(renderedCellValue)}>
+                        {renderedCellValue === "Chuyển khoản ngân hàng"
+                            ? "Chuyển khoản ngân hàng"
+                            : "Tiền mặt khi nhận hàng"}
+                    </Badge>
+                ),
             },
             {
                 accessorKey: "payment_status",

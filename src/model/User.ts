@@ -31,3 +31,7 @@ export interface UserProfile {
     deleted_at: string | null; // Thời gian xóa (có thể là null)
     status: number; // Trạng thái
 }
+export interface ChangePasswordNew {
+    password: string;
+    new_password: string;
+}

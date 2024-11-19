@@ -12,6 +12,7 @@ import { Box, Loader, Text } from "@mantine/core";
 import { Favorites } from "@/model/Favorite";
 import { min } from "lodash";
 import Index from "../../../routes/index";
+import { formatCurrencyVN } from "@/model/_base/Number";
 
 // const fetchFavoritesData = async () => {
 //     const response = await instance.get("/favorites");
@@ -166,7 +167,9 @@ const Favorite = ({ data }: any) => {
                                             </Box>
                                         </h1>
                                         <p className="text-base">
-                                            {favorite.product.price}
+                                            {formatCurrencyVN(
+                                                favorite.product.price,
+                                            )}
                                         </p>
                                     </div>
                                     <div className="flex items-center">

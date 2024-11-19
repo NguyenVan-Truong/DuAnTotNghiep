@@ -16,9 +16,9 @@ import {
     IconCheck,
     IconEye,
     IconFileExport,
+    IconMessageCircleStar,
     IconSearch,
     IconSwitch,
-    IconTrash,
     IconX,
 } from "@tabler/icons-react";
 import {
@@ -31,11 +31,11 @@ import {
 
 import { formatDateNotTimeZone } from "@/model/_base/Date";
 import { Order } from "@/model/Order";
+import { message, Popconfirm } from "antd";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import * as xlsx from "xlsx";
 import DetailOrder from "../DetailOrder";
-import { message, Popconfirm } from "antd";
 
 const OrderAll = () => {
     const [data, setData] = useState<Order[]>([]); // Cập nhật kiểu dữ liệu
@@ -115,6 +115,9 @@ const OrderAll = () => {
     function getColorStatusPayment(text: any) {
         return text === "Đã thanh toán" ? "green" : "red";
     }
+    function getColorStatusPay(text: any) {
+        return text === "Chuyển khoản ngân hàng" ? "blue" : "pink";
+    }
 
     // Cấu hình các cột của bảng
     const columns = useMemo<MRT_ColumnDef<any>[]>(
@@ -132,6 +135,7 @@ const OrderAll = () => {
                         {renderedCellValue || null}
                     </Badge>
                 ),
+                size: 20,
             },
             {
                 accessorKey: "customer.customer_name",
@@ -154,6 +158,10 @@ const OrderAll = () => {
                 ),
             },
             {
+                accessorKey: "email",
+                header: "Email người nhận",
+            },
+            {
                 accessorKey: "shipping_address",
                 header: "Địa chỉ giao hàng",
             },
@@ -162,9 +170,20 @@ const OrderAll = () => {
                 header: "Ngày đặt",
             },
             {
+                accessorKey: "note",
+                header: "Ghi chú",
+            },
+            {
                 accessorKey: "payment_method.payment_method_name",
                 header: "Phương thức thanh toán",
                 size: 250,
+                Cell: ({ renderedCellValue }) => (
+                    <Badge color={getColorStatusPay(renderedCellValue)}>
+                        {renderedCellValue === "Chuyển khoản ngân hàng"
+                            ? "Chuyển khoản ngân hàng"
+                            : "Tiền mặt khi nhận hàng"}
+                    </Badge>
+                ),
             },
             {
                 accessorKey: "payment_status",
@@ -251,7 +270,7 @@ const OrderAll = () => {
                             aria-label="Settings"
                             disabled={row.original.status !== "Chờ xử lý"}
                         >
-                            <IconX />
+                            <IconX size={20} />
                         </ActionIcon>
                     </Tooltip>
                 </Popconfirm>

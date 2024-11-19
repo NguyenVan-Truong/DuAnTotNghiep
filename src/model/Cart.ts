@@ -36,6 +36,7 @@ export interface ProductVariant {
     created_at: string;
     updated_at: string;
     discount_price: string;
+    attribute_values: [];
 }
 
 export interface CartItem {
@@ -50,4 +51,5 @@ export interface CartItem {
     price: string;
     product: Product;
     product_variant: ProductVariant;
+    image_url: string;
 }
