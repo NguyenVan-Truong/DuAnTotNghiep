@@ -147,10 +147,7 @@ const OrderLoader = () => {
                 accessorKey: "shipping_address",
                 header: "Địa chỉ giao hàng",
             },
-            {
-                accessorKey: "shipping_address",
-                header: "Địa chỉ giao hàng",
-            },
+
             {
                 accessorKey: "created_at",
                 header: "Ngày đặt",

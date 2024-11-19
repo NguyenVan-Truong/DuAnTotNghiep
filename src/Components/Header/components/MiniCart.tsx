@@ -69,17 +69,17 @@ const IconCart = () => {
         if (dataCart?.length > 0) {
             const total = dataCart.reduce(
                 (acc: any, item: CartItem) => {
-                    // Kiểm tra xem sản phẩm có được chọn không
-
                     acc.totalQuantity += item.quantity;
                     acc.totalPrice +=
-                        Number(item.product_variant.discount_price) *
+                        (Number(item.product_variant.discount_price) ||
+                            Number(item.product_variant.price)) *
                         Number(item.quantity);
 
                     return acc;
                 },
                 { totalQuantity: 0, totalPrice: 0 },
             );
+            console.log(total);
             setTotalPrice(total.totalPrice);
         } else {
             setTotalPrice(0);
