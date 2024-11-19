@@ -11,6 +11,7 @@ import LayoutWeb from "@/pages/Layout";
 import PageNotFound from "@/pages/NotFound/page";
 import ProductDetail from "@/pages/ProductDetail/ProductDetail";
 import ProductCategory from "@/pages/ProductsCategory/page";
+import OrderDetail from "@/pages/ProfileUser/components/OrderCart/components/DetailOrder";
 import OrderCart from "@/pages/ProfileUser/components/OrderCart/OrderCart";
 import SupportFeedback from "@/pages/ProfileUser/components/SupportFeedback/SupportFeedback";
 import UserAccount from "@/pages/ProfileUser/components/UserAccount/UserAccount";
@@ -57,6 +58,7 @@ const Index = () => {
                             element={<SupportFeedback />}
                         />
                         <Route path="don-hang" element={<OrderCart />} />
+                        <Route path="chi-tiet-don-hang" element={<OrderDetail />} />
                     </Route>
                 </Route>
                 <Route path="/xac-thuc" element={<Auth />}>
