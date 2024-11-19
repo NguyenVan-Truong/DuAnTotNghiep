@@ -3,12 +3,14 @@ import { Box, Button } from "@mantine/core";
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import ProductsHome from "../Home/components/ProductsHome/ProductsHome";
+import { useQueryClient } from "@tanstack/react-query";
 
 const PaymentResult = () => {
     const location = useLocation();
     const [orderStatus, setOrderStatus] = useState(false);
     const params = new URLSearchParams(location.search);
     const statuss = params.get("status");
+    const queryClient = useQueryClient();
     console.log("location", location.state);
     useEffect(() => {
         const dataCart = JSON.parse(localStorage.getItem("dataCart") || "{}");
@@ -19,6 +21,7 @@ const PaymentResult = () => {
                 setOrderStatus(true);
                 if (response.status === 201) {
                     localStorage.removeItem("dataCart");
+                    queryClient.invalidateQueries({ queryKey: ["cart"] });
                 }
             };
             fetchData();
@@ -104,7 +107,7 @@ const PaymentResult = () => {
                                 sớm được giao đến bạn."
                             </p>
                             <div>
-                                <Link to={"nguoi-dung/don-hang"}>
+                                <Link to={"/nguoi-dung/don-hang"}>
                                     <Button
                                         style={{
                                             margin: "0 auto",
