@@ -10,7 +10,6 @@ import {
     Flex,
     Grid,
     Text,
-    TextInput,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { IconFilter } from "@tabler/icons-react";
@@ -31,24 +30,28 @@ const ProductCategory = () => {
     const form = useForm({
         initialValues: {
             category: "",
-            dimension: "",
-            material: "",
+            dimension: "", // dimension can be something like "200x160"
+            material: "", // material can be something like "Gỗ Sồi"
             min_price: "",
             max_price: "",
+            kt: "",
         },
     });
 
     const fetchdata = async () => {
+        console.log("values: ", form.values);
         let url = `?page=${pagination.pageIndex}`;
 
         if (form.values.category) {
             url += `&category_id=${form.values.category}`;
         }
         if (form.values.dimension) {
-            url += `&dimension=${form.values.dimension}`;
+            console.log("Dimension value: ", form.values.dimension); // Kiểm tra giá trị
+            url += `&dimension=${encodeURIComponent(form.values.dimension)}`; // Mã hóa nếu có khoảng trắng
         }
         if (form.values.material) {
-            url += `&material=${form.values.material}`;
+            console.log("Material value: ", form.values.material); // Kiểm tra giá trị
+            url += `&material=${encodeURIComponent(form.values.material)}`; // Mã hóa nếu có khoảng trắng
         }
         if (form.values.min_price) {
             url += `&min_price=${form.values.min_price}`;
@@ -57,10 +60,12 @@ const ProductCategory = () => {
             url += `&max_price=${form.values.max_price}`;
         }
 
+        console.log("Final URL: ", url); // Kiểm tra URL cuối cùng
+
         try {
             const response = await instance.get(`/products/list${url}`);
-            console.log("API Response:", url);
             setData(response.data.data);
+            console.log("url", url);
         } catch (error) {
             console.log("API Error:", error);
         }
@@ -69,7 +74,15 @@ const ProductCategory = () => {
     const fetchCategory = async () => {
         try {
             const response = await instance.get(`/product-catalogues`);
-            setCategory(response.data);
+            const categoriesWithChildren = response.data.map(
+                (category: any) => ({
+                    ...category,
+                    children: response.data.filter(
+                        (child: any) => child.parent_id === category.id,
+                    ),
+                }),
+            );
+            setCategory(categoriesWithChildren);
         } catch (error) {
             console.log(error);
         }
@@ -95,29 +108,29 @@ const ProductCategory = () => {
 
     const handleCategoryChange = (categoryId: number, isChecked: boolean) => {
         const updatedCheckedCategories = new Set(checkedCategories);
+
+        const updateChildren = (categoryId: number, isChecked: boolean) => {
+            const children = dataCategory.filter(
+                (category: any) => category.parent_id === categoryId,
+            );
+
+            children.forEach((child: any) => {
+                if (isChecked) {
+                    updatedCheckedCategories.add(child.id);
+                } else {
+                    updatedCheckedCategories.delete(child.id);
+                }
+            });
+        };
+
         if (isChecked) {
             updatedCheckedCategories.add(categoryId);
-            const addChildren = (parentId: number) => {
-                dataCategory.forEach((category: any) => {
-                    if (category.parent_id === parentId) {
-                        updatedCheckedCategories.add(category.id);
-                        addChildren(category.id);
-                    }
-                });
-            };
-            addChildren(categoryId);
+            updateChildren(categoryId, true);
         } else {
             updatedCheckedCategories.delete(categoryId);
-            const removeChildren = (parentId: number) => {
-                dataCategory.forEach((category: any) => {
-                    if (category.parent_id === parentId) {
-                        updatedCheckedCategories.delete(category.id);
-                        removeChildren(category.id);
-                    }
-                });
-            };
-            removeChildren(categoryId);
+            updateChildren(categoryId, false);
         }
+
         setCheckedCategories(updatedCheckedCategories);
         form.setFieldValue(
             "category",
@@ -126,29 +139,60 @@ const ProductCategory = () => {
     };
 
     const renderCategories = (
-        categories: any[],
+        categories: any[] | undefined,
         parentId: number | null = null,
     ) => {
         return categories
-            .filter((category) => category.parent_id === parentId)
-            .map((category) => (
-                <div
-                    key={category.id}
-                    style={{ marginLeft: parentId ? "20px" : "0" }}
-                >
-                    <Checkbox
-                        label={category.name}
-                        checked={checkedCategories.has(category.id)}
-                        onChange={(event) =>
-                            handleCategoryChange(
-                                category.id,
-                                event.currentTarget.checked,
-                            )
-                        }
-                    />
-                    {renderCategories(categories, category.id)}
-                </div>
-            ));
+            ? categories
+                  .filter((category) => category.parent_id === parentId)
+                  .map((category) => (
+                      <div
+                          key={category.id}
+                          style={{ marginLeft: parentId ? "20px" : "0" }}
+                      >
+                          <Checkbox
+                              label={category.name}
+                              checked={checkedCategories.has(category.id)}
+                              onChange={(event) =>
+                                  handleCategoryChange(
+                                      category.id,
+                                      event.currentTarget.checked,
+                                  )
+                              }
+                          />
+                          {category.children &&
+                              category.children.length > 0 && (
+                                  <div>
+                                      {renderCategories(
+                                          category.children,
+                                          category.id,
+                                      )}
+                                  </div>
+                              )}
+                      </div>
+                  ))
+            : null;
+    };
+
+    const handleAttributeChange = (
+        attributeName: string,
+        valueName: string,
+        isChecked: boolean,
+    ) => {
+        const currentValues =
+            form.values[attributeName as keyof typeof form.values] || "";
+        const valuesArray = currentValues.split(",").filter(Boolean);
+
+        if (isChecked) {
+            valuesArray.push(valueName);
+        } else {
+            const index = valuesArray.indexOf(valueName);
+            if (index > -1) {
+                valuesArray.splice(index, 1);
+            }
+        }
+
+        form.setFieldValue(attributeName, valuesArray.join(","));
     };
 
     const renderAttributes = () => {
@@ -157,7 +201,22 @@ const ProductCategory = () => {
                 <h5 className="py-1">{attribute.name}</h5>
                 <div className="space-y-2">
                     {attribute.values.map((value: any) => (
-                        <Checkbox key={value.id} label={value.name} />
+                        <Checkbox
+                            key={value.id}
+                            label={value.name}
+                            checked={form.values[
+                                attribute.name as keyof typeof form.values
+                            ]
+                                ?.split(",")
+                                ?.includes(value.name)}
+                            onChange={(event) =>
+                                handleAttributeChange(
+                                    attribute.name,
+                                    value.name,
+                                    event.currentTarget.checked,
+                                )
+                            }
+                        />
                     ))}
                 </div>
                 <Divider my="sm" />
@@ -173,7 +232,6 @@ const ProductCategory = () => {
                     <div className="mt-[50px] product-filter padding">
                         <form
                             onSubmit={form.onSubmit(() => {
-                                console.log("Form Values:", form.values);
                                 fetchdata();
                             })}
                         >
