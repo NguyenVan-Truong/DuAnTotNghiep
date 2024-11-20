@@ -1,4 +1,5 @@
-import { dia_chi } from "@/assets/img";
+//import { dia_chi } from "@/assets/img";
+//import styles from "./Contact.module.scss";
 import { AspectRatio, Loader } from "@mantine/core";
 import instance from "@/configs/axios";
 import { useQuery } from "@tanstack/react-query";
@@ -102,6 +103,7 @@ const ContactPage = () => {
                 </div>
             </div>
         </div>
+        
     );
 };
 

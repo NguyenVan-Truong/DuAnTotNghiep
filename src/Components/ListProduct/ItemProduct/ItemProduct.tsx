@@ -13,9 +13,6 @@ import { message } from "antd";
 type props = {
     product: Product;
 };
-
-type FavoritesData = number[];
-
 const ItemProduct = ({ product }: props) => {
     const navigate = useNavigate();
     const [tym, setTym] = useState(false);
@@ -39,20 +36,14 @@ const ItemProduct = ({ product }: props) => {
                 queryKey: ["favoritesData"],
             });
             if (response.status === 200) {
-                // Cập nhật dữ liệu trong cache của react-query
-                queryClient.setQueryData<FavoritesData>(
-                    ["favoritesData"],
-                    (oldData) => {
-                        const currentData = oldData ?? [];
-                        const updatedData = tym
-                            ? currentData.filter((id) => id !== product.id)
-                            : [...currentData, product.id];
-
-                        return updatedData;
-                    },
-                );
-            } else {
-                console.error("Error toggling favorite status:", response.data);
+                // Cập nhật dữ liệu cache để đồng bộ ngay lập tức
+                queryClient.setQueryData<number[]>(['favoritesData'], (oldData) => {
+                    const currentData = oldData ?? []; // Đảm bảo oldData là mảng
+                    return tym
+                        ? currentData.filter(id => id !== product.id)
+                        : [...currentData, product.id];
+                });
+                // await queryClient.invalidateQueries({queryKey: ['favoritesData']});
             }
         } catch (error) {
             console.error("Có lỗi xảy ra", error);

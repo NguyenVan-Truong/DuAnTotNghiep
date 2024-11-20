@@ -14,16 +14,73 @@
     }
 
     .infoSection {
-        display: flex;
-        justify-content: space-between;
-        .contactInfo {
-            flex: 1;
-            padding-right: 20px;
-
-            h2 {
-                margin-bottom: 15px;
-                font-size: 20px;
-                font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+  
+      .contactInfo {
+        flex: 1;
+        padding-right: 20px;
+  
+        h2 {
+          margin-bottom: 15px;
+          font-size: 20px;
+          font-weight: 600;
+        }
+  
+        .contactItem {
+          display: flex;
+          align-items: center;
+          margin-bottom: 15px;
+  
+          label {
+            width: 120px;
+            font-weight: 600;
+            color: #524f4f;
+          }
+  
+          input {
+            width: 100%; /* Adjust to full width */
+            padding: 2px;
+            padding-left: 20px;
+            border: 1.5px solid #ccc;
+            border-radius: 3px;
+            font-size: 14px;
+            color: #524f4f;
+          }
+        }
+  
+        .messageSection {
+          background-color: #ece9e9;
+          color: #524f4f;
+          padding: 20px;
+          border-radius: 8px;
+          margin-top: 20px;
+          text-align: left;
+  
+          .messageTitle {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+          }
+  
+          .messageDescription {
+            margin-bottom: 10px;
+            font-size: 14px;
+            line-height: 1.5;
+          }
+  
+          .emailForm {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+  
+            .emailInput {
+              flex: 1;
+              padding: 8px;
+              border: 1px solid #ccc;
+              border-radius: 4px;
+              font-size: 14px;
             }
 
             .contactItem {
@@ -98,24 +155,29 @@
                 }
             }
         }
-
-        .addressImages {
-            flex: 1;
-            text-align: center; /* Ensure content is centered */
-
-            h2 {
-                font-size: 20px;
-                font-weight: 600;
-                margin-bottom: 10px;
-            }
-
-            .addressImage {
-                max-width: 300px;
-                border-radius: 8px;
-                display: block;
-                margin: 0 auto; /* Center the image */
-            }
+      }
+  
+      .addressImages {
+        flex: 1;
+        text-align: center; /* Ensure content is centered */
+        border: 0.5px solid #ccc;
+        border-radius: 10px;
+        background-color: #f8f8f8;
+  
+        h2 {
+          font-size: 20px;
+          font-weight: 600;
+          margin-bottom: 10px;
         }
+  
+        .addressImage {
+          max-width: 300px;
+          border-radius: 8px;
+          display: block;
+          margin: 0 auto; /* Center the image */
+          margin-bottom: 10px;
+        }
+      }
     }
 
     .mapSection {
@@ -202,6 +264,7 @@
             }
         }
     }
+}
 }
 .container {
     margin-top: 30px;
