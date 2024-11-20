@@ -13,12 +13,7 @@ import {
     Text,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import {
-    
-    IconCaretDownFilled,
-    
-    IconFilter,
-} from "@tabler/icons-react";
+import { IconCaretDownFilled, IconFilter } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 
@@ -26,36 +21,37 @@ import BannerProduct from "./BannerProduct/BannerProduct";
 import { Category } from "@/model/Categories";
 import { Attribute } from "@/model/Attribute";
 
-const ProductCategory = () => {   
-
+const ProductCategory = () => {
     // Danh mục được chọn
     const [selectedCategories, setSelectedCategories] = useState<number[]>([]);
     //const [hoveredStar, setHoveredStar] = useState(0);
     //const [tym, setTym] = useState(false);
     const [visible, { toggle }] = useDisclosure(false);
     const [data, setData] = useState<Product[]>([]);
-    const [selectedFilters, setSelectedFilters] = useState<Record<string, string[]>>({});
+    const [selectedFilters, setSelectedFilters] = useState<
+        Record<string, string[]>
+    >({});
     const mapFilterKeyToApi = (key: string): string => {
         const filterMapping: Record<string, string> = {
             "Chất Liệu": "material",
             "Màu Sắc": "color",
             "Kích Thước": "dimension",
             // Thêm các mapping khác nếu cần
-        };    
+        };
         return filterMapping[key] || key.toLowerCase().replace(/\s+/g, "_");
-    };    
+    };
 
     const buildQueryString = () => {
-        const params: Record<string, string> = {};    
+        const params: Record<string, string> = {};
         // Lặp qua các bộ lọc và thêm vào query string
         Object.entries(selectedFilters).forEach(([key, values]) => {
             if (values.length > 0) {
-                const paramKey = mapFilterKeyToApi(key); // Hàm này sẽ chuyển tên bộ lọc thành tên tham số API    
+                const paramKey = mapFilterKeyToApi(key); // Hàm này sẽ chuyển tên bộ lọc thành tên tham số API
                 // Mã hóa các giá trị tham số nếu cần thiết
                 params[paramKey] = values.join(",");
             }
         });
-    
+
         // Gắn category_id nếu có
         if (selectedCategories.length > 0) {
             params["category_id"] = selectedCategories.join(",");
@@ -63,11 +59,11 @@ const ProductCategory = () => {
         return Object.keys(params)
             .map((key) => `${key}=${params[key]}`)
             .join("&");
-    };    
+    };
 
     // Lấy danh sách danh mục từ API
     const fetchCategories = async () => {
-        const response = await instance.get('/product-catalogues'); // API danh mục
+        const response = await instance.get("/product-catalogues"); // API danh mục
         return response.data;
     };
     // Gọi API để lấy dữ liệu lọc
@@ -83,53 +79,69 @@ const ProductCategory = () => {
     const applyFilters = async () => {
         try {
             const queryString = buildQueryString();
-            const response = await instance.get(`/products/list?${queryString}`);
+            const response = await instance.get(
+                `/products/list?${queryString}`,
+            );
             setData(response.data.data);
         } catch (error) {
             console.error("Error fetching filtered products:", error);
         }
-    };    
+    };
 
     // Dùng react-query để lấy dữ liệu danh mục
-    const { data: categories, isLoading: loadingCategories } = useQuery<Category[]>({
-        queryKey: ['categories'],
-        queryFn: fetchCategories
+    const { data: categories, isLoading: loadingCategories } = useQuery<
+        Category[]
+    >({
+        queryKey: ["categories"],
+        queryFn: fetchCategories,
     });
     const { data: filters } = useQuery<Attribute[]>({
         queryKey: ["filters"],
         queryFn: fetchFilters,
     });
     const { error, isLoading, isError } = useQuery<Product[]>({
-        queryKey: ["products", selectedFilters, selectedCategories ],
+        queryKey: ["products", selectedFilters, selectedCategories],
         queryFn: fetchData,
     });
-    
-    
+
     // Kiểm tra xem tất cả các mục con của một danh mục cha có được chọn không
     const isParentChecked = (parentId: number) => {
-        const childCategories = categories?.filter(category => category.parent_id === parentId);
-        return childCategories?.every(category => selectedCategories.includes(category.id));
+        const childCategories = categories?.filter(
+            (category) => category.parent_id === parentId,
+        );
+        return childCategories?.every((category) =>
+            selectedCategories.includes(category.id),
+        );
     };
 
     // Kiểm tra nếu có ít nhất một mục con được chọn nhưng không phải tất cả (dấu trừ)
     const isParentIndeterminate = (parentId: number) => {
         if (!categories) return false;
-        const childCategories = categories.filter((category) => category.parent_id === parentId);
+        const childCategories = categories.filter(
+            (category) => category.parent_id === parentId,
+        );
         return (
-        childCategories.some((category) => selectedCategories.includes(category.id)) &&
-        !isParentChecked(parentId)
+            childCategories.some((category) =>
+                selectedCategories.includes(category.id),
+            ) && !isParentChecked(parentId)
         );
     };
 
     // Hàm xử lý khi thay đổi checkbox
-    const handleCategoryChange = (categoryId: number, isChecked: boolean, parentId?: number) => {
+    const handleCategoryChange = (
+        categoryId: number,
+        isChecked: boolean,
+        parentId?: number,
+    ) => {
         if (!categories) return;
-        
+
         if (parentId === undefined) {
             // Nếu là checkbox cha
-            const childCategories = categories.filter((category) => category.parent_id === categoryId);
+            const childCategories = categories.filter(
+                (category) => category.parent_id === categoryId,
+            );
             const childIds = childCategories.map((category) => category.id);
-    
+
             if (isChecked) {
                 // Chọn tất cả các mục con
                 setSelectedCategories((prev) => {
@@ -139,7 +151,9 @@ const ProductCategory = () => {
             } else {
                 // Bỏ chọn tất cả các mục con
                 setSelectedCategories((prev) => {
-                    return prev.filter((id) => id !== categoryId && !childIds.includes(id));
+                    return prev.filter(
+                        (id) => id !== categoryId && !childIds.includes(id),
+                    );
                 });
             }
         } else {
@@ -153,34 +167,39 @@ const ProductCategory = () => {
             });
         }
     };
-    
 
     // Hàm cập nhật trạng thái bộ lọc
-    const handleCheckboxChange = (attribute: string, value: string, isChecked: boolean) => {
+    const handleCheckboxChange = (
+        attribute: string,
+        value: string,
+        isChecked: boolean,
+    ) => {
         setSelectedFilters((prev) => {
-        const updated = { ...prev };
+            const updated = { ...prev };
 
-        if (isChecked) {
-            if (!updated[attribute]) {
-            updated[attribute] = [];
+            if (isChecked) {
+                if (!updated[attribute]) {
+                    updated[attribute] = [];
+                }
+                updated[attribute].push(value);
+            } else {
+                updated[attribute] = updated[attribute].filter(
+                    (v) => v !== value,
+                );
+                if (updated[attribute].length === 0) {
+                    delete updated[attribute];
+                }
             }
-            updated[attribute].push(value);
-        } else {
-            updated[attribute] = updated[attribute].filter((v) => v !== value);
-            if (updated[attribute].length === 0) {
-            delete updated[attribute];
-            }
-        }
 
-        return updated;
+            return updated;
         });
     };
 
     // Hiển thị loading nếu chưa tải xong danh mục
     if (loadingCategories) {
         return <div>Loading categories...</div>;
-    }      
-    
+    }
+
     // Kiểm tra lỗi
     if (isError) {
         return <div>Error: {error.message}</div>;
@@ -203,7 +222,6 @@ const ProductCategory = () => {
                                 className="items-center product-filter__container justify-between w-full"
                                 gap="md"
                             >
-                              
                                 <div className="w-[100%] lg:w-[256px] ">
                                     <span className="flex items-center space-x-2">
                                         <IconFilter size={20} />
@@ -213,68 +231,127 @@ const ProductCategory = () => {
                                     </span>
                                     <h5 className="py-1">Theo Danh mục</h5>
                                     <div>
-                                    
-                                    {categories?.length ? (
-                                        
+                                        {categories?.length ? (
                                             categories
-                                                .filter((category) => category.parent_id === null) // Lọc các danh mục cấp 1
+                                                .filter(
+                                                    (category) =>
+                                                        category.parent_id ===
+                                                        null,
+                                                ) // Lọc các danh mục cấp 1
                                                 .map((category) => (
-                                                    <div key={category.id} className="space-y-2">
-                                                        <div style={{ paddingLeft: category.level * 20 }}>
+                                                    <div
+                                                        key={category.id}
+                                                        className="space-y-2"
+                                                    >
+                                                        <div
+                                                            style={{
+                                                                paddingLeft:
+                                                                    category.level *
+                                                                    20,
+                                                            }}
+                                                        >
                                                             <Checkbox
-                                                                label={category.name}
+                                                                label={
+                                                                    category.name
+                                                                }
                                                                 //value={category.id.toString()}
-                                                                checked={selectedCategories.includes(category.id)}
-                                                                indeterminate={isParentIndeterminate(category.id)}
+                                                                checked={selectedCategories.includes(
+                                                                    category.id,
+                                                                )}
+                                                                indeterminate={isParentIndeterminate(
+                                                                    category.id,
+                                                                )}
                                                                 onChange={(e) =>
-                                                                    handleCategoryChange(category.id, e.target.checked)
+                                                                    handleCategoryChange(
+                                                                        category.id,
+                                                                        e.target
+                                                                            .checked,
+                                                                    )
                                                                 }
                                                             />
                                                         </div>
-                                            
+
                                                         {/* Render các danh mục con của danh mục cấp 1 */}
                                                         <div className="space-y-2">
-                                                        {categories
-                                                            .filter(subCategory => subCategory.parent_id === category.id) // Lọc các danh mục con
-                                                            .map(subCategory => (
-                                                                <div key={subCategory.id} style={{ paddingLeft: subCategory.level * 20 }}>
-                                                                    <Checkbox
-                                                                        label={subCategory.name}
-                                                                        //value={subCategory.id.toString()}
-                                                                        checked={selectedCategories.includes(subCategory.id)}
-                                                                        onChange={(e) =>
-                                                                            handleCategoryChange(subCategory.id, e.target.checked, category.id)
-                                                                        }
-                                                                    />
-                                                                </div>                                                                
-                                                            ))}
-                                                            </div>
+                                                            {categories
+                                                                .filter(
+                                                                    (
+                                                                        subCategory,
+                                                                    ) =>
+                                                                        subCategory.parent_id ===
+                                                                        category.id,
+                                                                ) // Lọc các danh mục con
+                                                                .map(
+                                                                    (
+                                                                        subCategory,
+                                                                    ) => (
+                                                                        <div
+                                                                            key={
+                                                                                subCategory.id
+                                                                            }
+                                                                            style={{
+                                                                                paddingLeft:
+                                                                                    subCategory.level *
+                                                                                    20,
+                                                                            }}
+                                                                        >
+                                                                            <Checkbox
+                                                                                label={
+                                                                                    subCategory.name
+                                                                                }
+                                                                                //value={subCategory.id.toString()}
+                                                                                checked={selectedCategories.includes(
+                                                                                    subCategory.id,
+                                                                                )}
+                                                                                onChange={(
+                                                                                    e,
+                                                                                ) =>
+                                                                                    handleCategoryChange(
+                                                                                        subCategory.id,
+                                                                                        e
+                                                                                            .target
+                                                                                            .checked,
+                                                                                        category.id,
+                                                                                    )
+                                                                                }
+                                                                            />
+                                                                        </div>
+                                                                    ),
+                                                                )}
+                                                        </div>
                                                     </div>
                                                 ))
                                         ) : (
                                             <p>No categories available</p>
                                         )}
                                     </div>
-                                    <p className="flex items-center pt-2 pl-8">
+                                    {/* <p className="flex items-center pt-2 pl-8">
                                         <span>Thêm</span>
                                         <span>
                                             <IconCaretDownFilled size={15} />
                                         </span>
-                                    </p>
+                                    </p> */}
                                     <div>
                                         <Divider my="sm" />
                                     </div>
                                     {/* Hiển thị bộ lọc */}
                                     {filters?.map((filter) => (
                                         <div key={filter.id}>
-                                            <h5 className="py-1">{filter.name}</h5>
+                                            <h5 className="py-1">
+                                                {filter.name}
+                                            </h5>
                                             <div className="space-y-2">
                                                 {filter.values.map((value) => (
                                                     <Checkbox
                                                         key={value.id}
                                                         label={value.name}
                                                         onChange={(e) =>
-                                                            handleCheckboxChange(filter.name, value.name, e.target.checked)
+                                                            handleCheckboxChange(
+                                                                filter.name,
+                                                                value.name,
+                                                                e.target
+                                                                    .checked,
+                                                            )
                                                         }
                                                     />
                                                 ))}
@@ -282,7 +359,6 @@ const ProductCategory = () => {
                                             <Divider my="sm" />
                                         </div>
                                     ))}
-                                    
                                 </div>
                                 <div className="w-[100%] lg:w-[256px] mt-[20px] lg:flex lg:justify-end">
                                     <Button
