@@ -59,6 +59,10 @@ export interface Promotion {
     updated_at: string; // Thời gian cập nhật (ISO format)
     deleted_at: string | null; // Thời gian xóa, có thể null
 }
+export interface SelectOption {
+    value: string | number; // Hoặc có thể là number nếu cần
+    label: string;
+}
 
 const CheckoutPage = () => {
     const location = useLocation();
@@ -68,7 +72,6 @@ const CheckoutPage = () => {
     if (!location.state) {
         return <Navigate to="/san-pham" replace />;
     }
-
     //Sản phẩm order
     const [orderItems, setOrderItems] = useState<[]>([]);
     // thông tin tỉnh thành phố
@@ -100,6 +103,7 @@ const CheckoutPage = () => {
     const [checked, setChecked] = useState(false);
     // ID cart
     const [idCart, setIdCart] = useState<string>("");
+
     const form = useForm({
         mode: "uncontrolled",
         initialValues: {
@@ -201,6 +205,19 @@ const CheckoutPage = () => {
     //#region callorder
     // Xử lý submit form
     const onhandleSubmit = async (values: any) => {
+        const nameCity = (valueCity.find(
+            (item: any) => item.value === checkedValueCity,
+        ) || { value: "", label: "" }) as SelectOption;
+        const nameDistrict =
+            valueDistrict.find(
+                (item: any) => item.value === checkedValueDistrict,
+            ) || ({ value: "", label: "" } as SelectOption);
+        const nameWard =
+            valueWard.find((item: any) => item.value === checkedValueWard) ||
+            ({ value: "", label: "" } as SelectOption);
+
+        const fullAddress = `${values.address}, ${nameWard.label}, ${nameDistrict.label}, ${nameCity.label}`;
+
         const dataSubmit = {
             customer_id: inforUser?.id,
             customer_name: values?.name,
@@ -212,7 +229,7 @@ const CheckoutPage = () => {
             status: 1,
             payment_method_id: selectedPaymentMethod, //phương thức thanh toán
             payment_status: 1, //thanh toán off trạng thái là 1
-            shipping_address: values.address || "",
+            shipping_address: fullAddress,
             discount_code: checkedPromotions?.code, //chưa ai làm
             email: values.email,
             phone_number: values.sđt,
@@ -231,6 +248,7 @@ const CheckoutPage = () => {
                 try {
                     const response = await instance.post("/orders", dataSubmit);
                     if (response && response.status === 201) {
+                        await handleShippingFee();
                         // modals.openConfirmModal({
                         //     title: (
                         //         <Title
@@ -306,8 +324,7 @@ const CheckoutPage = () => {
                         navigate("/order-success", {
                             state: { status: "thanhcong" },
                         });
-                    queryClient.invalidateQueries({ queryKey: ["cart"] });
-
+                        queryClient.invalidateQueries({ queryKey: ["cart"] });
                     }
                 } catch (error) {
                     message.error("Lỗi không thể đặt hàng");
@@ -333,6 +350,16 @@ const CheckoutPage = () => {
             if (response && response.status === 200) {
                 const data = response.data;
                 setInforfUser(data);
+                form.setValues({
+                    email: data.email,
+                    name: data.full_name,
+                    sđt: data.phone,
+                    city: null,
+                    district: null,
+                    ward: null,
+                    address: data.address,
+                    description: "",
+                });
             }
         } catch (error) {
             console.error("Error fetching user data", error);
@@ -356,11 +383,22 @@ const CheckoutPage = () => {
     const onhandlePromotions = async () => {
         try {
             const response = await instance.get("/promotions");
+            const now = new Date();
             if (response && response.status === 200) {
                 setDataAllPromotions(response.data);
+
+                //lấy những mã đã hết hạn hoặc đã sử dụng hết
+                const expiredPr = response.data.filter((promo: any) => {
+                    return (
+                        promo.quantity === 0 || new Date(promo.end_date) < now
+                    );
+                });
+
+                // format dữ liệu theo select option
                 const transformedData = response.data.map((item: any) => ({
                     value: String(item.id),
                     label: item.code,
+                    disabled: expiredPr.some((exp: any) => exp.id === item.id),
                 }));
                 setDataPromotions(transformedData);
             }
@@ -383,6 +421,17 @@ const CheckoutPage = () => {
             alert("Có lỗi xảy ra khi thanh toán!");
         }
     };
+    // Call trừ số lượng mã giảm giá
+    const handleShippingFee = async () => {
+        const response = await instance.post("/promotions/use", {
+            code: checkedPromotions?.code,
+        });
+        try {
+        } catch (error) {
+            console.log("lỗi trừ mã giảm giá", error);
+        }
+    };
+
     useEffect(() => {
         const fetchData = async () => {
             if (checkedValueCity !== undefined && checkedValueCity !== null) {
@@ -459,7 +508,6 @@ const CheckoutPage = () => {
             setFinalAmount(calculatedFinalAmount);
         }
     }, [location?.state.totalPrice, shippingFee, checkedPromotions]);
-
     return (
         <div className="padding my-[40px]">
             <div className="container">
