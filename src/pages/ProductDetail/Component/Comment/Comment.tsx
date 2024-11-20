@@ -263,7 +263,7 @@ const CommentProductDetail = ({
                                                                         Phân
                                                                         loại
                                                                         hàng:
-                                                                        {item.variant.map(
+                                                                        {/* {item?.variant.map(
                                                                             (
                                                                                 x: string,
                                                                             ) => {
@@ -279,7 +279,28 @@ const CommentProductDetail = ({
                                                                                     </span>
                                                                                 );
                                                                             },
-                                                                        )}
+                                                                        )} */}
+                                                                        {item.variant
+                                                                            ? (() => {
+                                                                                  try {
+                                                                                      const parsedVariant =
+                                                                                          JSON.parse(
+                                                                                              item.variant,
+                                                                                          );
+                                                                                      return Object.values(
+                                                                                          parsedVariant,
+                                                                                      ).join(
+                                                                                          ", ",
+                                                                                      );
+                                                                                  } catch (e) {
+                                                                                      console.error(
+                                                                                          "Invalid JSON:",
+                                                                                          e,
+                                                                                      );
+                                                                                      return "";
+                                                                                  }
+                                                                              })()
+                                                                            : ""}
                                                                     </p>
                                                                 </Flex>
                                                             </div>

@@ -6,7 +6,6 @@ import {
     Checkbox,
     Flex,
     Loader,
-    Modal,
     ScrollArea,
     Select,
     Textarea,
@@ -14,13 +13,14 @@ import {
     Title,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
+import { modals } from "@mantine/modals";
 import { IconBuildingBank, IconCashBanknote } from "@tabler/icons-react";
 import { message } from "antd";
-import { useEffect, useState } from "react";
-import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import DescriptionShipping from "./DescriptionShipping";
 import styles from "./checkoutPage.module.scss"; // Import CSS module
-import { modals } from "@mantine/modals";
+import { useQueryClient } from "@tanstack/react-query";
 
 type UserInfo = {
     id: number;
@@ -62,10 +62,13 @@ export interface Promotion {
 
 const CheckoutPage = () => {
     const location = useLocation();
+    const navigate = useNavigate();
+    const queryClient = useQueryClient();
+
     if (!location.state) {
         return <Navigate to="/san-pham" replace />;
     }
-    const navigate = useNavigate();
+
     //Sản phẩm order
     const [orderItems, setOrderItems] = useState<[]>([]);
     // thông tin tỉnh thành phố
@@ -95,6 +98,8 @@ const CheckoutPage = () => {
     const [loading, setLoading] = useState(false);
     // checkked
     const [checked, setChecked] = useState(false);
+    // ID cart
+    const [idCart, setIdCart] = useState<string>("");
     const form = useForm({
         mode: "uncontrolled",
         initialValues: {
@@ -213,7 +218,7 @@ const CheckoutPage = () => {
             phone_number: values.sđt,
             note: values.description,
             order_items: orderItems,
-            // cart_id:"1,2,3", Thêm trường này
+            cart_id: idCart, //Thêm trường này
         };
         if (dataSubmit) {
             if (!checked) {
@@ -221,87 +226,102 @@ const CheckoutPage = () => {
                     "Vui lòng đọc và đồng ý điều khoản của chúng tôi",
                 );
             }
-            setLoading(true);
-            try {
-                const response = await instance.post("/orders", dataSubmit);
-                if (response && response.status === 201) {
-                    // location.state = null;
-                    modals.openConfirmModal({
-                        title: (
-                            <Title
-                                order={4}
-                                style={{
-                                    marginLeft: "6px",
-                                }}
-                            >
-                                Cảm ơn bạn đã đặt hàng tại Morden Home
-                            </Title>
-                        ),
-                        size: "400px",
-                        centered: true, // Căn giữa modal
-                        withCloseButton: false, // Ẩn nút "x"
-                        closeOnClickOutside: false, // Không đóng khi click ra ngoài
-                        children: (
-                            <>
-                                <div style={{ textAlign: "center" }}>
-                                    {" "}
-                                    {/* Căn giữa nội dung */}
-                                    <p>Đơn hàng đã đặt thành công</p>
-                                </div>
-                                <Flex
-                                    direction={"row"}
-                                    justify={"space-evenly"}
-                                    style={{
-                                        marginTop: "20px",
-                                    }}
-                                >
-                                    <Button
-                                        style={{
-                                            minWidth: "150px",
-                                        }}
-                                        variant="light"
-                                        onClick={() => {
-                                            modals.closeAll();
-                                            navigate("/nguoi-dung/don-hang", {
-                                                replace: true,
-                                            });
-                                        }}
-                                    >
-                                        Xem đơn hàng
-                                    </Button>
+            if (selectedPaymentMethod === 3) {
+                setLoading(true);
+                try {
+                    const response = await instance.post("/orders", dataSubmit);
+                    if (response && response.status === 201) {
+                        // modals.openConfirmModal({
+                        //     title: (
+                        //         <Title
+                        //             order={4}
+                        //             style={{
+                        //                 marginLeft: "6px",
+                        //             }}
+                        //         >
+                        //             Cảm ơn bạn đã đặt hàng tại Morden Home
+                        //         </Title>
+                        //     ),
+                        //     size: "400px",
+                        //     centered: true, // Căn giữa modal
+                        //     withCloseButton: false, // Ẩn nút "x"
+                        //     closeOnClickOutside: false, // Không đóng khi click ra ngoài
+                        //     children: (
+                        //         <>
+                        //             <div style={{ textAlign: "center" }}>
+                        //                 {" "}
+                        //                 {/* Căn giữa nội dung */}
+                        //                 <p>Đơn hàng đã đặt thành công</p>
+                        //             </div>
+                        //             <Flex
+                        //                 direction={"row"}
+                        //                 justify={"space-evenly"}
+                        //                 style={{
+                        //                     marginTop: "20px",
+                        //                 }}
+                        //             >
+                        //                 <Button
+                        //                     style={{
+                        //                         minWidth: "150px",
+                        //                     }}
+                        //                     variant="light"
+                        //                     onClick={() => {
+                        //                         modals.closeAll();
+                        //                         navigate(
+                        //                             "/nguoi-dung/don-hang",
+                        //                             {
+                        //                                 replace: true,
+                        //                             },
+                        //                         );
+                        //                     }}
+                        //                 >
+                        //                     Xem đơn hàng
+                        //                 </Button>
+                        //                 <Button
+                        //                     onClick={() => {
+                        //                         modals.closeAll();
+                        //                         navigate("/san-pham", {
+                        //                             replace: true,
+                        //                         });
+                        //                     }}
+                        //                     style={{
+                        //                         minWidth: "150px",
+                        //                     }}
+                        //                     variant="filled"
+                        //                 >
+                        //                     Tiếp tục mua hàng{" "}
+                        //                 </Button>
+                        //             </Flex>
+                        //         </>
+                        //     ),
+                        //     confirmProps: { display: "none" },
+                        //     cancelProps: { display: "none" },
+                        //     classNames: {
+                        //         header: "custom-modal-header", // Tên class cho header
+                        //         root: "custom-modal-root", // Tên class cho modal
+                        //         title: "custom-modal-title", // Tên class cho tiêu đề
+                        //         body: "custom-modal-body", // Tên class cho phần nội dung
+                        //     },
+                        // });
+                        navigate("/order-success", {
+                            state: { status: "thanhcong" },
+                        });
+                    queryClient.invalidateQueries({ queryKey: ["cart"] });
 
-                                    <Button
-                                        onClick={() => {
-                                            modals.closeAll();
-                                            navigate("/san-pham", {
-                                                replace: true,
-                                            });
-                                        }}
-                                        style={{
-                                            minWidth: "150px",
-                                        }}
-                                        variant="filled"
-                                    >
-                                        Tiếp tục mua hàng{" "}
-                                    </Button>
-                                </Flex>
-                            </>
-                        ),
-                        confirmProps: { display: "none" },
-                        cancelProps: { display: "none" },
-                        classNames: {
-                            header: "custom-modal-header", // Tên class cho header
-                            root: "custom-modal-root", // Tên class cho modal
-                            title: "custom-modal-title", // Tên class cho tiêu đề
-                            body: "custom-modal-body", // Tên class cho phần nội dung
-                        },
-                    });
+                    }
+                } catch (error) {
+                    message.error("Lỗi không thể đặt hàng");
+                    console.log("error", error);
+                } finally {
+                    setLoading(false);
                 }
-            } catch (error) {
-                message.error("Lỗi không thể đặt hàng");
-                console.log("error", error);
-            } finally {
-                setLoading(false);
+            } else {
+                const dataResponse = {
+                    ...dataSubmit,
+                    payment_status: 2,
+                };
+                localStorage.setItem("dataCart", JSON.stringify(dataResponse));
+                await handlePayment();
             }
         }
     };
@@ -346,6 +366,21 @@ const CheckoutPage = () => {
             }
         } catch (error) {
             message.error("Lỗi không thể lấy dữ liệu");
+        }
+    };
+    // Thanh toán online
+    const handlePayment = async () => {
+        try {
+            const response = await instance.post("/vnpay/payment", {
+                total_price: finalAmount,
+                bank_code: "NCB",
+            });
+            if (response && response.status === 200) {
+                window.location.href = response.data.payment_url;
+            }
+        } catch (error) {
+            console.error(error);
+            alert("Có lỗi xảy ra khi thanh toán!");
         }
     };
     useEffect(() => {
@@ -394,6 +429,11 @@ const CheckoutPage = () => {
             };
         });
         setOrderItems(orderItems);
+        // lấy id cart sản phẩm
+        const IdCart = location?.state.listchecked
+            .map((item: any) => item.id)
+            .join(",");
+        setIdCart(IdCart);
     }, []);
     // MÃ GIẢM GIÁ
     useEffect(() => {
@@ -409,13 +449,15 @@ const CheckoutPage = () => {
     // SÔs tiền cuối cùng
     useEffect(() => {
         const discountValue = (checkedPromotions as any)?.discount_value || 0;
-        console.log("discountValue", discountValue);
         const calculatedFinalAmount =
             Number(location?.state.totalPrice) +
             Number(shippingFee) -
             Number(discountValue);
-        console.log("calculatedFinalAmount", calculatedFinalAmount);
-        setFinalAmount(calculatedFinalAmount);
+        if (calculatedFinalAmount < 0) {
+            setFinalAmount(0);
+        } else {
+            setFinalAmount(calculatedFinalAmount);
+        }
     }, [location?.state.totalPrice, shippingFee, checkedPromotions]);
 
     return (
@@ -862,22 +904,49 @@ const CheckoutPage = () => {
                                         <div
                                             className={`${styles.submitButton} w-[100%] mt-2`}
                                         >
-                                            <Button
-                                                variant="filled"
-                                                color="blue"
-                                                type="submit"
-                                                style={{ width: "100%" }}
-                                                disabled={loading}
-                                            >
-                                                {loading ? (
-                                                    <Loader
-                                                        color="cyan"
-                                                        size="sm"
-                                                    />
-                                                ) : (
-                                                    "HOÀN TẤT ĐƠN HÀNG"
-                                                )}
-                                            </Button>
+                                            {selectedPaymentMethod == 3 ? (
+                                                <>
+                                                    <Button
+                                                        variant="filled"
+                                                        color="blue"
+                                                        type="submit"
+                                                        style={{
+                                                            width: "100%",
+                                                        }}
+                                                        disabled={loading}
+                                                    >
+                                                        {loading ? (
+                                                            <Loader
+                                                                color="cyan"
+                                                                size="sm"
+                                                            />
+                                                        ) : (
+                                                            "HOÀN TẤT ĐƠN HÀNG"
+                                                        )}
+                                                    </Button>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <Button
+                                                        variant="filled"
+                                                        color="blue"
+                                                        type="submit"
+                                                        style={{
+                                                            width: "100%",
+                                                        }}
+                                                        disabled={loading}
+                                                    >
+                                                        {loading ? (
+                                                            <Loader
+                                                                color="cyan"
+                                                                size="sm"
+                                                            />
+                                                        ) : (
+                                                            "TIẾN HÀNH THANH TOÁN ONLINE"
+                                                        )}
+                                                    </Button>
+                                                </>
+                                            )}
                                         </div>
                                     </div>
                                 </div>

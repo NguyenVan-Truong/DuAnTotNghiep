@@ -121,7 +121,7 @@ const ItemProduct = ({ product }: props) => {
                     </Flex>
                     <div>
                         <p className="text-[14px] text-slate-600">
-                            Kho : {product?.stock}
+                            {/* Kho : {product?.stock} */}
                         </p>
                     </div>
                 </Flex>

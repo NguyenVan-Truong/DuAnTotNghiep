@@ -177,10 +177,6 @@ const OrderSucces = () => {
                 header: "Địa chỉ giao hàng",
             },
             {
-                accessorKey: "shipping_address",
-                header: "Địa chỉ giao hàng",
-            },
-            {
                 accessorKey: "created_at",
                 header: "Ngày đặt",
             },
@@ -234,22 +230,22 @@ const OrderSucces = () => {
                         : "₫0";
                 },
             },
-            {
-                accessorKey: "action",
-                header: "Thao tác",
-                size: 10,
-                Cell: ({ row }) => (
-                    <Box
-                        style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "4px",
-                        }}
-                    >
-                        {processTaskActionMenu(row)}
-                    </Box>
-                ),
-            },
+            // {
+            //     accessorKey: "action",
+            //     header: "Thao tác",
+            //     size: 10,
+            //     Cell: ({ row }) => (
+            //         <Box
+            //             style={{
+            //                 display: "flex",
+            //                 alignItems: "center",
+            //                 gap: "4px",
+            //             }}
+            //         >
+            //             {processTaskActionMenu(row)}
+            //         </Box>
+            //     ),
+            // },
         ],
         [],
     );
@@ -294,7 +290,7 @@ const OrderSucces = () => {
             showColumnFilters: false,
             columnPinning: {
                 left: ["mrt-row-select", "order_code"],
-                right: ["action"],
+                right: ["status"],
             },
             density: "xs",
         },
