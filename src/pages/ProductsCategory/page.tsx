@@ -26,36 +26,44 @@ import BannerProduct from "./BannerProduct/BannerProduct";
 import { Category } from "@/model/Categories";
 import { Attribute } from "@/model/Attribute";
 
-
-
-const ProductCategory = () => {
-    
+const ProductCategory = () => {   
 
     // Danh mục được chọn
     const [selectedCategories, setSelectedCategories] = useState<number[]>([]);
     //const [hoveredStar, setHoveredStar] = useState(0);
     //const [tym, setTym] = useState(false);
     const [visible, { toggle }] = useDisclosure(false);
-    // const [selectedFilters, setSelectedFilters] = useState<{}>({});
+    const [data, setData] = useState<Product[]>([]);
+    const [selectedFilters, setSelectedFilters] = useState<Record<string, string[]>>({});
+    const mapFilterKeyToApi = (key: string): string => {
+        const filterMapping: Record<string, string> = {
+            "Chất Liệu": "material",
+            "Màu Sắc": "color",
+            "Kích Thước": "dimension",
+            // Thêm các mapping khác nếu cần
+        };    
+        return filterMapping[key] || key.toLowerCase().replace(/\s+/g, "_");
+    };    
 
-    // const buildQueryString = () => {
-    //     const params: any = {};
+    const buildQueryString = () => {
+        const params: Record<string, string> = {};    
+        // Lặp qua các bộ lọc và thêm vào query string
+        Object.entries(selectedFilters).forEach(([key, values]) => {
+            if (values.length > 0) {
+                const paramKey = mapFilterKeyToApi(key); // Hàm này sẽ chuyển tên bộ lọc thành tên tham số API    
+                // Mã hóa các giá trị tham số nếu cần thiết
+                params[paramKey] = values.join(",");
+            }
+        });
     
-    //     // Duyệt qua selectedFilters để tạo query string
-    //     Object.keys(selectedFilters).forEach((key) => {
-    //         const value = selectedFilters[key];
-    //         if (value) {
-    //             params[key] = value;
-    //         }
-    //     });
-    
-    //     // Tạo query string
-    //     return Object.keys(params)
-    //         .map((key) => `${key}=${encodeURIComponent(params[key])}`)
-    //         .join('&');
-    // };   
-    
-    
+        // Gắn category_id nếu có
+        if (selectedCategories.length > 0) {
+            params["category_id"] = selectedCategories.join(",");
+        }
+        return Object.keys(params)
+            .map((key) => `${key}=${params[key]}`)
+            .join("&");
+    };    
 
     // Lấy danh sách danh mục từ API
     const fetchCategories = async () => {
@@ -69,56 +77,38 @@ const ProductCategory = () => {
     };
 
     const fetchData = async () => {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        const response = await instance.get(`/products`);
-        return response.data;
+        const response = await instance.get(`/products/list`);
+        return response.data.data; // Lấy danh sách sản phẩm
     };
-
-    // const fetchData = async () => {
-    //     await new Promise((resolve) => setTimeout(resolve, 1000));
-    //     const queryString = buildQueryString();
-    //     const response = await instance.get(`/products/list?${queryString}`);
-    //     return response.data;
-    // };
-
-    // const handleFilterChange = (key: string, value: any) => {
-    //     setSelectedFilters((prevFilters) => ({
-    //         ...prevFilters,
-    //         [key]: value,
-    //     }));
-    // };
-    
-    
-    
-    
-
+    const applyFilters = async () => {
+        try {
+            const queryString = buildQueryString();
+            const response = await instance.get(`/products/list?${queryString}`);
+            setData(response.data.data);
+        } catch (error) {
+            console.error("Error fetching filtered products:", error);
+        }
+    };    
 
     // Dùng react-query để lấy dữ liệu danh mục
     const { data: categories, isLoading: loadingCategories } = useQuery<Category[]>({
-        queryKey: ['categories'], // Key của query
+        queryKey: ['categories'],
         queryFn: fetchCategories
     });
     const { data: filters } = useQuery<Attribute[]>({
         queryKey: ["filters"],
         queryFn: fetchFilters,
     });
-    // const { data, error, isLoading, isError } = useQuery<Product[]>({
-    //     queryKey: ["products"],
-    //     queryFn: fetchData,
-    // });
-    const { data, error, isLoading, isError } = useQuery<Product[]>({
-        queryKey: ["products"],
+    const { error, isLoading, isError } = useQuery<Product[]>({
+        queryKey: ["products", selectedFilters, selectedCategories ],
         queryFn: fetchData,
     });
     
-
-
     
     // Kiểm tra xem tất cả các mục con của một danh mục cha có được chọn không
     const isParentChecked = (parentId: number) => {
-        if (!categories) return false;
-        const childCategories = categories.filter((category) => category.parent_id === parentId);
-        return childCategories.every((category) => selectedCategories.includes(category.id));
+        const childCategories = categories?.filter(category => category.parent_id === parentId);
+        return childCategories?.every(category => selectedCategories.includes(category.id));
     };
 
     // Kiểm tra nếu có ít nhất một mục con được chọn nhưng không phải tất cả (dấu trừ)
@@ -134,64 +124,67 @@ const ProductCategory = () => {
     // Hàm xử lý khi thay đổi checkbox
     const handleCategoryChange = (categoryId: number, isChecked: boolean, parentId?: number) => {
         if (!categories) return;
+        
         if (parentId === undefined) {
-        // Nếu là checkbox cha
-        if (isChecked) {
-            // Chọn tất cả các mục con
+            // Nếu là checkbox cha
             const childCategories = categories.filter((category) => category.parent_id === categoryId);
             const childIds = childCategories.map((category) => category.id);
-            setSelectedCategories((prev) => [...prev, categoryId, ...childIds]);
+    
+            if (isChecked) {
+                // Chọn tất cả các mục con
+                setSelectedCategories((prev) => {
+                    // Kiểm tra xem danh mục cha đã được chọn chưa
+                    return [...new Set([...prev, categoryId, ...childIds])];
+                });
+            } else {
+                // Bỏ chọn tất cả các mục con
+                setSelectedCategories((prev) => {
+                    return prev.filter((id) => id !== categoryId && !childIds.includes(id));
+                });
+            }
         } else {
-            // Bỏ chọn tất cả các mục con
-            const childCategories = categories.filter((category) => category.parent_id === categoryId);
-            const childIds = childCategories.map((category) => category.id);
-            setSelectedCategories((prev) => prev.filter((id) => id !== categoryId && !childIds.includes(id)));
-        }
-        } else {
-        // Nếu là checkbox con
-        if (isChecked) {
-            setSelectedCategories((prev) => [...prev, categoryId]);
-        } else {
-            setSelectedCategories((prev) => prev.filter((id) => id !== categoryId));
-        }
+            // Nếu là checkbox con
+            setSelectedCategories((prev) => {
+                if (isChecked) {
+                    return [...new Set([...prev, categoryId])]; // Thêm ID vào nếu được chọn
+                } else {
+                    return prev.filter((id) => id !== categoryId); // Loại bỏ ID nếu bị bỏ chọn
+                }
+            });
         }
     };
     
 
-    // Xử lý khi thay đổi checkbox
-    // const handleCheckboxChange = (attributeId: number, valueId: number, isChecked: boolean) => {
-    //     setSelectedFilters((prevFilters) => {
-    //         const currentValues = prevFilters[attributeId] || [];
-    //         if (isChecked) {
-    //             return {
-    //                 ...prevFilters,
-    //                 [attributeId]: [...currentValues, valueId],
-    //             };
-    //         } else {
-    //             return {
-    //                 ...prevFilters,
-    //                 [attributeId]: currentValues.filter((id) => id !== valueId),
-    //             };
-    //         }
-    //     });
-    // };
+    // Hàm cập nhật trạng thái bộ lọc
+    const handleCheckboxChange = (attribute: string, value: string, isChecked: boolean) => {
+        setSelectedFilters((prev) => {
+        const updated = { ...prev };
+
+        if (isChecked) {
+            if (!updated[attribute]) {
+            updated[attribute] = [];
+            }
+            updated[attribute].push(value);
+        } else {
+            updated[attribute] = updated[attribute].filter((v) => v !== value);
+            if (updated[attribute].length === 0) {
+            delete updated[attribute];
+            }
+        }
+
+        return updated;
+        });
+    };
 
     // Hiển thị loading nếu chưa tải xong danh mục
     if (loadingCategories) {
         return <div>Loading categories...</div>;
     }      
     
-    
-    
     // Kiểm tra lỗi
     if (isError) {
         return <div>Error: {error.message}</div>;
     }
-
-    // Hàm xử lý khi nhấn nút "Áp dụng"
-    
-
-    //#endregion
 
     // const onhandleTymItem = () => {
     //     setTym(!tym);
@@ -234,7 +227,7 @@ const ProductCategory = () => {
                                                                 checked={selectedCategories.includes(category.id)}
                                                                 indeterminate={isParentIndeterminate(category.id)}
                                                                 onChange={(e) =>
-                                                                    handleCategoryChange(category.id, e.target.checked, category.id)
+                                                                    handleCategoryChange(category.id, e.target.checked)
                                                                 }
                                                             />
                                                         </div>
@@ -272,56 +265,31 @@ const ProductCategory = () => {
                                         <Divider my="sm" />
                                     </div>
                                     {/* Hiển thị bộ lọc */}
-                                    {filters?.map((filter: any) => (
+                                    {filters?.map((filter) => (
                                         <div key={filter.id}>
                                             <h5 className="py-1">{filter.name}</h5>
                                             <div className="space-y-2">
-                                                {filter.values.map((value: any) => (
+                                                {filter.values.map((value) => (
                                                     <Checkbox
                                                         key={value.id}
                                                         label={value.name}
-                                                        // onChange={(e) =>
-                                                        //     handleCheckboxChange(
-                                                        //         filter.id, 
-                                                        //         value.id,  
-                                                        //         e.target.checked 
-                                                        //     )
-                                                        // }
+                                                        onChange={(e) =>
+                                                            handleCheckboxChange(filter.name, value.name, e.target.checked)
+                                                        }
                                                     />
                                                 ))}
                                             </div>
                                             <Divider my="sm" />
                                         </div>
                                     ))}
-                                    {/* <h5 className="py-1">Theo Chất Liệu</h5>
-                                    <div className="space-y-2">
-                                        <Checkbox label="I agree to sell my privacy" />
-                                        <Checkbox label="I agree to sell my privacy" />
-                                        <Checkbox label="I agree to sell my privacy" />
-                                        <Checkbox label="I agree to sell my privacy" />
-                                    </div>
-                                    <div>
-                                        <Divider my="sm" />
-                                    </div>
-                                    <h5 className="py-1">Khoảng Giá</h5>
-                                    <div className="space-y-2">
-                                        <Checkbox label="I agree to sell my privacy" />
-                                        <Checkbox label="I agree to sell my privacy" />
-                                        <Checkbox label="I agree to sell my privacy" />
-                                        <Checkbox label="I agree to sell my privacy" />
-                                    </div> */}
-                                    {/* <div>
-                                        <Divider my="sm" />
-                                    </div>
-                                    <div>
-                                        <Divider my="sm" />
-                                    </div> */}
+                                    
                                 </div>
                                 <div className="w-[100%] lg:w-[256px] mt-[20px] lg:flex lg:justify-end">
                                     <Button
                                         variant="filled"
                                         color="rgba(0, 0, 0, 1)"
                                         className="bg-black w-[100%] border-none rounded-none lg:w-[100px] font-normal text-[15px]"
+                                        onClick={applyFilters} // Gọi hàm applyFilters khi nhấn
                                     >
                                         Áp dụng
                                     </Button>
@@ -340,7 +308,7 @@ const ProductCategory = () => {
                                     zIndex={1000}
                                     overlayProps={{ radius: "sm", blur: 2 }}
                                 />
-                                {data?.map((product: any) => (
+                                {data?.map((product) => (
                                     <ItemProduct
                                         key={product.id}
                                         product={product}
