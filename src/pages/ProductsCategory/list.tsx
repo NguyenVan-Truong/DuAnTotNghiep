@@ -27,6 +27,15 @@ const ProductCategory = () => {
         pageSize: 10,
     });
 
+    const mapAttributeNameToField = (name: string) => {
+        const mappings: Record<string, string> = {
+            "Chất Liệu": "attribute",
+            "Màu Sắc": "attribute",
+            "Kích Thước": "attribute",
+        };
+        return mappings[name] || name;
+    };
+
     const form = useForm({
         initialValues: {
             category: "",
@@ -180,11 +189,12 @@ const ProductCategory = () => {
             : null;
     };
     const handleAttributeChange = (
+        attributeName: string,
         valueId: number,
         isChecked: boolean,
     ) => {
         const fieldName: keyof typeof form.values = "attribute";
-        const currentValues = form.values[fieldName as keyof typeof form.values] || "";
+        const currentValues = form.values[fieldName] || "";
         //const currentValues = form.values[attributeName as keyof typeof form.values] || "";
         const valuesArray = currentValues.split(",").filter(Boolean);
 
@@ -196,6 +206,7 @@ const ProductCategory = () => {
                 valuesArray.splice(index, 1);
             }
         }
+
         form.setFieldValue(fieldName, valuesArray.join(","));
         setTimeout(() => {
             console.log("Form values after attribute change:", form.values);
