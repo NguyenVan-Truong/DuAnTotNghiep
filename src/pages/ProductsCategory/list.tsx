@@ -14,6 +14,7 @@ import {
 import { useForm } from "@mantine/form";
 import { IconFilter } from "@tabler/icons-react";
 import BannerProduct from "./BannerProduct/BannerProduct";
+import { TextInput } from "@mantine/core";
 
 const ProductCategory = () => {
     const [data, setData] = useState<any>([]);
@@ -37,50 +38,47 @@ const ProductCategory = () => {
     };
 
     const form = useForm({
+        mode: "controlled",
         initialValues: {
             category: "",
             attribute: "",
-            dimension: "", // dimension can be something like "200x160"
-            material: "", // material can be something like "Gỗ Sồi"
-            min_price: "",
-            max_price: "",
-            kt: "",
+            minPrice: "",
+            maxPrice: "",
+        },
+        validate: {
+            minPrice: (value, values) => {
+                if (parseFloat(value) > parseFloat(values.maxPrice)) {
+                    return "Giá nhỏ không được lớn hơn giá lớn";
+                }
+                return null;
+            },
+            maxPrice: (value, values) => {
+                if (parseFloat(value) < parseFloat(values.minPrice)) {
+                    return "Giá lớn không được nhỏ hơn giá nhỏ";
+                }
+                return null;
+            },
         },
     });
 
     const fetchdata = async () => {
-        console.log("values: ", form.values);
         let url = `?page=${pagination.pageIndex}`;
 
         if (form.values.category) {
-            console.log("category_id value: ", form.values.category);
             url += `&category_id=${form.values.category}`;
         }
         if (form.values.attribute) {
-            console.log("attribute value: ", form.values.attribute); // Kiểm tra giá trị
             url += `&attribute_value_ids=${form.values.attribute}`;
         }
-        if (form.values.dimension) {
-            console.log("Dimension value: ", form.values.dimension); // Kiểm tra giá trị
-            url += `&dimension=${encodeURIComponent(form.values.dimension)}`; // Mã hóa nếu có khoảng trắng
+        if (form.values.minPrice) {
+            url += `&min_price=${form.values.minPrice}`;
         }
-        if (form.values.material) {
-            console.log("Material value: ", form.values.material); // Kiểm tra giá trị
-            url += `&material=${encodeURIComponent(form.values.material)}`; // Mã hóa nếu có khoảng trắng
+        if (form.values.maxPrice) {
+            url += `&max_price=${form.values.maxPrice}`;
         }
-        if (form.values.min_price) {
-            url += `&min_price=${form.values.min_price}`;
-        }
-        if (form.values.max_price) {
-            url += `&max_price=${form.values.max_price}`;
-        }
-
-        console.log("Final URL: ", url); // Kiểm tra URL cuối cùng
-
         try {
             const response = await instance.get(`/products/list${url}`);
             setData(response.data.data);
-            console.log("url", url);
         } catch (error) {
             console.log("API Error:", error);
         }
@@ -105,7 +103,7 @@ const ProductCategory = () => {
 
     const fetchAttributes = async () => {
         try {
-            const response = await instance.get(`/attributesValue`); 
+            const response = await instance.get(`/attributesValue`);
             setAttributes(response.data);
         } catch (error) {
             console.log(error);
@@ -208,9 +206,9 @@ const ProductCategory = () => {
         }
 
         form.setFieldValue(fieldName, valuesArray.join(","));
-        setTimeout(() => {
-            console.log("Form values after attribute change:", form.values);
-        }, 0);
+        // setTimeout(() => {
+        //     console.log("Form values after attribute change:", form.values);
+        // }, 0);
     };
     const renderAttributes = () => {
         return attributes.map((attribute: any) => (
@@ -258,17 +256,34 @@ const ProductCategory = () => {
                                 gap="md"
                             >
                                 <div className="w-[100%] lg:w-[256px] ">
-                                    <span className="flex items-center space-x-2">
+                                    <span className="flex items-center space-x-2 mb-2">
                                         <IconFilter size={20} />
                                         <Text fw={500} size="xl">
                                             Bộ Lọc Tìm Kiếm
                                         </Text>
                                     </span>
+                                    <hr />
                                     <h5 className="py-1">Theo Danh mục</h5>
-                                    <div>{renderCategories(dataCategory)}</div>
+                                    <div className="mb-5">
+                                        {renderCategories(dataCategory)}
+                                    </div>
+                                    <hr />
                                     {renderAttributes()}
+                                    <h5 className="mb-3">Khoảng giá</h5>
+                                    <div className="flex items-center space-x-2">
+                                        <TextInput
+                                            placeholder="Từ"
+                                            {...form.getInputProps("minPrice")}
+                                        />
+                                        <TextInput
+                                            placeholder="Dến"
+                                            {...form.getInputProps("maxPrice")}
+                                        />
+                                    </div>
+                                    <hr />
                                 </div>
-                                <Button type="submit">Apply Filters</Button>
+
+                                <Button type="submit">Áp dụng</Button>
                             </Flex>
                         </form>
                     </div>
