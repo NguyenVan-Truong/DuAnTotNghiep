@@ -30,6 +30,7 @@ const ProductCategory = () => {
     const form = useForm({
         initialValues: {
             category: "",
+            attribute: "",
             dimension: "", // dimension can be something like "200x160"
             material: "", // material can be something like "Gỗ Sồi"
             min_price: "",
@@ -43,7 +44,12 @@ const ProductCategory = () => {
         let url = `?page=${pagination.pageIndex}`;
 
         if (form.values.category) {
+            console.log("category_id value: ", form.values.category);
             url += `&category_id=${form.values.category}`;
+        }
+        if (form.values.attribute) {
+            console.log("attribute value: ", form.values.attribute); // Kiểm tra giá trị
+            url += `&attribute_value_ids=${form.values.attribute}`;
         }
         if (form.values.dimension) {
             console.log("Dimension value: ", form.values.dimension); // Kiểm tra giá trị
@@ -90,7 +96,7 @@ const ProductCategory = () => {
 
     const fetchAttributes = async () => {
         try {
-            const response = await instance.get(`/attributesValue`);
+            const response = await instance.get(`/attributesValue`); 
             setAttributes(response.data);
         } catch (error) {
             console.log(error);
@@ -173,28 +179,28 @@ const ProductCategory = () => {
                   ))
             : null;
     };
-
     const handleAttributeChange = (
-        attributeName: string,
-        valueName: string,
+        valueId: number,
         isChecked: boolean,
     ) => {
-        const currentValues =
-            form.values[attributeName as keyof typeof form.values] || "";
+        const fieldName: keyof typeof form.values = "attribute";
+        const currentValues = form.values[fieldName as keyof typeof form.values] || "";
+        //const currentValues = form.values[attributeName as keyof typeof form.values] || "";
         const valuesArray = currentValues.split(",").filter(Boolean);
 
         if (isChecked) {
-            valuesArray.push(valueName);
+            valuesArray.push(valueId.toString());
         } else {
-            const index = valuesArray.indexOf(valueName);
+            const index = valuesArray.indexOf(valueId.toString());
             if (index > -1) {
                 valuesArray.splice(index, 1);
             }
         }
-
-        form.setFieldValue(attributeName, valuesArray.join(","));
+        form.setFieldValue(fieldName, valuesArray.join(","));
+        setTimeout(() => {
+            console.log("Form values after attribute change:", form.values);
+        }, 0);
     };
-
     const renderAttributes = () => {
         return attributes.map((attribute: any) => (
             <div key={attribute.id}>
@@ -208,11 +214,11 @@ const ProductCategory = () => {
                                 attribute.name as keyof typeof form.values
                             ]
                                 ?.split(",")
-                                ?.includes(value.name)}
+                                ?.includes(value.id.toString())}
                             onChange={(event) =>
                                 handleAttributeChange(
                                     attribute.name,
-                                    value.name,
+                                    value.id,
                                     event.currentTarget.checked,
                                 )
                             }
