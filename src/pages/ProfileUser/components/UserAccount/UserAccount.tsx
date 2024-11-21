@@ -194,7 +194,7 @@ const UserAccount = () => {
                                 disabled
                                 placeholder="Input component"
                                 className="flex-grow"
-                                value={data.province_id || "Không có dữ liệu"}
+                                value={data.province || "Không có dữ liệu"}
                             />
                         </div>
                         <div className="flex items-center space-x-3">
@@ -205,7 +205,7 @@ const UserAccount = () => {
                                 disabled
                                 placeholder="Input component"
                                 className="flex-grow"
-                                value={data.district_id || "Không có dữ liệu"}
+                                value={data.district || "Không có dữ liệu"}
                             />
                         </div>
                         <div className="flex items-center space-x-3">
@@ -216,7 +216,7 @@ const UserAccount = () => {
                                 disabled
                                 placeholder="Input component"
                                 className="flex-grow"
-                                value={data.ward_id || "Không có dữ liệu"}
+                                value={data.ward || "Không có dữ liệu"}
                             />
                         </div>
                     </div>

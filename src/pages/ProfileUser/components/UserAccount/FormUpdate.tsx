@@ -190,14 +190,21 @@ const FormUpdate = ({ onSuccess, modals }: FormUpdateProps) => {
             );
 
             message.success("Cập nhật thông tin thành công!");
-            localStorage.setItem(
-                "userProFile",
-                JSON.stringify(response.data.user),
-            );
+            const {
+                rule_id,
+                status,
+                updated_at,
+                user_agent,
+                last_login,
+                created_at,
+                deleted_at,
+                ...userProfile
+            } = response.data.user;
+
+            localStorage.setItem("userProFile", JSON.stringify(userProfile));
             onSuccess();
             modals.closeAll();
         } catch (error) {
-            console.error("Error updating profile", error);
             message.error("Cập nhật thông tin thất bại!");
         }
     };
