@@ -14,6 +14,7 @@ import {
 import { useForm } from "@mantine/form";
 import { IconFilter } from "@tabler/icons-react";
 import BannerProduct from "./BannerProduct/BannerProduct";
+import { TextInput } from "@mantine/core";
 
 const ProductCategory = () => {
     const [data, setData] = useState<any>([]);

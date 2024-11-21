@@ -159,17 +159,7 @@ const UserAccount = () => {
                                 value={data.phone || "Không có dữ liệu"}
                             />
                         </div>
-                        <div className="flex items-center space-x-3">
-                            <Text className="w-1/3" size="lg">
-                                Địa chỉ:
-                            </Text>
-                            <TextInput
-                                disabled
-                                placeholder="Input component"
-                                className="flex-grow"
-                                value={data.address || "Không có dữ liệu"}
-                            />
-                        </div>
+
                         <div className="flex items-center space-x-3">
                             <Text className="w-1/3" size="lg">
                                 Ngày sinh:
@@ -183,6 +173,50 @@ const UserAccount = () => {
                                         ? formatDateNotTimeZone(data.birthday)
                                         : "Không có dữ liệu"
                                 }
+                            />
+                        </div>
+                        <div className="flex items-center space-x-3">
+                            <Text className="w-1/3" size="lg">
+                                Địa chỉ:
+                            </Text>
+                            <TextInput
+                                disabled
+                                placeholder="Input component"
+                                className="flex-grow"
+                                value={data.address || "Không có dữ liệu"}
+                            />
+                        </div>
+                        <div className="flex items-center space-x-3">
+                            <Text className="w-1/3" size="lg">
+                                Tỉnh/Thành phố:
+                            </Text>
+                            <TextInput
+                                disabled
+                                placeholder="Input component"
+                                className="flex-grow"
+                                value={data.province_id || "Không có dữ liệu"}
+                            />
+                        </div>
+                        <div className="flex items-center space-x-3">
+                            <Text className="w-1/3" size="lg">
+                                Quận/Huyện:
+                            </Text>
+                            <TextInput
+                                disabled
+                                placeholder="Input component"
+                                className="flex-grow"
+                                value={data.district_id || "Không có dữ liệu"}
+                            />
+                        </div>
+                        <div className="flex items-center space-x-3">
+                            <Text className="w-1/3" size="lg">
+                                Phường/Xã:
+                            </Text>
+                            <TextInput
+                                disabled
+                                placeholder="Input component"
+                                className="flex-grow"
+                                value={data.ward_id || "Không có dữ liệu"}
                             />
                         </div>
                     </div>
