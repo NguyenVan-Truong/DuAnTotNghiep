@@ -48,6 +48,7 @@ const IconCart = () => {
             message.error("Vui lòng chọn sản phẩm để thanh toán");
             return;
         }
+        onClose();
         navigate("/thanh-toan", {
             state: { listchecked: dataCart, totalPrice: totalPrice },
         });
@@ -79,7 +80,6 @@ const IconCart = () => {
                 },
                 { totalQuantity: 0, totalPrice: 0 },
             );
-            console.log(total);
             setTotalPrice(total.totalPrice);
         } else {
             setTotalPrice(0);
@@ -209,7 +209,7 @@ const IconCart = () => {
                             <h3>{formatCurrencyVN(String(totalPrice))}</h3>
                         </div>
                         <div className="mt-5">
-                            <Link to="/gio-hang">
+                            <Link to="/gio-hang" onClick={onClose}>
                                 <button className="w-full bg-black text-white p-2 rounded-md mb-3">
                                     Xem Giỏ Hàng
                                 </button>

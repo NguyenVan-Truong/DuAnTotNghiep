@@ -6,12 +6,14 @@ import { IconMessageCircleStar } from "@tabler/icons-react";
 import { modals } from "@mantine/modals";
 import ProductReviews from "./ProductReviews";
 import { message } from "antd";
+import { useNavigate } from "react-router-dom";
 
 type OrderDetailProps = {
     data: any;
 };
 
 const OrderDetail = ({ data }: OrderDetailProps) => {
+    const navigate = useNavigate();
     const Reviews = async (item: number) => {
         modals.openConfirmModal({
             title: "Chi tiết đơn hàng",
@@ -22,47 +24,65 @@ const OrderDetail = ({ data }: OrderDetailProps) => {
         });
     };
     const componentPDF = useRef<HTMLDivElement>(null);
-    const rows = data.order_items.map((item: any) => (
-        <tr key={item.id} className="border-b border-gray-200">
-            <td className="px-4 py-2 text-left">{item.product_name}</td>
-            <td className="px-4 py-2 text-center">{item.quantity}</td>
-            <td className="px-4 py-2 text-center">
-                {Number(item.price).toLocaleString("vi-VN")} VND
-            </td>
-            <td className="px-4 py-2 text-center">
-                {Number(item.total).toLocaleString("vi-VN")} VND
-            </td>
-            <td className="px-4 py-2 text-left">
-                {item.variant
-                    ? (() => {
-                          try {
-                              const parsedVariant = JSON.parse(item.variant);
-                              return Object.values(parsedVariant).join(", ");
-                          } catch (e) {
-                              console.error("Invalid JSON:", e);
-                              return "";
-                          }
-                      })()
-                    : ""}
-            </td>
-            <td className="px-4 py-2 text-left">
-                <Tooltip label="Đánh giá">
-                    <ActionIcon
-                        variant="light"
-                        aria-label="Settings"
-                        color="green"
-                        disabled={
-                            item.is_reviewed === "Đã có đánh giá" ||
-                            data.status !== "Hoàn thành"
-                        }
-                        onClick={() => Reviews(item)}
-                    >
-                        <IconMessageCircleStar size={20} />
-                    </ActionIcon>
-                </Tooltip>
-            </td>
-        </tr>
-    ));
+    const onhandleTurnPage = (id: number, slug: string) => {
+        navigate(`/chi-tiet-san-pham/${slug}`, { state: { id: id } });
+        modals.closeAll();
+    };
+    const rows = data.order_items.map((item: any) => {
+        console.log("item", item);
+        return (
+            <tr key={item.id} className="border-b border-gray-200">
+                <td
+                    className="px-4 py-2 text-left cursor-pointer"
+                    onClick={() =>
+                        onhandleTurnPage(item?.product_id, item?.slug)
+                    }
+                >
+                    {item.product_name}
+                </td>
+                <td className="px-4 py-2 text-center">{item.quantity}</td>
+                <td className="px-4 py-2 text-center">
+                    {Number(item.price).toLocaleString("vi-VN")} VND
+                </td>
+                <td className="px-4 py-2 text-center">
+                    {Number(item.total).toLocaleString("vi-VN")} VND
+                </td>
+                <td className="px-4 py-2 text-left">
+                    {item.variant
+                        ? (() => {
+                              try {
+                                  const parsedVariant = JSON.parse(
+                                      item.variant,
+                                  );
+                                  return Object.values(parsedVariant).join(
+                                      ", ",
+                                  );
+                              } catch (e) {
+                                  console.error("Invalid JSON:", e);
+                                  return "";
+                              }
+                          })()
+                        : ""}
+                </td>
+                <td className="px-4 py-2 text-left">
+                    <Tooltip label="Đánh giá">
+                        <ActionIcon
+                            variant="light"
+                            aria-label="Settings"
+                            color="green"
+                            disabled={
+                                item.is_reviewed === "Đã có đánh giá" ||
+                                data.status !== "Hoàn thành"
+                            }
+                            onClick={() => Reviews(item)}
+                        >
+                            <IconMessageCircleStar size={20} />
+                        </ActionIcon>
+                    </Tooltip>
+                </td>
+            </tr>
+        );
+    });
 
     // Đảm bảo rằng hook useReactToPrint luôn được gọi trong render
     const generatePDF = useReactToPrint({
