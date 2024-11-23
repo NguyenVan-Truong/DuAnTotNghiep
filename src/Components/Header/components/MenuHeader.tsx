@@ -2,9 +2,22 @@ import instance from "@/configs/axios";
 import { Category } from "@/model/Category";
 import { Menu } from "@mantine/core";
 import { useQuery } from "@tanstack/react-query";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 
 const MenuHeader = () => {
+    const [searchParams, setSearchParams] = useSearchParams();
+    const navigate = useNavigate();
+
+    const handleCategoryClick = (categoryId: number) => {
+        console.log("categoryId", categoryId);
+        navigate("/san-pham",{
+            state:{
+                id:categoryId
+            }
+        })
+        // setSearchParams({ ...Object.fromEntries(searchParams.entries()), category_id: String(categoryId) });
+    };
+
     const buildCategoryTree = (categories: Category[]) => {
         const map: { [key: number]: Category & { children?: Category[] } } = {};
         categories.forEach((category) => {
@@ -41,7 +54,13 @@ const MenuHeader = () => {
                             closeDelay={100}
                         >
                             <Menu.Target>
-                                <span>{category.name}</span>
+                                <span
+                                    onClick={() =>
+                                        handleCategoryClick(category.id)
+                                    }
+                                >
+                                    {category.name}
+                                </span>
                             </Menu.Target>
                             <Menu.Dropdown>
                                 {renderMenuItems(category.children)}
@@ -50,7 +69,14 @@ const MenuHeader = () => {
                     </Menu.Item>
                 );
             }
-            return <Menu.Item key={category.id}>{category.name}</Menu.Item>;
+            return (
+                <Menu.Item
+                    key={category.id}
+                    onClick={() => handleCategoryClick(category.id)}
+                >
+                    {category.name}
+                </Menu.Item>
+            );
         });
     };
 

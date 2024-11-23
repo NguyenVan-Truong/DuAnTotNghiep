@@ -26,8 +26,7 @@ import {
     Navigate,
     Route,
     Routes,
-    useLocation,
-    useNavigate,
+    useLocation
 } from "react-router-dom";
 
 const Index = () => {

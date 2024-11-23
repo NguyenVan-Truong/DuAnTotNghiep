@@ -24,6 +24,8 @@ import MenuHeader from "./components/MenuHeader";
 const Header = () => {
     const [visible, setVisible] = useState(false);
     const [dropdownVisible, setDropdownVisible] = useState(false);
+    const [keysearch, setKeysearch] = useState("");
+
     const handleOverlayClick = () => {
         setVisible(false);
         setDropdownVisible(false);
@@ -79,6 +81,18 @@ const Header = () => {
         staleTime: 0,
         enabled: true,
     });
+
+    const handleSearch = () => {
+        if (keysearch.trim()) {
+            navigate(`/san-pham?keysearch=${encodeURIComponent(keysearch)}`);
+        }       
+    };
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === "Enter") {
+            handleSearch();
+        }
+    };
+    
     return (
         <>
             {/* Header1 */}
@@ -357,8 +371,11 @@ const Header = () => {
                             type="text"
                             variant="filled"
                             radius="xl"
-                            placeholder="Tìm kiếm..."
-                            rightSection={<SearchOutlined />}
+                            placeholder="Tìm kiếm..."  
+                            value={keysearch}
+                            onChange={(e) => setKeysearch(e.target.value)} 
+                            onKeyDown={handleKeyDown}                         
+                            rightSection={<SearchOutlined onClick={handleSearch}/>}
                         />
                     </div>
                 </div>
