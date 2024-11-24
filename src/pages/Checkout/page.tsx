@@ -10,17 +10,15 @@ import {
     Select,
     Textarea,
     TextInput,
-    Title,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { modals } from "@mantine/modals";
 import { IconBuildingBank, IconCashBanknote } from "@tabler/icons-react";
+import { useQueryClient } from "@tanstack/react-query";
 import { message } from "antd";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import DescriptionShipping from "./DescriptionShipping";
 import styles from "./checkoutPage.module.scss"; // Import CSS module
-import { useQueryClient } from "@tanstack/react-query";
 
 type UserInfo = {
     id: number;
@@ -68,7 +66,7 @@ const CheckoutPage = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const queryClient = useQueryClient();
-
+    const userProFile = JSON.parse(localStorage.getItem("userProFile") || "{}");
     if (!location.state) {
         return <Navigate to="/san-pham" replace />;
     }
@@ -76,13 +74,19 @@ const CheckoutPage = () => {
     const [orderItems, setOrderItems] = useState<[]>([]);
     // thông tin tỉnh thành phố
     const [valueCity, setValueCity] = useState([]);
-    const [checkedValueCity, setCheckedValueCity] = useState();
+    const [checkedValueCity, setCheckedValueCity] = useState(
+        userProFile.province_id,
+    );
     // thông tin quận huyện
     const [valueDistrict, setValueDistrict] = useState([]);
-    const [checkedValueDistrict, setCheckedValueDistrict] = useState();
+    const [checkedValueDistrict, setCheckedValueDistrict] = useState(
+        userProFile.district_id,
+    );
     // thông tin phường xã
     const [valueWard, setValueWard] = useState([]);
-    const [checkedValueWard, setCheckedValueWard] = useState();
+    const [checkedValueWard, setCheckedValueWard] = useState(
+        userProFile.ward_id,
+    );
     // Phương thức thanh toán
     const [selectedPaymentMethod, setSelectedPaymentMethod] =
         useState<Number>(3);
@@ -132,7 +136,7 @@ const CheckoutPage = () => {
             address: (value) => (!value ? "Địa chỉ là bắt buộc" : null),
         },
     });
-    // CHọn tỉnh
+    // CHọn thành phố
     const onhandleSelectCity = async () => {
         try {
             const response = await instance.get("/getAllProvinces");
@@ -154,7 +158,7 @@ const CheckoutPage = () => {
     const onhandleSelectDistrict = async () => {
         try {
             const response = await instance.get(
-                `/getLocaion?target=district&data[province_id]=${checkedValueCity}`,
+                `/getLocaion?target=district&data[province_id]=${checkedValueCity === null ? form.getValues().city : checkedValueCity}`,
             );
             if (response && response.status === 200) {
                 const parser = new DOMParser();
@@ -181,7 +185,7 @@ const CheckoutPage = () => {
     const onhandleSelectWart = async () => {
         try {
             const response = await instance.get(
-                `/getLocaion?target=ward&data[district_id]=${checkedValueDistrict}`,
+                `/getLocaion?target=ward&data[district_id]=${checkedValueDistrict === null ? form.getValues().district : checkedValueDistrict}`,
             );
             if (response && response.status === 200) {
                 const parser = new DOMParser();
@@ -284,9 +288,9 @@ const CheckoutPage = () => {
                     email: data.email,
                     name: data.full_name,
                     sđt: data.phone,
-                    city: null,
-                    district: null,
-                    ward: null,
+                    city: data.province_id,
+                    district: data.district_id,
+                    ward: data.ward_id,
                     address: data.address,
                     description: "",
                 });
@@ -362,12 +366,7 @@ const CheckoutPage = () => {
     //         console.log("lỗi trừ mã giảm giá", error);
     //     }
     // };
-    useEffect(() => {
-        onhandleSelectDistrict();
-    }, [checkedValueCity]);
-    useEffect(() => {
-        onhandleSelectWart();
-    }, [checkedValueDistrict]);
+
     useEffect(() => {
         const fetchData = async () => {
             if (checkedValueCity !== undefined && checkedValueCity !== null) {
@@ -394,7 +393,6 @@ const CheckoutPage = () => {
     }, [checkedValueCity, checkedValueCity]);
 
     useEffect(() => {
-        fetchDataUser();
         const orderItems = location?.state.listchecked.map((item: any) => {
             return {
                 product_id: item.product_id,
@@ -419,7 +417,16 @@ const CheckoutPage = () => {
             .map((item: any) => item.id)
             .join(",");
         setIdCart(IdCart);
+        Promise.all([fetchDataUser(), onhandleSelectCity()]);
     }, []);
+    useEffect(() => {
+        form.setFieldValue("district", null);
+        form.setFieldValue("ward", null);
+        onhandleSelectDistrict();
+    }, [checkedValueCity]);
+    useEffect(() => {
+        onhandleSelectWart();
+    }, [checkedValueDistrict]);
     // MÃ GIẢM GIÁ
     useEffect(() => {
         if (valuePromotions !== undefined) {
@@ -502,12 +509,15 @@ const CheckoutPage = () => {
                                             placeholder="Nhập tỉnh/thành phố"
                                             className="w-[50%]"
                                             searchable
+                                            value={
+                                                form.getValues().city ?? null
+                                            }
                                             {...form.getInputProps("city")}
-                                            onClick={() => {
-                                                if (valueCity.length === 0) {
-                                                    onhandleSelectCity();
-                                                }
-                                            }}
+                                            // onClick={() => {
+                                            //     if (valueCity.length === 0) {
+                                            //         onhandleSelectCity();
+                                            //     }
+                                            // }}
                                             onChange={(value: any) => {
                                                 form.setFieldValue(
                                                     "city",
@@ -527,22 +537,26 @@ const CheckoutPage = () => {
                                             data={valueDistrict}
                                             className="w-[50%]"
                                             searchable
+                                            value={
+                                                form.getValues().district ??
+                                                null
+                                            }
                                             {...form.getInputProps("district")}
-                                            onClick={() => {
-                                                if (
-                                                    valueCity.length === 0 ||
-                                                    !checkedValueCity
-                                                ) {
-                                                    return message.error(
-                                                        "Vui lòng chọn tỉnh/thành phố trước",
-                                                    );
-                                                }
-                                                if (
-                                                    valueDistrict.length === 0
-                                                ) {
-                                                    onhandleSelectDistrict();
-                                                }
-                                            }}
+                                            // onClick={() => {
+                                            //     if (
+                                            //         valueCity.length === 0 ||
+                                            //         !checkedValueCity
+                                            //     ) {
+                                            //         return message.error(
+                                            //             "Vui lòng chọn tỉnh/thành phố trước",
+                                            //         );
+                                            //     }
+                                            //     if (
+                                            //         valueDistrict.length === 0
+                                            //     ) {
+                                            //         onhandleSelectDistrict();
+                                            //     }
+                                            // }}
                                             onChange={(value: any) => {
                                                 form.setFieldValue(
                                                     "district",
@@ -557,22 +571,25 @@ const CheckoutPage = () => {
                                             placeholder="Nhập phường/xã"
                                             data={valueWard}
                                             searchable
+                                            value={
+                                                form.getValues().ward ?? null
+                                            }
                                             {...form.getInputProps("ward")}
                                             className="w-[50%]"
-                                            onClick={() => {
-                                                if (
-                                                    valueDistrict.length ===
-                                                        0 ||
-                                                    !checkedValueDistrict
-                                                ) {
-                                                    return message.error(
-                                                        "Vui lòng chọn quận huyện trước",
-                                                    );
-                                                }
-                                                if (valueWard.length === 0) {
-                                                    onhandleSelectWart();
-                                                }
-                                            }}
+                                            // onClick={() => {
+                                            //     if (
+                                            //         valueDistrict.length ===
+                                            //             0 ||
+                                            //         !checkedValueDistrict
+                                            //     ) {
+                                            //         return message.error(
+                                            //             "Vui lòng chọn quận huyện trước",
+                                            //         );
+                                            //     }
+                                            //     if (valueWard.length === 0) {
+                                            //         onhandleSelectWart();
+                                            //     }
+                                            // }}
                                             onChange={(value: any) => {
                                                 form.setFieldValue(
                                                     "ward",
