@@ -10,11 +10,11 @@ import {
     Flex,
     Grid,
     Text,
-    TextInput,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { IconFilter } from "@tabler/icons-react";
 import BannerProduct from "./BannerProduct/BannerProduct";
+import { TextInput } from "@mantine/core";
 
 const ProductCategory = () => {
     const [data, setData] = useState<any>([]);
@@ -28,13 +28,36 @@ const ProductCategory = () => {
         pageSize: 10,
     });
 
+    const mapAttributeNameToField = (name: string) => {
+        const mappings: Record<string, string> = {
+            "Chất Liệu": "attribute",
+            "Màu Sắc": "attribute",
+            "Kích Thước": "attribute",
+        };
+        return mappings[name] || name;
+    };
+
     const form = useForm({
+        mode: "controlled",
         initialValues: {
             category: "",
-            dimension: "",
-            material: "",
-            min_price: "",
-            max_price: "",
+            attribute: "",
+            minPrice: "",
+            maxPrice: "",
+        },
+        validate: {
+            minPrice: (value, values) => {
+                if (parseFloat(value) > parseFloat(values.maxPrice)) {
+                    return "Giá nhỏ không được lớn hơn giá lớn";
+                }
+                return null;
+            },
+            maxPrice: (value, values) => {
+                if (parseFloat(value) < parseFloat(values.minPrice)) {
+                    return "Giá lớn không được nhỏ hơn giá nhỏ";
+                }
+                return null;
+            },
         },
     });
 
@@ -44,22 +67,17 @@ const ProductCategory = () => {
         if (form.values.category) {
             url += `&category_id=${form.values.category}`;
         }
-        if (form.values.dimension) {
-            url += `&dimension=${form.values.dimension}`;
+        if (form.values.attribute) {
+            url += `&attribute_value_ids=${form.values.attribute}`;
         }
-        if (form.values.material) {
-            url += `&material=${form.values.material}`;
+        if (form.values.minPrice) {
+            url += `&min_price=${form.values.minPrice}`;
         }
-        if (form.values.min_price) {
-            url += `&min_price=${form.values.min_price}`;
+        if (form.values.maxPrice) {
+            url += `&max_price=${form.values.maxPrice}`;
         }
-        if (form.values.max_price) {
-            url += `&max_price=${form.values.max_price}`;
-        }
-
         try {
             const response = await instance.get(`/products/list${url}`);
-            console.log("API Response:", url);
             setData(response.data.data);
         } catch (error) {
             console.log("API Error:", error);
@@ -69,7 +87,15 @@ const ProductCategory = () => {
     const fetchCategory = async () => {
         try {
             const response = await instance.get(`/product-catalogues`);
-            setCategory(response.data);
+            const categoriesWithChildren = response.data.map(
+                (category: any) => ({
+                    ...category,
+                    children: response.data.filter(
+                        (child: any) => child.parent_id === category.id,
+                    ),
+                }),
+            );
+            setCategory(categoriesWithChildren);
         } catch (error) {
             console.log(error);
         }
@@ -95,29 +121,29 @@ const ProductCategory = () => {
 
     const handleCategoryChange = (categoryId: number, isChecked: boolean) => {
         const updatedCheckedCategories = new Set(checkedCategories);
+
+        const updateChildren = (categoryId: number, isChecked: boolean) => {
+            const children = dataCategory.filter(
+                (category: any) => category.parent_id === categoryId,
+            );
+
+            children.forEach((child: any) => {
+                if (isChecked) {
+                    updatedCheckedCategories.add(child.id);
+                } else {
+                    updatedCheckedCategories.delete(child.id);
+                }
+            });
+        };
+
         if (isChecked) {
             updatedCheckedCategories.add(categoryId);
-            const addChildren = (parentId: number) => {
-                dataCategory.forEach((category: any) => {
-                    if (category.parent_id === parentId) {
-                        updatedCheckedCategories.add(category.id);
-                        addChildren(category.id);
-                    }
-                });
-            };
-            addChildren(categoryId);
+            updateChildren(categoryId, true);
         } else {
             updatedCheckedCategories.delete(categoryId);
-            const removeChildren = (parentId: number) => {
-                dataCategory.forEach((category: any) => {
-                    if (category.parent_id === parentId) {
-                        updatedCheckedCategories.delete(category.id);
-                        removeChildren(category.id);
-                    }
-                });
-            };
-            removeChildren(categoryId);
+            updateChildren(categoryId, false);
         }
+
         setCheckedCategories(updatedCheckedCategories);
         form.setFieldValue(
             "category",
@@ -126,38 +152,86 @@ const ProductCategory = () => {
     };
 
     const renderCategories = (
-        categories: any[],
+        categories: any[] | undefined,
         parentId: number | null = null,
     ) => {
         return categories
-            .filter((category) => category.parent_id === parentId)
-            .map((category) => (
-                <div
-                    key={category.id}
-                    style={{ marginLeft: parentId ? "20px" : "0" }}
-                >
-                    <Checkbox
-                        label={category.name}
-                        checked={checkedCategories.has(category.id)}
-                        onChange={(event) =>
-                            handleCategoryChange(
-                                category.id,
-                                event.currentTarget.checked,
-                            )
-                        }
-                    />
-                    {renderCategories(categories, category.id)}
-                </div>
-            ));
+            ? categories
+                  .filter((category) => category.parent_id === parentId)
+                  .map((category) => (
+                      <div
+                          key={category.id}
+                          style={{ marginLeft: parentId ? "20px" : "0" }}
+                      >
+                          <Checkbox
+                              label={category.name}
+                              checked={checkedCategories.has(category.id)}
+                              onChange={(event) =>
+                                  handleCategoryChange(
+                                      category.id,
+                                      event.currentTarget.checked,
+                                  )
+                              }
+                          />
+                          {category.children &&
+                              category.children.length > 0 && (
+                                  <div>
+                                      {renderCategories(
+                                          category.children,
+                                          category.id,
+                                      )}
+                                  </div>
+                              )}
+                      </div>
+                  ))
+            : null;
     };
+    const handleAttributeChange = (
+        attributeName: string,
+        valueId: number,
+        isChecked: boolean,
+    ) => {
+        const fieldName: keyof typeof form.values = "attribute";
+        const currentValues = form.values[fieldName] || "";
+        //const currentValues = form.values[attributeName as keyof typeof form.values] || "";
+        const valuesArray = currentValues.split(",").filter(Boolean);
 
+        if (isChecked) {
+            valuesArray.push(valueId.toString());
+        } else {
+            const index = valuesArray.indexOf(valueId.toString());
+            if (index > -1) {
+                valuesArray.splice(index, 1);
+            }
+        }
+
+        form.setFieldValue(fieldName, valuesArray.join(","));
+        // setTimeout(() => {
+        //     console.log("Form values after attribute change:", form.values);
+        // }, 0);
+    };
     const renderAttributes = () => {
         return attributes.map((attribute: any) => (
             <div key={attribute.id}>
                 <h5 className="py-1">{attribute.name}</h5>
                 <div className="space-y-2">
                     {attribute.values.map((value: any) => (
-                        <Checkbox key={value.id} label={value.name} />
+                        <Checkbox
+                            key={value.id}
+                            label={value.name}
+                            checked={form.values[
+                                attribute.name as keyof typeof form.values
+                            ]
+                                ?.split(",")
+                                ?.includes(value.id.toString())}
+                            onChange={(event) =>
+                                handleAttributeChange(
+                                    attribute.name,
+                                    value.id,
+                                    event.currentTarget.checked,
+                                )
+                            }
+                        />
                     ))}
                 </div>
                 <Divider my="sm" />
@@ -173,7 +247,6 @@ const ProductCategory = () => {
                     <div className="mt-[50px] product-filter padding">
                         <form
                             onSubmit={form.onSubmit(() => {
-                                console.log("Form Values:", form.values);
                                 fetchdata();
                             })}
                         >
@@ -183,17 +256,34 @@ const ProductCategory = () => {
                                 gap="md"
                             >
                                 <div className="w-[100%] lg:w-[256px] ">
-                                    <span className="flex items-center space-x-2">
+                                    <span className="flex items-center space-x-2 mb-2">
                                         <IconFilter size={20} />
                                         <Text fw={500} size="xl">
                                             Bộ Lọc Tìm Kiếm
                                         </Text>
                                     </span>
+                                    <hr />
                                     <h5 className="py-1">Theo Danh mục</h5>
-                                    <div>{renderCategories(dataCategory)}</div>
+                                    <div className="mb-5">
+                                        {renderCategories(dataCategory)}
+                                    </div>
+                                    <hr />
                                     {renderAttributes()}
+                                    <h5 className="mb-3">Khoảng giá</h5>
+                                    <div className="flex items-center space-x-2">
+                                        <TextInput
+                                            placeholder="Từ"
+                                            {...form.getInputProps("minPrice")}
+                                        />
+                                        <TextInput
+                                            placeholder="Dến"
+                                            {...form.getInputProps("maxPrice")}
+                                        />
+                                    </div>
+                                    <hr />
                                 </div>
-                                <Button type="submit">Apply Filters</Button>
+
+                                <Button type="submit">Áp dụng</Button>
                             </Flex>
                         </form>
                     </div>

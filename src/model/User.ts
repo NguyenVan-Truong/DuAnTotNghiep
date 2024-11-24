@@ -15,9 +15,9 @@ export interface UserProfile {
     full_name: string | null; // Tên đầy đủ (có thể là null)
     email: string; // Địa chỉ email
     phone: string | null; // Số điện thoại (có thể là null)
-    province_id: number | null; // ID tỉnh (có thể là null)
-    district_id: number | null; // ID huyện (có thể là null)
-    ward_id: number | null; // ID xã (có thể là null)
+    province: string | null; // ID tỉnh (có thể là null)
+    district: string | null; // ID huyện (có thể là null)
+    ward: string | null; // ID xã (có thể là null)
     address: string | null; // Địa chỉ (có thể là null)
     birthday: string | null; // Ngày sinh (có thể là null)
     avatar: string; // Đường dẫn tới ảnh đại diện (có thể là null)

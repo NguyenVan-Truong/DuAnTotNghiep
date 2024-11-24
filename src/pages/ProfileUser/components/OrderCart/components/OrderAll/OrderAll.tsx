@@ -45,8 +45,6 @@ const OrderAll = () => {
         pageIndex: 0,
         pageSize: 10,
     });
-    const [rowSelection, setRowSelection] = useState<MRT_RowSelectionState>({});
-    const [selectId, setSelectId] = useState<string | undefined>(undefined);
     const [search, setSearch] = useState({
         search: "",
         order_date: "",
@@ -137,75 +135,67 @@ const OrderAll = () => {
                 ),
                 size: 20,
             },
-            {
-                accessorKey: "customer.customer_name",
-                header: "Tên khách hàng",
-                Cell: ({ row }) => (
-                    <AvatarUtils
-                        value={
-                            row.original.customer.customer_name?.split("-")[0]
-                        }
-                    />
-                ),
-            },
-            {
-                accessorKey: "customer_name",
-                header: "Tên người nhận",
-                Cell: ({ row }) => (
-                    <AvatarUtils
-                        value={row.original.customer_name?.split("-")[0]}
-                    />
-                ),
-            },
-            {
-                accessorKey: "email",
-                header: "Email người nhận",
-            },
-            {
-                accessorKey: "shipping_address",
-                header: "Địa chỉ giao hàng",
-            },
+            // {
+            //     accessorKey: "customer.customer_name",
+            //     header: "Tên khách hàng",
+            //     Cell: ({ row }) => (
+            //         <AvatarUtils
+            //             value={
+            //                 row.original.customer.customer_name?.split("-")[0]
+            //             }
+            //         />
+            //     ),
+            // },
+            // {
+            //     accessorKey: "customer_name",
+            //     header: "Tên người nhận",
+            //     Cell: ({ row }) => (
+            //         <AvatarUtils
+            //             value={row.original.customer_name?.split("-")[0]}
+            //         />
+            //     ),
+            // },
+            // {
+            //     accessorKey: "email",
+            //     header: "Email người nhận",
+            // },
+            // {
+            //     accessorKey: "shipping_address",
+            //     header: "Địa chỉ giao hàng",
+            // },
             {
                 accessorKey: "created_at",
                 header: "Ngày đặt",
             },
-            {
-                accessorKey: "note",
-                header: "Ghi chú",
-            },
-            {
-                accessorKey: "payment_method.payment_method_name",
-                header: "Phương thức thanh toán",
-                size: 250,
-                Cell: ({ renderedCellValue }) => (
-                    <Badge color={getColorStatusPay(renderedCellValue)}>
-                        {renderedCellValue === "Chuyển khoản ngân hàng"
-                            ? "Chuyển khoản ngân hàng"
-                            : "Tiền mặt khi nhận hàng"}
-                    </Badge>
-                ),
-            },
-            {
-                accessorKey: "payment_status",
-                header: "Trạng thái thanh toán",
-                size: 230,
-                Cell: ({ renderedCellValue }) => (
-                    <Badge color={getColorStatusPayment(renderedCellValue)}>
-                        {renderedCellValue === "Đã thanh toán"
-                            ? "Đã thanh toán"
-                            : "Chưa thanh toán"}
-                    </Badge>
-                ),
-            },
-            {
-                accessorKey: "status",
-                header: "Trạng thái đơn hàng",
-                Cell: ({ renderedCellValue }) => (
-                    <Badge color={getColorStatus(renderedCellValue)}>
-                        {renderedCellValue || "Không có"}
-                    </Badge>
-                ),
-            },
+            // {
+            //     accessorKey: "note",
+            //     header: "Ghi chú",
+            // },
+            // {
+            //     accessorKey: "payment_method.payment_method_name",
+            //     header: "Phương thức thanh toán",
+            //     size: 250,
+            //     Cell: ({ renderedCellValue }) => (
+            //         <Badge color={getColorStatusPay(renderedCellValue)}>
+            //             {renderedCellValue === "Chuyển khoản ngân hàng"
+            //                 ? "Chuyển khoản ngân hàng"
+            //                 : "Tiền mặt khi nhận hàng"}
+            //         </Badge>
+            //     ),
+            // },
+            // {
+            //     accessorKey: "payment_status",
+            //     header: "Trạng thái thanh toán",
+            //     size: 230,
+            //     Cell: ({ renderedCellValue }) => (
+            //         <Badge color={getColorStatusPayment(renderedCellValue)}>
+            //             {renderedCellValue === "Đã thanh toán"
+            //                 ? "Đã thanh toán"
+            //                 : "Chưa thanh toán"}
+            //         </Badge>
+            //     ),
+            // },
+
             {
                 accessorKey: "final_amount",
                 header: "Tổng tiền",
@@ -218,6 +208,15 @@ const OrderAll = () => {
                           })
                         : "₫0";
                 },
+            },
+            {
+                accessorKey: "status",
+                header: "Trạng thái đơn hàng",
+                Cell: ({ renderedCellValue }) => (
+                    <Badge color={getColorStatus(renderedCellValue)}>
+                        {renderedCellValue || "Không có"}
+                    </Badge>
+                ),
             },
             {
                 accessorKey: "action",
@@ -241,6 +240,18 @@ const OrderAll = () => {
     function processTaskActionMenu(row: MRT_Row<any>): any {
         return (
             <>
+                <Tooltip label="Xem chi tiết">
+                    <ActionIcon
+                        variant="light"
+                        aria-label="Settings"
+                        color="yellow"
+                    >
+                        <IconEye
+                            size={20}
+                            onClick={() => callApiGetData(row?.original.id)}
+                        />
+                    </ActionIcon>
+                </Tooltip>
                 <Tooltip label="Xác nhận đã nhận hàng">
                     <ActionIcon
                         variant="light"
@@ -298,14 +309,6 @@ const OrderAll = () => {
         }
     };
     // Xử lý khi chỉ lấy 1 ID từ rowSelection
-    useEffect(() => {
-        const valuesList = Object.keys(rowSelection);
-        if (valuesList.length === 1) {
-            setSelectId(valuesList[0]);
-        } else {
-            setSelectId(undefined);
-        }
-    }, [rowSelection]);
 
     const callApiGetData = async (id: string | undefined) => {
         try {
@@ -331,8 +334,6 @@ const OrderAll = () => {
         enableSorting: true,
         enableColumnActions: true,
         enableColumnPinning: true,
-        enableRowSelection: true,
-        onRowSelectionChange: setRowSelection,
         initialState: {
             showColumnFilters: false,
             columnPinning: {
@@ -343,7 +344,6 @@ const OrderAll = () => {
         },
         state: {
             pagination,
-            rowSelection,
         },
         getRowId: (row) => row.id,
         positionToolbarAlertBanner: "bottom",
@@ -422,15 +422,6 @@ const OrderAll = () => {
         ),
         renderToolbarInternalActions: () => (
             <>
-                <Button
-                    leftSection={<IconEye size={20} />}
-                    variant="outline"
-                    mr="xs"
-                    onClick={() => selectId && callApiGetData(selectId)}
-                    disabled={!selectId}
-                >
-                    Chi Tiết
-                </Button>
                 <Button
                     leftSection={<IconFileExport size={20} />}
                     variant="outline"
