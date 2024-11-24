@@ -12,23 +12,23 @@ const PaymentResult = () => {
     const statuss = params.get("status");
     const queryClient = useQueryClient();
     // console.log("location", location.state);
-    // Call trừ số lượng mã giảm giá
-    const handleShippingFee = async (checkedCode: string) => {
-        const response = await instance.post("/promotions/use", {
-            code: checkedCode,
-        });
-        try {
-        } catch (error) {
-            console.log("lỗi trừ mã giảm giá", error);
-        }
-    };
+    // // Call trừ số lượng mã giảm giá
+    // const handleShippingFee = async (checkedCode: string) => {
+    //     const response = await instance.post("/promotions/use", {
+    //         code: checkedCode,
+    //     });
+    //     try {
+    //     } catch (error) {
+    //         console.log("lỗi trừ mã giảm giá", error);
+    //     }
+    // };
     useEffect(() => {
         const dataCart = JSON.parse(localStorage.getItem("dataCart") || "{}");
 
         if (statuss === "success" && orderStatus === false) {
             const fetchData = async () => {
                 const response = await instance.post("/orders", dataCart);
-                await handleShippingFee(dataCart?.discount_code);
+                // await handleShippingFee(dataCart?.discount_code);
                 setOrderStatus(true);
                 if (response.status === 201) {
                     localStorage.removeItem("dataCart");
