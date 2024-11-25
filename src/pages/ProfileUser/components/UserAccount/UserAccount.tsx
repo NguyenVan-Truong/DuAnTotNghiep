@@ -123,114 +123,77 @@ const UserAccount = () => {
                 </div>
                 <form
                     action=""
-                    className="mt-5 grid grid-cols-1 md:grid-cols-[65%_35%] gap-3"
+                    className="mt-5 grid grid-cols-1 md:grid-cols-[65%_35%] gap-6 bg-gradient-to-r from-beige-100 to-green-100 rounded-xl shadow-lg"
                 >
-                    <div className="space-y-3">
-                        <div className="flex items-center space-x-3">
-                            <Text className="w-1/3" size="lg">
+                    <div className="space-y-6 p-6 bg-gradient-to-r from-beige-100 to-green-100 rounded-xl shadow-lg">
+                        <div className="flex items-center space-x-6">
+                            <Text className="w-1/3 text-lg font-bold text-brown-700">
                                 Email:
                             </Text>
-                            <TextInput
-                                disabled
-                                placeholder="Input component"
-                                className="flex-grow"
-                                value={data.email || "Không có dữ liệu"}
-                            />
+                            <div className="flex-grow text-brown-600 cursor-not-allowed">
+                                {data.email || "Không có dữ liệu"}
+                            </div>
                         </div>
-                        <div className="flex items-center space-x-3">
-                            <Text className="w-1/3" size="lg">
+                        <div className="flex items-center space-x-6">
+                            <Text className="w-1/3 text-lg font-bold text-brown-700">
                                 Tên người dùng:
                             </Text>
-                            <TextInput
-                                disabled
-                                placeholder="Input component"
-                                className="flex-grow"
-                                value={data.full_name || "Không có dữ liệu"}
-                            />
+                            <div className="flex-grow text-brown-600 cursor-not-allowed">
+                                {data.full_name || "Không có dữ liệu"}
+                            </div>
                         </div>
-                        <div className="flex items-center space-x-3">
-                            <Text className="w-1/3" size="lg">
+                        <div className="flex items-center space-x-6">
+                            <Text className="w-1/3 text-lg font-bold text-brown-700">
                                 Số điện thoại:
                             </Text>
-                            <TextInput
-                                disabled
-                                placeholder="Input component"
-                                className="flex-grow"
-                                value={data.phone || "Không có dữ liệu"}
-                            />
+                            <div className="flex-grow text-brown-600 cursor-not-allowed">
+                                {data.phone || "Không có dữ liệu"}
+                            </div>
                         </div>
-
-                        <div className="flex items-center space-x-3">
-                            <Text className="w-1/3" size="lg">
-                                Ngày sinh:
-                            </Text>
-                            <TextInput
-                                disabled
-                                placeholder="Input component"
-                                className="flex-grow"
-                                value={
-                                    data.birthday
-                                        ? formatDateNotTimeZone(data.birthday)
-                                        : "Không có dữ liệu"
-                                }
-                            />
-                        </div>
-                        <div className="flex items-center space-x-3">
-                            <Text className="w-1/3" size="lg">
+                        <div className="flex items-center space-x-6">
+                            <Text className="w-1/3 text-lg font-bold text-brown-700">
                                 Địa chỉ:
                             </Text>
-                            <TextInput
-                                disabled
-                                placeholder="Input component"
-                                className="flex-grow"
-                                value={data.address || "Không có dữ liệu"}
-                            />
+                            <div className="flex-grow text-brown-600 cursor-not-allowed">
+                                {data.address || "Không có dữ liệu"}
+                            </div>
                         </div>
-                        <div className="flex items-center space-x-3">
-                            <Text className="w-1/3" size="lg">
+                        <div className="flex items-center space-x-6">
+                            <Text className="w-1/3 text-lg font-bold text-brown-700">
                                 Tỉnh/Thành phố:
                             </Text>
-                            <TextInput
-                                disabled
-                                placeholder="Input component"
-                                className="flex-grow"
-                                value={data.province || "Không có dữ liệu"}
-                            />
+                            <div className="flex-grow text-brown-600 cursor-not-allowed">
+                                {data.province || "Không có dữ liệu"}
+                            </div>
                         </div>
-                        <div className="flex items-center space-x-3">
-                            <Text className="w-1/3" size="lg">
+                        <div className="flex items-center space-x-6">
+                            <Text className="w-1/3 text-lg font-bold text-brown-700">
                                 Quận/Huyện:
                             </Text>
-                            <TextInput
-                                disabled
-                                placeholder="Input component"
-                                className="flex-grow"
-                                value={data.district || "Không có dữ liệu"}
-                            />
+                            <div className="flex-grow text-brown-600 cursor-not-allowed">
+                                {data.district || "Không có dữ liệu"}
+                            </div>
                         </div>
-                        <div className="flex items-center space-x-3">
-                            <Text className="w-1/3" size="lg">
+                        <div className="flex items-center space-x-6">
+                            <Text className="w-1/3 text-lg font-bold text-brown-700">
                                 Phường/Xã:
                             </Text>
-                            <TextInput
-                                disabled
-                                placeholder="Input component"
-                                className="flex-grow"
-                                value={data.ward || "Không có dữ liệu"}
-                            />
+                            <div className="flex-grow text-brown-600 cursor-not-allowed">
+                                {data.ward || "Không có dữ liệu"}
+                            </div>
                         </div>
                     </div>
-                    <div className="border-l-2 border-slate-300">
-                        <div className="flex justify-center">
+                    <div className=" border-neutral-200 items-center my-auto">
+                        <div className="flex justify-center ">
                             <img
                                 src={data.avatar}
                                 alt="avatar"
-                                className="rounded-full h-44 w-44"
+                                className="rounded-full h-48 w-48 border-4 border-neutral-400 shadow-md"
                             />
                         </div>
-                        <div className="flex justify-center mt-5">
+                        <div className="flex justify-center mt-6">
                             <Button
-                                className="text-white p-2 rounded"
+                                className="bg-brown-600 hover:bg-brown-700 text-white py-2 px-4 rounded-full shadow-lg transition-transform transform hover:scale-105"
                                 onClick={() => handleAdd()}
                             >
                                 Sửa thông tin

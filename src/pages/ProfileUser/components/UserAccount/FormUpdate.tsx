@@ -8,6 +8,7 @@ import ImgCrop from "antd-img-crop";
 import { message, Upload } from "antd";
 import moment from "moment";
 import { useForm } from "@mantine/form";
+import dayjs from "dayjs";
 
 type FormUpdateProps = {
     onSuccess: () => void;
@@ -15,32 +16,39 @@ type FormUpdateProps = {
 };
 
 const FormUpdate = ({ onSuccess, modals }: FormUpdateProps) => {
+    const userProFile = JSON.parse(localStorage.getItem("userProFile") || "{}");
     const [fileList, setFileList] = useState<any[]>([]);
     const [valueCity, setValueCity] = useState([]);
-    const [checkedValueCity, setCheckedValueCity] = useState();
+    const [checkedValueCity, setCheckedValueCity] = useState(
+        userProFile.province_id,
+    );
     // thông tin quận huyện
     const [valueDistrict, setValueDistrict] = useState([]);
-    const [checkedValueDistrict, setCheckedValueDistrict] = useState();
+    const [checkedValueDistrict, setCheckedValueDistrict] = useState(
+        userProFile.district_id,
+    );
     // thông tin phường xã
     const [valueWard, setValueWard] = useState([]);
-    const [checkedValueWard, setCheckedValueWard] = useState();
-
+    const [checkedValueWard, setCheckedValueWard] = useState(
+        userProFile.ward_id,
+    );
     // Form hook từ Mantine
     const form = useForm({
         initialValues: {
             full_name: "",
             phone: "",
             address: "",
-            birthday: null,
-            city: "",
-            district: "",
-            ward: "",
+            // birthday: null as any,
+            city: null,
+            district: null,
+            ward: null,
         },
         validate: {
             full_name: (value) =>
                 value ? null : "Vui lòng nhập tên người dùng",
             phone: (value) => (value ? null : "Vui lòng nhập số điện thoại"),
             address: (value) => (value ? null : "Vui lòng nhập địa chỉ"),
+            // birthday: (value) => (value ? null : "Vui lòng chọn ngày sinh"),
             city: (value) => (!value ? "Thành phố là bắt buộc" : null),
             district: (value) => (!value ? "Quận/Huyện là bắt buộc" : null),
             ward: (value) => (!value ? "Phường/Xã là bắt buộc" : null),
@@ -73,7 +81,7 @@ const FormUpdate = ({ onSuccess, modals }: FormUpdateProps) => {
     const onhandleSelectDistrict = async () => {
         try {
             const response = await instance.get(
-                `/getLocaion?target=district&data[province_id]=${checkedValueCity}`,
+                `/getLocaion?target=district&data[province_id]=${checkedValueCity === null ? form.getValues().city : checkedValueCity}`,
             );
             if (response && response.status === 200) {
                 const parser = new DOMParser();
@@ -101,7 +109,7 @@ const FormUpdate = ({ onSuccess, modals }: FormUpdateProps) => {
     const onhandleSelectWart = async () => {
         try {
             const response = await instance.get(
-                `/getLocaion?target=ward&data[district_id]=${checkedValueDistrict}`,
+                `/getLocaion?target=ward&data[district_id]=${checkedValueDistrict === null ? form.getValues().district : checkedValueDistrict}`,
             );
             if (response && response.status === 200) {
                 const parser = new DOMParser();
@@ -173,9 +181,16 @@ const FormUpdate = ({ onSuccess, modals }: FormUpdateProps) => {
             }
         };
 
-        fetchData();
+        Promise.all([fetchData(), onhandleSelectCity()]);
     }, []);
-
+    useEffect(() => {
+        form.setFieldValue("district", null);
+        form.setFieldValue("ward", null);
+        onhandleSelectDistrict();
+    }, [checkedValueCity]);
+    useEffect(() => {
+        onhandleSelectWart();
+    }, [checkedValueDistrict]);
     const onChange = (info: any) => {
         setFileList(info.fileList);
     };
@@ -201,12 +216,12 @@ const FormUpdate = ({ onSuccess, modals }: FormUpdateProps) => {
             formData.append("full_name", values.full_name);
             formData.append("phone", values.phone);
             formData.append("address", values.address);
-            formData.append(
-                "birthday",
-                values.birthday
-                    ? moment(values.birthday).format("YYYY-MM-DD")
-                    : "",
-            );
+            // formData.append(
+            //     "birthday",
+            //     values.birthday
+            //         ? moment(values.birthday).format("YYYY-MM-DD")
+            //         : "",
+            // );
             formData.append("province_id", checkedValueCity || "");
             formData.append("district_id", checkedValueDistrict || "");
             formData.append("ward_id", checkedValueWard || "");
@@ -269,7 +284,7 @@ const FormUpdate = ({ onSuccess, modals }: FormUpdateProps) => {
             {/* <DateInput
                 label="Ngày sinh"
                 placeholder="Chọn ngày sinh"
-                valueFormat="DD-MM-YYYY"
+                // valueFormat="DD-MM-YYYY"
                 {...form.getInputProps("birthday")}
                 style={{ width: "100%" }}
             /> */}
@@ -283,11 +298,12 @@ const FormUpdate = ({ onSuccess, modals }: FormUpdateProps) => {
                         className="w-[90%]"
                         searchable
                         {...form.getInputProps("city")}
-                        onClick={() => {
-                            if (valueCity.length === 0) {
-                                onhandleSelectCity();
-                            }
-                        }}
+                        // onClick={() => {
+                        //     if (valueCity.length === 0) {
+                        //         onhandleSelectCity();
+                        //     }
+                        // }}
+                        value={form.getValues().city ?? null}
                         onChange={(value: any) => {
                             form.setFieldValue("city", value);
                             setCheckedValueCity(value);
@@ -301,16 +317,17 @@ const FormUpdate = ({ onSuccess, modals }: FormUpdateProps) => {
                         className="w-[90%]"
                         searchable
                         {...form.getInputProps("district")}
-                        onClick={() => {
-                            if (valueCity.length === 0 || !checkedValueCity) {
-                                return message.error(
-                                    "Vui lòng chọn tỉnh/thành phố trước",
-                                );
-                            }
-                            if (valueDistrict.length === 0) {
-                                onhandleSelectDistrict();
-                            }
-                        }}
+                        // onClick={() => {
+                        //     if (valueCity.length === 0 || !checkedValueCity) {
+                        //         return message.error(
+                        //             "Vui lòng chọn tỉnh/thành phố trước",
+                        //         );
+                        //     }
+                        //     if (valueDistrict.length === 0) {
+                        //         onhandleSelectDistrict();
+                        //     }
+                        // }}
+                        value={form.getValues().district ?? null}
                         onChange={(value: any) => {
                             form.setFieldValue("district", value);
                             setCheckedValueDistrict(value);
@@ -324,19 +341,20 @@ const FormUpdate = ({ onSuccess, modals }: FormUpdateProps) => {
                         searchable
                         {...form.getInputProps("ward")}
                         className="w-[90%]"
-                        onClick={() => {
-                            if (
-                                valueDistrict.length === 0 ||
-                                !checkedValueDistrict
-                            ) {
-                                return message.error(
-                                    "Vui lòng chọn quận huyện trước",
-                                );
-                            }
-                            if (valueWard.length === 0) {
-                                onhandleSelectWart();
-                            }
-                        }}
+                        // onClick={() => {
+                        //     if (
+                        //         valueDistrict.length === 0 ||
+                        //         !checkedValueDistrict
+                        //     ) {
+                        //         return message.error(
+                        //             "Vui lòng chọn quận huyện trước",
+                        //         );
+                        //     }
+                        //     if (valueWard.length === 0) {
+                        //         onhandleSelectWart();
+                        //     }
+                        // }}
+                        value={form.getValues().ward ?? null}
                         onChange={(value: any) => {
                             form.setFieldValue("ward", value);
                             setCheckedValueWard(value);
