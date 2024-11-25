@@ -11,12 +11,15 @@ import {
     Grid,
     Text,
 } from "@mantine/core";
+import {
+    Pagination as AntdPagination,
+} from "antd"; 
 import { useForm } from "@mantine/form";
 import { IconFilter } from "@tabler/icons-react";
 import BannerProduct from "./BannerProduct/BannerProduct";
 import { TextInput } from "@mantine/core";
-import { useLocation, useSearchParams } from "react-router-dom";
-import { values } from "lodash";
+import { useLocation } from "react-router-dom";
+//import { values } from "lodash";
 
 const ProductCategory = () => {
     const location = useLocation();
@@ -29,11 +32,13 @@ const ProductCategory = () => {
     );
     const [pagination, setPagination] = useState({
         pageIndex: 0,
-        pageSize: 10,
+        pageSize: 3,
+        totalItems: 0,
     });
-    const [searchParams] = useSearchParams();
-    const categoryIdFromParams = searchParams.get("category_id");
-    const keysearch = searchParams.get("keysearch");
+    const [totalPages, setTotalPages] = useState<number>(1);
+    //const [searchParams] = useSearchParams();
+    //const categoryIdFromParams = searchParams.get("category_id");
+    //const keysearch = searchParams.get("keysearch");
 
     const mapAttributeNameToField = (name: string) => {
         const mappings: Record<string, string> = {
@@ -69,13 +74,13 @@ const ProductCategory = () => {
     });
     const fetchdata = async () => {
         console.log("Values :", form.values);
-        const params = Object.fromEntries(searchParams.entries());
-        let url = `?page=${pagination.pageIndex}`;
+        //const params = Object.fromEntries(searchParams.entries());
+        let url = `?page=${pagination.pageIndex + 1}`;
 
         if (form.values.category) {
             url += `&category_id=${form.values.category}`;
-        } else if (location?.state.id) {
-            url += `&category_id=${location?.state.id}`;
+        } else if (location?.state?.id) {
+            url += `&category_id=${location?.state?.id}`;
         }
         if (form.values.attribute) {
             url += `&attribute_value_ids=${form.values.attribute}`;
@@ -86,12 +91,18 @@ const ProductCategory = () => {
         if (form.values.maxPrice) {
             url += `&max_price=${form.values.maxPrice}`;
         }
-        if (keysearch) {
-            url += `&keysearch=${keysearch}`;
-        }
         try {
             const response = await instance.get(`/products/list${url}`);
             setData(response.data.data);
+            // Cập nhật số lượng sản phẩm
+            const totalItems = response.data.totalItems;
+            // Tính lại tổng số trang
+            const newTotalPages = Math.ceil(totalItems / pagination.pageSize);
+            setPagination((prev) => ({
+                ...prev,
+                totalItems: response.data.totalItems,
+            }));
+            setTotalPages(newTotalPages);
         } catch (error) {
             console.log("API Error:", error);
         }
@@ -248,7 +259,7 @@ const ProductCategory = () => {
     useEffect(() => {
         fetchCategory();
         fetchAttributes();
-        if (location.state.id) {
+        if (location?.state?.id) {
             console.log("chayj vaof ddaay");
             handleCategoryChange(location.state.id,true)
             // handleAttributeChange("fsfse",location?.state?.id,true)
@@ -256,10 +267,15 @@ const ProductCategory = () => {
             fetchdata();
         }
     }, []);
-
+    const handlePageChange = (page: number) => {
+        setPagination((prev) => ({
+            ...prev,
+            pageIndex: page - 1,
+        }));
+    };
     useEffect(() => {
         fetchdata();
-    }, [pagination.pageIndex, keysearch]);
+    }, [pagination.pageIndex]);
 
     // useEffect(() => {
     //     if (categoryIdFromParams) {
@@ -329,6 +345,23 @@ const ProductCategory = () => {
                                 ))}
                             </Grid>
                         </div>
+                        {/* Component phân trang */}
+                        <Box
+                            style={{
+                                display: "flex",
+                                justifyContent: "flex-end", // Căn phải
+                                marginTop: "20px", // Khoảng cách với các sản phẩm phía trên
+                            }}
+                        >
+                            <AntdPagination
+                                current={pagination.pageIndex + 1}  // Đảm bảo giá trị bắt đầu từ 1
+                                pageSize={pagination.pageSize}  // Số lượng sản phẩm trên mỗi trang
+                                total={pagination.totalItems}  // Tổng số sản phẩm
+                                onChange={handlePageChange}  // Cập nhật trang khi người dùng chọn
+                                showSizeChanger={false}  // Không hiển thị chọn số lượng sản phẩm mỗi trang
+                                disabled={pagination.pageIndex >= totalPages - 1}  // Disable nút "next" nếu là trang cuối
+                            />
+                        </Box>
                     </Box>
                 </div>
             </div>
