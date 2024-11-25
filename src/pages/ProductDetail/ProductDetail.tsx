@@ -13,6 +13,7 @@ import { IconHome } from "@tabler/icons-react";
 
 const ProductDetail = () => {
     const location = useLocation();
+    console.log("location", location.state);
     const [data, setData] = useState<TypeProductDetail>();
     const [dataComment, setDataComment] = useState<{}>();
     const [valueRating, setValueRating] = useState(0);
