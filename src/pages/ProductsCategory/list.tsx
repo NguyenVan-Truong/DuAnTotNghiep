@@ -19,6 +19,7 @@ import { IconFilter } from "@tabler/icons-react";
 import BannerProduct from "./BannerProduct/BannerProduct";
 import { TextInput } from "@mantine/core";
 import { useLocation } from "react-router-dom";
+import { ArrowLeftOutlined, ArrowRightOutlined } from "@ant-design/icons";
 //import { values } from "lodash";
 
 const ProductCategory = () => {
@@ -32,7 +33,7 @@ const ProductCategory = () => {
     );
     const [pagination, setPagination] = useState({
         pageIndex: 0,
-        pageSize: 3,
+        pageSize: 6,
         totalItems: 0,
     });
     const [totalPages, setTotalPages] = useState<number>(1);
@@ -75,7 +76,7 @@ const ProductCategory = () => {
     const fetchdata = async () => {
         console.log("Values :", form.values);
         //const params = Object.fromEntries(searchParams.entries());
-        let url = `?page=${pagination.pageIndex + 1}`;
+        let url = `?page=${pagination.pageIndex + 1}&pageSize=${pagination.pageSize}`;
 
         if (form.values.category) {
             url += `&category_id=${form.values.category}`;
@@ -93,21 +94,22 @@ const ProductCategory = () => {
         }
         try {
             const response = await instance.get(`/products/list${url}`);
+            //console.log("Data Response", response.data);
             setData(response.data.data);
-            // Cập nhật số lượng sản phẩm
-            const totalItems = response.data.totalItems;
-            // Tính lại tổng số trang
+            const totalItems = response.data.total;
             const newTotalPages = Math.ceil(totalItems / pagination.pageSize);
             setPagination((prev) => ({
                 ...prev,
-                totalItems: response.data.totalItems,
+                totalItems,
             }));
             setTotalPages(newTotalPages);
         } catch (error) {
             console.log("API Error:", error);
         }
+        console.log(`/products/list${url}`);
     };
-
+    // console.log("Total Items:", pagination.totalItems);
+    // console.log("Total Pages:", totalPages);
     const fetchCategory = async () => {
         try {
             const response = await instance.get(`/product-catalogues`);
@@ -268,14 +270,16 @@ const ProductCategory = () => {
         }
     }, []);
     const handlePageChange = (page: number) => {
-        setPagination((prev) => ({
-            ...prev,
-            pageIndex: page - 1,
-        }));
+        if (page >= 1 && page <= totalPages) {
+            setPagination((prev) => ({
+                ...prev,
+                pageIndex: page - 1,
+            }));
+        }
     };
     useEffect(() => {
         fetchdata();
-    }, [pagination.pageIndex]);
+    }, [pagination.pageIndex, pagination.pageSize]);
 
     // useEffect(() => {
     //     if (categoryIdFromParams) {
@@ -349,17 +353,20 @@ const ProductCategory = () => {
                         <Box
                             style={{
                                 display: "flex",
-                                justifyContent: "flex-end", // Căn phải
-                                marginTop: "20px", // Khoảng cách với các sản phẩm phía trên
+                                justifyContent: "flex-end",
+                                marginTop: "20px",
+                                marginBottom: "20px",
                             }}
                         >
                             <AntdPagination
-                                current={pagination.pageIndex + 1}  // Đảm bảo giá trị bắt đầu từ 1
-                                pageSize={pagination.pageSize}  // Số lượng sản phẩm trên mỗi trang
-                                total={pagination.totalItems}  // Tổng số sản phẩm
-                                onChange={handlePageChange}  // Cập nhật trang khi người dùng chọn
-                                showSizeChanger={false}  // Không hiển thị chọn số lượng sản phẩm mỗi trang
-                                disabled={pagination.pageIndex >= totalPages - 1}  // Disable nút "next" nếu là trang cuối
+                                current={pagination.pageIndex + 1}
+                                pageSize={pagination.pageSize}
+                                total={pagination.totalItems}
+                                onChange={handlePageChange}
+                                showSizeChanger={false}
+                                prevIcon={<ArrowLeftOutlined />}  // Thêm icon nếu cần
+                                nextIcon={<ArrowRightOutlined />} // Thêm icon nếu cần
+                                //disabled={pagination.pageIndex <= 0 || pagination.pageIndex >= totalPages - 1}  // Disable nếu là trang đầu hoặc trang cuối
                             />
                         </Box>
                     </Box>
