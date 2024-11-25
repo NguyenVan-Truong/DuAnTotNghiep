@@ -9,7 +9,7 @@ import {
     IconUserCircle,
 } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
-import { Button, Dropdown, message, Modal } from "antd";
+import { Button, message, Modal } from "antd";
 import { useEffect, useState } from "react";
 import { FiPhone } from "react-icons/fi";
 import { Link, NavLink, useNavigate } from "react-router-dom";
@@ -18,8 +18,9 @@ import Favorite from "./components/FavoriteCollection";
 import IconMenu from "./components/Menu";
 import CartIcon from "./components/MiniCart";
 import "./Header.scss";
-import { Category } from "@/model/Category";
+//import { Category } from "@/model/Category";
 import MenuHeader from "./components/MenuHeader";
+import SearchBox from "./components/Search";
 
 const Header = () => {
     const [visible, setVisible] = useState(false);
@@ -367,7 +368,7 @@ const Header = () => {
                     </div>
 
                     <div className="!mr-3 md:mr-0">
-                        <Input
+                        {/* <Input
                             type="text"
                             variant="filled"
                             radius="xl"
@@ -376,7 +377,8 @@ const Header = () => {
                             onChange={(e) => setKeysearch(e.target.value)} 
                             onKeyDown={handleKeyDown}                         
                             rightSection={<SearchOutlined onClick={handleSearch}/>}
-                        />
+                        /> */}
+                        <SearchBox />
                     </div>
                 </div>
             </header>

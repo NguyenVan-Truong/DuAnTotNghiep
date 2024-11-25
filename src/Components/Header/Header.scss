@@ -29,3 +29,12 @@
 .custom-scrollbar::-webkit-scrollbar {
     display: none;
 }
+.suggestions-container {
+    scrollbar-width: none; /* Ẩn thanh cuộn trên Firefox */
+    -ms-overflow-style: none; /* Ẩn thanh cuộn trên IE/Edge */
+
+    /* Dành cho Chrome, Edge, Safari */
+    &::-webkit-scrollbar {
+        display: none; /* Ẩn thanh cuộn */
+    }
+}
