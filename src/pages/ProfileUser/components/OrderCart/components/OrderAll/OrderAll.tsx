@@ -207,7 +207,10 @@ const OrderAll = () => {
                             variant="light"
                             size="md"
                             aria-label="Settings"
-                            disabled={row.original.status !== "Chờ xử lý"}
+                            disabled={
+                                row.original.status !== "Chờ xử lý" ||
+                                row.original.payment_status === "Đã thanh toán"
+                            }
                         >
                             <IconX size={20} />
                         </ActionIcon>

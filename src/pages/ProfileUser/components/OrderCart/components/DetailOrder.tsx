@@ -32,9 +32,13 @@ const OrderDetail = ({ data }: OrderDetailProps) => {
             <tr key={item.id} className="border-b border-gray-200">
                 <td
                     className="px-4 py-2 text-left cursor-pointer"
-                    onClick={() =>
-                        onhandleTurnPage(item?.product_id, item?.slug)
-                    }
+                    onClick={() => {
+                        if (!item?.product_id || !item?.slug) {
+                            message.error("Sản phẩm đã ngừng bán");
+                        } else {
+                            onhandleTurnPage(item.product_id, item.slug);
+                        }
+                    }}
                 >
                     <Box className="w-44">
                         <Text className="truncate">{item.product_name}</Text>
@@ -42,7 +46,7 @@ const OrderDetail = ({ data }: OrderDetailProps) => {
                 </td>
                 <td>
                     <Image
-                        src={item.image_url}
+                        src={item.image}
                         alt={item.product_name}
                         width={80}
                     />

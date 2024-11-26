@@ -306,7 +306,7 @@ const CheckoutPage = () => {
             if (response.status === 200) {
                 return response.data;
             }
-            console.warn("Unexpected response:", response);
+            // console.warn("Unexpected response:", response);
             return [];
         } catch (error) {
             console.error("Error fetching shipping fee", error);

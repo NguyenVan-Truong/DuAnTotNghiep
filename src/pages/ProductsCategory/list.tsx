@@ -15,8 +15,12 @@ import { useForm } from "@mantine/form";
 import { IconFilter } from "@tabler/icons-react";
 import BannerProduct from "./BannerProduct/BannerProduct";
 import { TextInput } from "@mantine/core";
+import { useLocation, useSearchParams } from "react-router-dom";
+import { values } from "lodash";
 
 const ProductCategory = () => {
+    const location = useLocation();
+    // console.log("location", location);
     const [data, setData] = useState<any>([]);
     const [dataCategory, setCategory] = useState<any>([]);
     const [attributes, setAttributes] = useState<any>([]);
@@ -27,6 +31,9 @@ const ProductCategory = () => {
         pageIndex: 0,
         pageSize: 10,
     });
+    const [searchParams] = useSearchParams();
+    const categoryIdFromParams = searchParams.get("category_id");
+    const keysearch = searchParams.get("keysearch");
 
     const mapAttributeNameToField = (name: string) => {
         const mappings: Record<string, string> = {
@@ -60,12 +67,15 @@ const ProductCategory = () => {
             },
         },
     });
-
     const fetchdata = async () => {
+        // console.log("Values :", form.values);
+        const params = Object.fromEntries(searchParams.entries());
         let url = `?page=${pagination.pageIndex}`;
 
         if (form.values.category) {
             url += `&category_id=${form.values.category}`;
+        } else if (location?.state.id) {
+            url += `&category_id=${location?.state.id}`;
         }
         if (form.values.attribute) {
             url += `&attribute_value_ids=${form.values.attribute}`;
@@ -75,6 +85,9 @@ const ProductCategory = () => {
         }
         if (form.values.maxPrice) {
             url += `&max_price=${form.values.maxPrice}`;
+        }
+        if (keysearch) {
+            url += `&keysearch=${keysearch}`;
         }
         try {
             const response = await instance.get(`/products/list${url}`);
@@ -109,15 +122,6 @@ const ProductCategory = () => {
             console.log(error);
         }
     };
-
-    useEffect(() => {
-        fetchCategory();
-        fetchAttributes();
-    }, []);
-
-    useEffect(() => {
-        fetchdata();
-    }, [pagination.pageIndex]);
 
     const handleCategoryChange = (categoryId: number, isChecked: boolean) => {
         const updatedCheckedCategories = new Set(checkedCategories);
@@ -191,6 +195,7 @@ const ProductCategory = () => {
         valueId: number,
         isChecked: boolean,
     ) => {
+        // console.log("valueId", valueId);
         const fieldName: keyof typeof form.values = "attribute";
         const currentValues = form.values[fieldName] || "";
         //const currentValues = form.values[attributeName as keyof typeof form.values] || "";
@@ -210,6 +215,7 @@ const ProductCategory = () => {
         //     console.log("Form values after attribute change:", form.values);
         // }, 0);
     };
+
     const renderAttributes = () => {
         return attributes.map((attribute: any) => (
             <div key={attribute.id}>
@@ -238,6 +244,29 @@ const ProductCategory = () => {
             </div>
         ));
     };
+    // console.log("form", form.getValues());
+    useEffect(() => {
+        fetchCategory();
+        fetchAttributes();
+        if (location.state.id) {
+            // console.log("chayj vaof ddaay");
+            handleCategoryChange(location.state.id, true);
+            // handleAttributeChange("fsfse",location?.state?.id,true)
+            form.setFieldValue("category", location?.state.id);
+            fetchdata();
+        }
+    }, []);
+
+    useEffect(() => {
+        fetchdata();
+    }, [pagination.pageIndex, keysearch]);
+
+    // useEffect(() => {
+    //     if (categoryIdFromParams) {
+    //         form.setFieldValue("category", categoryIdFromParams);
+    //         fetchdata();
+    //     }
+    // }, [categoryIdFromParams]);
 
     return (
         <>

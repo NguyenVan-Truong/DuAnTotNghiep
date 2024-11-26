@@ -3,7 +3,7 @@ import {
     HeartOutlined,
     ShoppingCartOutlined,
 } from "@ant-design/icons";
-import { Badge, Drawer } from "antd";
+import { Badge, Drawer, message } from "antd";
 import { useState } from "react";
 import { sanpham1 } from "@/assets/img";
 import instance from "@/configs/axios";
@@ -93,10 +93,9 @@ const Favorite = ({ data }: any) => {
         );
         try {
             const response = await removeFavorite(productId);
-
-            console.log("Xóa thành công sản phẩm yêu thích", response);
+            message.success("Xóa thành công sản phẩm yêu thích", response);
         } catch (error) {
-            console.error("Có lỗi khi xóa sản phẩm yêu thích", error);
+            message.error("Có lỗi khi xóa sản phẩm yêu thích");
 
             // Hoàn tác lại thay đổi trong cache nếu có lỗi từ API
             queryClient.setQueryData(
