@@ -172,14 +172,14 @@ const RightProduct = ({ data, id }: Props) => {
             return; // Dừng lại nếu thiếu thuộc tính
         }
 
-        // Kiểm tra nếu filteredVariant không có giá trị hợp lệ
-        if (!filteredVariant) {
-            message.error("Không tìm thấy biến thể sản phẩm phù hợp.");
-            return; // Dừng lại nếu không tìm thấy variant
-        }
+        // // Kiểm tra nếu filteredVariant không có giá trị hợp lệ
+        // if (!filteredVariant) {
+        //     message.error("Không tìm thấy biến thể sản phẩm phù hợp.");
+        //     return; // Dừng lại nếu không tìm thấy variant
+        // }
         const dataAddToCart = {
             product_id: id,
-            product_variant_id: filteredVariant?.id,
+            product_variant_id: filteredVariant?.id ?? null,
             quantity: quantity,
         };
 
@@ -210,17 +210,24 @@ const RightProduct = ({ data, id }: Props) => {
                         );
                     });
                     let TotalPrice = 0;
-                    if (
-                        addedProduct?.product_variant.discount_price !== "0.00"
-                    ) {
+                    if (addedProduct.product_variant == null) {
                         TotalPrice =
-                            Number(
-                                addedProduct.product_variant.discount_price,
-                            ) * Number(addedProduct.quantity);
-                    } else {
-                        TotalPrice =
-                            Number(addedProduct.product_variant.price) *
+                            Number(addedProduct.price) *
                             Number(addedProduct.quantity);
+                    } else {
+                        if (
+                            addedProduct?.product_variant.discount_price !==
+                            "0.00"
+                        ) {
+                            TotalPrice =
+                                Number(
+                                    addedProduct.product_variant.discount_price,
+                                ) * Number(addedProduct.quantity);
+                        } else {
+                            TotalPrice =
+                                Number(addedProduct.product_variant.price) *
+                                Number(addedProduct.quantity);
+                        }
                     }
                     if (addedProduct && TotalPrice) {
                         navigate("/thanh-toan", {

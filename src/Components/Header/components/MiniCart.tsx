@@ -72,9 +72,13 @@ const IconCart = () => {
                 (acc: any, item: CartItem) => {
                     acc.totalQuantity += item.quantity;
                     acc.totalPrice +=
-                        (Number(item.product_variant.discount_price) ||
-                            Number(item.product_variant.price)) *
-                        Number(item.quantity);
+                        Number(
+                            item.product_variant
+                                ? item.product_variant.discount_price !== "0.00"
+                                    ? item.product_variant.discount_price
+                                    : item.product_variant.price
+                                : item.price,
+                        ) * Number(item.quantity);
 
                     return acc;
                 },
@@ -154,12 +158,14 @@ const IconCart = () => {
                                                     fontWeight: "400",
                                                 }}
                                             >
-                                                {product.product_variant.attribute_values
-                                                    .map(
-                                                        (item: any) =>
-                                                            item.name,
-                                                    )
-                                                    .join(", ")}
+                                                {product.product_variant
+                                                    ? product.product_variant.attribute_values
+                                                          .map(
+                                                              (item: any) =>
+                                                                  item.name,
+                                                          )
+                                                          .join(", ")
+                                                    : ""}
                                             </p>
                                         </div>
                                         <Flex
@@ -174,14 +180,17 @@ const IconCart = () => {
                                             >
                                                 {formatCurrencyVN(
                                                     product.product_variant
-                                                        .discount_price !==
-                                                        "0.00"
                                                         ? product
                                                               .product_variant
-                                                              .discount_price
-                                                        : product
-                                                              .product_variant
-                                                              .price,
+                                                              .discount_price !==
+                                                          "0.00"
+                                                            ? product
+                                                                  .product_variant
+                                                                  .discount_price
+                                                            : product
+                                                                  .product_variant
+                                                                  .price
+                                                        : product.price,
                                                 )}{" "}
                                                 x {product.quantity}
                                             </p>
