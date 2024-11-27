@@ -129,7 +129,14 @@ const CheckoutPage = () => {
                       ? null
                       : "Email phải đúng định dạng",
             name: (value) => (!value ? "Tên là bắt buộc" : null),
-            sđt: (value) => (!value ? "Số điện thoại là bắt buộc" : null),
+            sđt: (value) => {
+                if (!value) {
+                    return "Số điện thoại là bắt buộc";
+                } else if (!/^\d{10}$/.test(value)) {
+                    return "Số điện thoại phải có đúng 10 chữ số";
+                }
+                return null;
+            },
             city: (value) => (!value ? "Thành phố là bắt buộc" : null),
             district: (value) => (!value ? "Quận/Huyện là bắt buộc" : null),
             ward: (value) => (!value ? "Phường/Xã là bắt buộc" : null),
@@ -350,6 +357,8 @@ const CheckoutPage = () => {
             });
             if (response && response.status === 200) {
                 window.location.href = response.data.payment_url;
+            } else {
+                localStorage.removeItem("dataCart");
             }
         } catch (error) {
             console.error(error);

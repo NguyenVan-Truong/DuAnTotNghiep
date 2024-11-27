@@ -95,21 +95,21 @@ const ItemProduct = ({ product }: props) => {
                     className={style.listProductsPricing}
                 >
                     <p className={`${style.listProductsPriceCurrent} `}>
-                        {Math.floor(product?.price).toLocaleString("vi-VN", {
-                            style: "currency",
-                            currency: "VND",
-                        })}
-                    </p>
-                    <p
-                        className={`${style.listProductsPriceOriginal} line-through`}
-                    >
-                        {Math.floor(product?.discount_price).toLocaleString(
+                        {Math.round(product?.discount_price).toLocaleString(
                             "vi-VN",
                             {
                                 style: "currency",
                                 currency: "VND",
                             },
                         )}
+                    </p>
+                    <p
+                        className={`${style.listProductsPriceOriginal} line-through`}
+                    >
+                        {Math.round(product?.price).toLocaleString("vi-VN", {
+                            style: "currency",
+                            currency: "VND",
+                        })}
                     </p>
                 </Flex>
                 <Flex direction="row" justify="space-between">
@@ -166,7 +166,7 @@ const ItemProduct = ({ product }: props) => {
                     >
                         <div className={style.discountText}>
                             <span>
-                                {Math.floor(product?.discount_percentage)}%
+                                {Math.round(product?.discount_percentage)}%
                             </span>
                         </div>
                     </div>
