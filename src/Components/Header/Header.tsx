@@ -9,7 +9,7 @@ import {
     IconUserCircle,
 } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
-import { Button, Dropdown, message, Modal } from "antd";
+import { Button, message, Modal } from "antd";
 import { useEffect, useState } from "react";
 import { FiPhone } from "react-icons/fi";
 import { Link, NavLink, useNavigate } from "react-router-dom";
@@ -18,12 +18,15 @@ import Favorite from "./components/FavoriteCollection";
 import IconMenu from "./components/Menu";
 import CartIcon from "./components/MiniCart";
 import "./Header.scss";
-import { Category } from "@/model/Category";
+//import { Category } from "@/model/Category";
 import MenuHeader from "./components/MenuHeader";
+import SearchBox from "./components/Search";
 
 const Header = () => {
     const [visible, setVisible] = useState(false);
     const [dropdownVisible, setDropdownVisible] = useState(false);
+    const [keysearch, setKeysearch] = useState("");
+
     const handleOverlayClick = () => {
         setVisible(false);
         setDropdownVisible(false);
@@ -60,6 +63,7 @@ const Header = () => {
                 localStorage.removeItem("user");
                 localStorage.removeItem("token");
                 localStorage.removeItem("userProFile");
+                localStorage.removeItem("dataCart");
                 navigate("/xac-thuc/dang-nhap");
                 message.success("Đăng xuất thành công");
             },
@@ -79,6 +83,18 @@ const Header = () => {
         staleTime: 0,
         enabled: true,
     });
+
+    const handleSearch = () => {
+        if (keysearch.trim()) {
+            navigate(`/san-pham?keysearch=${encodeURIComponent(keysearch)}`);
+        }
+    };
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === "Enter") {
+            handleSearch();
+        }
+    };
+
     return (
         <>
             {/* Header1 */}
@@ -353,13 +369,17 @@ const Header = () => {
                     </div>
 
                     <div className="!mr-3 md:mr-0">
-                        <Input
+                        {/* <Input
                             type="text"
                             variant="filled"
                             radius="xl"
-                            placeholder="Tìm kiếm..."
-                            rightSection={<SearchOutlined />}
-                        />
+                            placeholder="Tìm kiếm..."  
+                            value={keysearch}
+                            onChange={(e) => setKeysearch(e.target.value)} 
+                            onKeyDown={handleKeyDown}                         
+                            rightSection={<SearchOutlined onClick={handleSearch}/>}
+                        /> */}
+                        <SearchBox />
                     </div>
                 </div>
             </header>

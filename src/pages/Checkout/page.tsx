@@ -10,17 +10,15 @@ import {
     Select,
     Textarea,
     TextInput,
-    Title,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { modals } from "@mantine/modals";
 import { IconBuildingBank, IconCashBanknote } from "@tabler/icons-react";
+import { useQueryClient } from "@tanstack/react-query";
 import { message } from "antd";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import DescriptionShipping from "./DescriptionShipping";
 import styles from "./checkoutPage.module.scss"; // Import CSS module
-import { useQueryClient } from "@tanstack/react-query";
 
 type UserInfo = {
     id: number;
@@ -59,27 +57,36 @@ export interface Promotion {
     updated_at: string; // Thời gian cập nhật (ISO format)
     deleted_at: string | null; // Thời gian xóa, có thể null
 }
+export interface SelectOption {
+    value: string | number; // Hoặc có thể là number nếu cần
+    label: string;
+}
 
 const CheckoutPage = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const queryClient = useQueryClient();
-
+    const userProFile = JSON.parse(localStorage.getItem("userProFile") || "{}");
     if (!location.state) {
         return <Navigate to="/san-pham" replace />;
     }
-
     //Sản phẩm order
     const [orderItems, setOrderItems] = useState<[]>([]);
     // thông tin tỉnh thành phố
     const [valueCity, setValueCity] = useState([]);
-    const [checkedValueCity, setCheckedValueCity] = useState();
+    const [checkedValueCity, setCheckedValueCity] = useState(
+        userProFile.province_id,
+    );
     // thông tin quận huyện
     const [valueDistrict, setValueDistrict] = useState([]);
-    const [checkedValueDistrict, setCheckedValueDistrict] = useState();
+    const [checkedValueDistrict, setCheckedValueDistrict] = useState(
+        userProFile.district_id,
+    );
     // thông tin phường xã
     const [valueWard, setValueWard] = useState([]);
-    const [checkedValueWard, setCheckedValueWard] = useState();
+    const [checkedValueWard, setCheckedValueWard] = useState(
+        userProFile.ward_id,
+    );
     // Phương thức thanh toán
     const [selectedPaymentMethod, setSelectedPaymentMethod] =
         useState<Number>(3);
@@ -100,6 +107,7 @@ const CheckoutPage = () => {
     const [checked, setChecked] = useState(false);
     // ID cart
     const [idCart, setIdCart] = useState<string>("");
+
     const form = useForm({
         mode: "uncontrolled",
         initialValues: {
@@ -121,14 +129,21 @@ const CheckoutPage = () => {
                       ? null
                       : "Email phải đúng định dạng",
             name: (value) => (!value ? "Tên là bắt buộc" : null),
-            sđt: (value) => (!value ? "Số điện thoại là bắt buộc" : null),
+            sđt: (value) => {
+                if (!value) {
+                    return "Số điện thoại là bắt buộc";
+                } else if (!/^\d{10}$/.test(value)) {
+                    return "Số điện thoại phải có đúng 10 chữ số";
+                }
+                return null;
+            },
             city: (value) => (!value ? "Thành phố là bắt buộc" : null),
             district: (value) => (!value ? "Quận/Huyện là bắt buộc" : null),
             ward: (value) => (!value ? "Phường/Xã là bắt buộc" : null),
             address: (value) => (!value ? "Địa chỉ là bắt buộc" : null),
         },
     });
-    // CHọn tỉnh
+    // CHọn thành phố
     const onhandleSelectCity = async () => {
         try {
             const response = await instance.get("/getAllProvinces");
@@ -150,7 +165,7 @@ const CheckoutPage = () => {
     const onhandleSelectDistrict = async () => {
         try {
             const response = await instance.get(
-                `/getLocaion?target=district&data[province_id]=${checkedValueCity}`,
+                `/getLocaion?target=district&data[province_id]=${checkedValueCity === null ? form.getValues().city : checkedValueCity}`,
             );
             if (response && response.status === 200) {
                 const parser = new DOMParser();
@@ -172,11 +187,12 @@ const CheckoutPage = () => {
             message.error("Lỗi không thể lấy dữ liệu");
         }
     };
+
     // Chọn phường xã
     const onhandleSelectWart = async () => {
         try {
             const response = await instance.get(
-                `/getLocaion?target=ward&data[district_id]=${checkedValueDistrict}`,
+                `/getLocaion?target=ward&data[district_id]=${checkedValueDistrict === null ? form.getValues().district : checkedValueDistrict}`,
             );
             if (response && response.status === 200) {
                 const parser = new DOMParser();
@@ -198,9 +214,23 @@ const CheckoutPage = () => {
             message.error("Lỗi không thể lấy dữ liệu");
         }
     };
+
     //#region callorder
     // Xử lý submit form
     const onhandleSubmit = async (values: any) => {
+        const nameCity = (valueCity.find(
+            (item: any) => item.value === checkedValueCity,
+        ) || { value: "", label: "" }) as SelectOption;
+        const nameDistrict =
+            valueDistrict.find(
+                (item: any) => item.value === checkedValueDistrict,
+            ) || ({ value: "", label: "" } as SelectOption);
+        const nameWard =
+            valueWard.find((item: any) => item.value === checkedValueWard) ||
+            ({ value: "", label: "" } as SelectOption);
+
+        const fullAddress = `${values.address}, ${nameWard.label}, ${nameDistrict.label}, ${nameCity.label}`;
+
         const dataSubmit = {
             customer_id: inforUser?.id,
             customer_name: values?.name,
@@ -212,7 +242,7 @@ const CheckoutPage = () => {
             status: 1,
             payment_method_id: selectedPaymentMethod, //phương thức thanh toán
             payment_status: 1, //thanh toán off trạng thái là 1
-            shipping_address: values.address || "",
+            shipping_address: fullAddress,
             discount_code: checkedPromotions?.code, //chưa ai làm
             email: values.email,
             phone_number: values.sđt,
@@ -231,83 +261,11 @@ const CheckoutPage = () => {
                 try {
                     const response = await instance.post("/orders", dataSubmit);
                     if (response && response.status === 201) {
-                        // modals.openConfirmModal({
-                        //     title: (
-                        //         <Title
-                        //             order={4}
-                        //             style={{
-                        //                 marginLeft: "6px",
-                        //             }}
-                        //         >
-                        //             Cảm ơn bạn đã đặt hàng tại Morden Home
-                        //         </Title>
-                        //     ),
-                        //     size: "400px",
-                        //     centered: true, // Căn giữa modal
-                        //     withCloseButton: false, // Ẩn nút "x"
-                        //     closeOnClickOutside: false, // Không đóng khi click ra ngoài
-                        //     children: (
-                        //         <>
-                        //             <div style={{ textAlign: "center" }}>
-                        //                 {" "}
-                        //                 {/* Căn giữa nội dung */}
-                        //                 <p>Đơn hàng đã đặt thành công</p>
-                        //             </div>
-                        //             <Flex
-                        //                 direction={"row"}
-                        //                 justify={"space-evenly"}
-                        //                 style={{
-                        //                     marginTop: "20px",
-                        //                 }}
-                        //             >
-                        //                 <Button
-                        //                     style={{
-                        //                         minWidth: "150px",
-                        //                     }}
-                        //                     variant="light"
-                        //                     onClick={() => {
-                        //                         modals.closeAll();
-                        //                         navigate(
-                        //                             "/nguoi-dung/don-hang",
-                        //                             {
-                        //                                 replace: true,
-                        //                             },
-                        //                         );
-                        //                     }}
-                        //                 >
-                        //                     Xem đơn hàng
-                        //                 </Button>
-                        //                 <Button
-                        //                     onClick={() => {
-                        //                         modals.closeAll();
-                        //                         navigate("/san-pham", {
-                        //                             replace: true,
-                        //                         });
-                        //                     }}
-                        //                     style={{
-                        //                         minWidth: "150px",
-                        //                     }}
-                        //                     variant="filled"
-                        //                 >
-                        //                     Tiếp tục mua hàng{" "}
-                        //                 </Button>
-                        //             </Flex>
-                        //         </>
-                        //     ),
-                        //     confirmProps: { display: "none" },
-                        //     cancelProps: { display: "none" },
-                        //     classNames: {
-                        //         header: "custom-modal-header", // Tên class cho header
-                        //         root: "custom-modal-root", // Tên class cho modal
-                        //         title: "custom-modal-title", // Tên class cho tiêu đề
-                        //         body: "custom-modal-body", // Tên class cho phần nội dung
-                        //     },
-                        // });
+                        // await handleShippingFee();
                         navigate("/order-success", {
                             state: { status: "thanhcong" },
                         });
-                    queryClient.invalidateQueries({ queryKey: ["cart"] });
-
+                        queryClient.invalidateQueries({ queryKey: ["cart"] });
                     }
                 } catch (error) {
                     message.error("Lỗi không thể đặt hàng");
@@ -333,6 +291,16 @@ const CheckoutPage = () => {
             if (response && response.status === 200) {
                 const data = response.data;
                 setInforfUser(data);
+                form.setValues({
+                    email: data.email,
+                    name: data.full_name,
+                    sđt: data.phone,
+                    city: data.province_id,
+                    district: data.district_id,
+                    ward: data.ward_id,
+                    address: data.address,
+                    description: "",
+                });
             }
         } catch (error) {
             console.error("Error fetching user data", error);
@@ -345,7 +313,7 @@ const CheckoutPage = () => {
             if (response.status === 200) {
                 return response.data;
             }
-            console.warn("Unexpected response:", response);
+            // console.warn("Unexpected response:", response);
             return [];
         } catch (error) {
             console.error("Error fetching shipping fee", error);
@@ -356,11 +324,23 @@ const CheckoutPage = () => {
     const onhandlePromotions = async () => {
         try {
             const response = await instance.get("/promotions");
+            const now = new Date();
             if (response && response.status === 200) {
                 setDataAllPromotions(response.data);
+
+                //lấy những mã đã hết hạn hoặc đã sử dụng hết
+                const expiredPr = response.data.filter((promo: any) => {
+                    return (
+                        promo.quantity >= promo.max_uses ||
+                        new Date(promo.end_date) < now
+                    );
+                });
+
+                // format dữ liệu theo select option
                 const transformedData = response.data.map((item: any) => ({
                     value: String(item.id),
                     label: item.code,
+                    disabled: expiredPr.some((exp: any) => exp.id === item.id),
                 }));
                 setDataPromotions(transformedData);
             }
@@ -377,12 +357,25 @@ const CheckoutPage = () => {
             });
             if (response && response.status === 200) {
                 window.location.href = response.data.payment_url;
+            } else {
+                localStorage.removeItem("dataCart");
             }
         } catch (error) {
             console.error(error);
             alert("Có lỗi xảy ra khi thanh toán!");
         }
     };
+    // // Call trừ số lượng mã giảm giá
+    // const handleShippingFee = async () => {
+    //     const response = await instance.post("/promotions/use", {
+    //         code: checkedPromotions?.code,
+    //     });
+    //     try {
+    //     } catch (error) {
+    //         console.log("lỗi trừ mã giảm giá", error);
+    //     }
+    // };
+
     useEffect(() => {
         const fetchData = async () => {
             if (checkedValueCity !== undefined && checkedValueCity !== null) {
@@ -407,24 +400,34 @@ const CheckoutPage = () => {
 
         fetchData(); // Gọi hàm bất đồng bộ
     }, [checkedValueCity, checkedValueCity]);
-
     useEffect(() => {
-        fetchDataUser();
         const orderItems = location?.state.listchecked.map((item: any) => {
+            let price = 0;
+            if (item.product_variant == null) {
+                price = parseFloat(item.price);
+            } else {
+                if (item.product_variant.discount_price == "0.00") {
+                    price = parseFloat(item.product_variant.price);
+                } else {
+                    price = parseFloat(item.product_variant.discount_price);
+                }
+            }
             return {
                 product_id: item.product_id,
                 product_name: item.product.name,
                 quantity: item.quantity,
-                price: parseFloat(item.product_variant.price),
-                total: item.quantity * parseFloat(item.product_variant.price),
+                price: price,
+                total: item.quantity * price,
                 variant: JSON.stringify(
-                    item.product_variant.attribute_values.reduce(
-                        (acc: any, attr: any) => {
-                            acc[attr.attributes.name] = attr.name;
-                            return acc;
-                        },
-                        {},
-                    ),
+                    item.product_variant
+                        ? item.product_variant.attribute_values.reduce(
+                              (acc: any, attr: any) => {
+                                  acc[attr.attributes.name] = attr.name;
+                                  return acc;
+                              },
+                              {},
+                          )
+                        : {},
                 ),
             };
         });
@@ -434,7 +437,16 @@ const CheckoutPage = () => {
             .map((item: any) => item.id)
             .join(",");
         setIdCart(IdCart);
+        Promise.all([fetchDataUser(), onhandleSelectCity()]);
     }, []);
+    useEffect(() => {
+        form.setFieldValue("district", null);
+        form.setFieldValue("ward", null);
+        onhandleSelectDistrict();
+    }, [checkedValueCity]);
+    useEffect(() => {
+        onhandleSelectWart();
+    }, [checkedValueDistrict]);
     // MÃ GIẢM GIÁ
     useEffect(() => {
         if (valuePromotions !== undefined) {
@@ -459,7 +471,6 @@ const CheckoutPage = () => {
             setFinalAmount(calculatedFinalAmount);
         }
     }, [location?.state.totalPrice, shippingFee, checkedPromotions]);
-
     return (
         <div className="padding my-[40px]">
             <div className="container">
@@ -518,12 +529,15 @@ const CheckoutPage = () => {
                                             placeholder="Nhập tỉnh/thành phố"
                                             className="w-[50%]"
                                             searchable
+                                            value={
+                                                form.getValues().city ?? null
+                                            }
                                             {...form.getInputProps("city")}
-                                            onClick={() => {
-                                                if (valueCity.length === 0) {
-                                                    onhandleSelectCity();
-                                                }
-                                            }}
+                                            // onClick={() => {
+                                            //     if (valueCity.length === 0) {
+                                            //         onhandleSelectCity();
+                                            //     }
+                                            // }}
                                             onChange={(value: any) => {
                                                 form.setFieldValue(
                                                     "city",
@@ -543,22 +557,26 @@ const CheckoutPage = () => {
                                             data={valueDistrict}
                                             className="w-[50%]"
                                             searchable
+                                            value={
+                                                form.getValues().district ??
+                                                null
+                                            }
                                             {...form.getInputProps("district")}
-                                            onClick={() => {
-                                                if (
-                                                    valueCity.length === 0 ||
-                                                    !checkedValueCity
-                                                ) {
-                                                    return message.error(
-                                                        "Vui lòng chọn tỉnh/thành phố trước",
-                                                    );
-                                                }
-                                                if (
-                                                    valueDistrict.length === 0
-                                                ) {
-                                                    onhandleSelectDistrict();
-                                                }
-                                            }}
+                                            // onClick={() => {
+                                            //     if (
+                                            //         valueCity.length === 0 ||
+                                            //         !checkedValueCity
+                                            //     ) {
+                                            //         return message.error(
+                                            //             "Vui lòng chọn tỉnh/thành phố trước",
+                                            //         );
+                                            //     }
+                                            //     if (
+                                            //         valueDistrict.length === 0
+                                            //     ) {
+                                            //         onhandleSelectDistrict();
+                                            //     }
+                                            // }}
                                             onChange={(value: any) => {
                                                 form.setFieldValue(
                                                     "district",
@@ -573,22 +591,25 @@ const CheckoutPage = () => {
                                             placeholder="Nhập phường/xã"
                                             data={valueWard}
                                             searchable
+                                            value={
+                                                form.getValues().ward ?? null
+                                            }
                                             {...form.getInputProps("ward")}
                                             className="w-[50%]"
-                                            onClick={() => {
-                                                if (
-                                                    valueDistrict.length ===
-                                                        0 ||
-                                                    !checkedValueDistrict
-                                                ) {
-                                                    return message.error(
-                                                        "Vui lòng chọn quận huyện trước",
-                                                    );
-                                                }
-                                                if (valueWard.length === 0) {
-                                                    onhandleSelectWart();
-                                                }
-                                            }}
+                                            // onClick={() => {
+                                            //     if (
+                                            //         valueDistrict.length ===
+                                            //             0 ||
+                                            //         !checkedValueDistrict
+                                            //     ) {
+                                            //         return message.error(
+                                            //             "Vui lòng chọn quận huyện trước",
+                                            //         );
+                                            //     }
+                                            //     if (valueWard.length === 0) {
+                                            //         onhandleSelectWart();
+                                            //     }
+                                            // }}
                                             onChange={(value: any) => {
                                                 form.setFieldValue(
                                                     "ward",
@@ -752,7 +773,7 @@ const CheckoutPage = () => {
                                                                             "-5px",
                                                                     }}
                                                                 >
-                                                                    {item.product_variant.attribute_values
+                                                                    {/* {item?.product_variant?.attribute_values
                                                                         .map(
                                                                             (
                                                                                 item: any,
@@ -761,7 +782,7 @@ const CheckoutPage = () => {
                                                                         )
                                                                         .join(
                                                                             ", ",
-                                                                        )}
+                                                                        )} */}
                                                                 </p>
                                                             </Flex>
                                                             <strong>
@@ -772,7 +793,7 @@ const CheckoutPage = () => {
                                                                     styles.productPrice
                                                                 }
                                                             >
-                                                                {item
+                                                                {/* {item
                                                                     .product_variant
                                                                     .discount_price !==
                                                                 "0.00" ? (
@@ -791,7 +812,7 @@ const CheckoutPage = () => {
                                                                                 .price,
                                                                         )}
                                                                     </>
-                                                                )}
+                                                                )} */}
                                                             </p>
                                                         </div>
                                                     );

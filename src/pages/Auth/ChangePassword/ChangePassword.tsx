@@ -130,17 +130,28 @@ const ChangePassword = () => {
     };
 
     return (
-        <div className="bg-white !pb-6 h-[610px]">
-            <form className="w-[340px]" onSubmit={form.onSubmit(onSubmit)}>
+        <div className="bg-white p-5 h-[610px]">
+            <Text
+                size="xl"
+                mb="xl"
+                className="text-brown-600 items-center my-auto"
+            >
+                Đổi mật khẩu
+            </Text>
+            <hr />
+            <form
+                className="w-[340px] mx-auto mt-10 p-6 bg-white rounded-lg shadow-lg"
+                onSubmit={form.onSubmit(onSubmit)}
+            >
                 <PasswordInput
                     withAsterisk
-                    // className="mb-1"
                     label="Mật khẩu"
                     size="md"
                     radius="md"
                     leftSection={<FiLock />}
                     placeholder="Mời bạn nhập mật khẩu"
                     {...form.getInputProps("password")}
+                    className="mb-4"
                 />
                 <Stack>
                     <Popover
@@ -156,7 +167,6 @@ const ChangePassword = () => {
                             >
                                 <PasswordInput
                                     withAsterisk
-                                    // className="mb-1"
                                     label="Mật khẩu mới"
                                     size="md"
                                     radius="md"
@@ -194,7 +204,7 @@ const ChangePassword = () => {
                         </Popover.Dropdown>
                     </Popover>
                     <PasswordInput
-                        className="mb-3"
+                        className="mb-4"
                         withAsterisk
                         size="md"
                         radius="md"
@@ -214,7 +224,7 @@ const ChangePassword = () => {
                     radius="md"
                     size="md"
                     fullWidth
-                    className="!bg-black !border-white !text-white hover:!bg-gray-800"
+                    className="bg-black text-white hover:bg-gray-800 rounded-lg shadow-md transition-transform transform hover:scale-105"
                 >
                     Đổi Mật Khẩu
                 </Button>

@@ -13,7 +13,8 @@ import PageNotFound from "@/pages/NotFound/page";
 import PaymentPage from "@/pages/Payment/Payment";
 import PaymentResult from "@/pages/Payment/PaymentResult";
 import ProductDetail from "@/pages/ProductDetail/ProductDetail";
-import ProductCategory from "@/pages/ProductsCategory/page";
+import ProductCategory from "@/pages/ProductsCategory/list";
+// import ProductCategory from "@/pages/ProductsCategory/page";
 import OrderCart from "@/pages/ProfileUser/components/OrderCart/OrderCart";
 import SupportFeedback from "@/pages/ProfileUser/components/SupportFeedback/SupportFeedback";
 import UserAccount from "@/pages/ProfileUser/components/UserAccount/UserAccount";
@@ -25,8 +26,7 @@ import {
     Navigate,
     Route,
     Routes,
-    useLocation,
-    useNavigate,
+    useLocation
 } from "react-router-dom";
 
 const Index = () => {

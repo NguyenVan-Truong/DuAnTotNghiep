@@ -3,6 +3,7 @@ import { Box, Image, NavLink, Text } from "@mantine/core";
 import {
     IconCards,
     IconHeart,
+    IconLock,
     IconMail,
     IconPencil,
     IconShoppingCart,
@@ -68,7 +69,7 @@ const ProfileUser = () => {
                             }
                         />
                         <NavLink
-                            leftSection={<IconUser size="1.4rem" />}
+                            leftSection={<IconLock size="1.4rem" />}
                             href="/nguoi-dung/doi-mat-khau"
                             label={
                                 <span style={{ fontSize: "14.20px" }}>

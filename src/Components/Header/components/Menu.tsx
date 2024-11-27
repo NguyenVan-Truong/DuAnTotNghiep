@@ -4,6 +4,8 @@ import { MenuOutlined } from "@ant-design/icons";
 import { useQuery } from "@tanstack/react-query";
 import { Category } from "@/model/Category";
 import instance from "@/configs/axios";
+import { useNavigate } from "react-router-dom";
+
 // API fetch danh mục
 const fetchCategories = async () => {
     const response = await instance.get("/product-catalogues");
@@ -35,20 +37,41 @@ const groupCategoriesByParent = (categories: Category[]) => {
 
 // Menu cho từng danh mục
 const MenuContent = ({ categories }: { categories: Category[] }) => {
+    const navigate = useNavigate();
+    const handleCategoryClick = (categoryId: number) => {
+        navigate("/san-pham", {
+            state: {
+                id: categoryId,
+            },
+        });
+    };
     const renderSubMenu = (category: any) => {
         if (category.children && category.children.length > 0) {
             return (
                 <Menu.SubMenu
                     key={category.id}
+                    //onClick={() => handleCategoryClick(category.id)}
                     title={<span>{category.name}</span>}
                 >
                     {category.children.map((child: any) => (
-                        <Menu.Item key={child.id}>{child.name}</Menu.Item>
+                        <Menu.Item
+                            key={child.id}
+                            onClick={() => handleCategoryClick(child.id)}
+                        >
+                            {child.name}
+                        </Menu.Item>
                     ))}
                 </Menu.SubMenu>
             );
         }
-        return <Menu.Item key={category.id}>{category.name}</Menu.Item>;
+        return (
+            <Menu.Item
+                key={category.id}
+                onClick={() => handleCategoryClick(category.id)}
+            >
+                {category.name}
+            </Menu.Item>
+        );
     };
 
     const groupedCategories = groupCategoriesByParent(categories);
