@@ -12,7 +12,7 @@ const PaymentPage = () => {
                 total_price: 10000,
                 bank_code: "NCB",
             });
-            console.log("response", response);
+            // console.log("response", response);
             if (response && response.status === 200) {
                 window.location.href = response.data.payment_url;
             }

@@ -9,7 +9,6 @@ const MenuHeader = () => {
     const navigate = useNavigate();
 
     const handleCategoryClick = (categoryId: number) => {
-        console.log("categoryId", categoryId);
         navigate("/san-pham",{
             state:{
                 id:categoryId

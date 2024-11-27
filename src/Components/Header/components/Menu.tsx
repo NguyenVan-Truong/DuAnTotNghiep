@@ -39,7 +39,6 @@ const groupCategoriesByParent = (categories: Category[]) => {
 const MenuContent = ({ categories }: { categories: Category[] }) => {
     const navigate = useNavigate();
     const handleCategoryClick = (categoryId: number) => {
-        console.log("categoryId", categoryId);
         navigate("/san-pham", {
             state: {
                 id: categoryId,

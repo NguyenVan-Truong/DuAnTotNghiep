@@ -64,7 +64,6 @@ const SearchBox: React.FC = () => {
 
     // Xử lý khi chọn sản phẩm từ gợi ý
     const handleSuggestionClick = (item: Suggestion) => {
-        console.log("item", item);
         navigate(`/chi-tiet-san-pham/${item.slug}`, {
             state: { 
                 id: item.id,

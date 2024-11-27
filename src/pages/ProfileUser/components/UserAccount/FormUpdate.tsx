@@ -1,11 +1,14 @@
 import instance from "@/configs/axios"; // Giả sử bạn có instance axios đã cấu hình sẵn
 import { UploadOutlined } from "@ant-design/icons";
-import { Select } from "@mantine/core";
+import { Select, TextInput, Button } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
-import { Button, Col, Form, Input, message, Row, Upload } from "antd";
-import ImgCrop from "antd-img-crop";
-import moment from "moment";
 import { useEffect, useState } from "react";
+import { notifications } from "@mantine/notifications";
+import ImgCrop from "antd-img-crop";
+import { message, Upload } from "antd";
+import moment from "moment";
+import { useForm } from "@mantine/form";
+import dayjs from "dayjs";
 
 type FormUpdateProps = {
     onSuccess: () => void;
@@ -13,18 +16,46 @@ type FormUpdateProps = {
 };
 
 const FormUpdate = ({ onSuccess, modals }: FormUpdateProps) => {
+    const userProFile = JSON.parse(localStorage.getItem("userProFile") || "{}");
     const [fileList, setFileList] = useState<any[]>([]);
-    const [form] = Form.useForm();
     const [valueCity, setValueCity] = useState([]);
-    const [checkedValueCity, setCheckedValueCity] = useState();
+    const [checkedValueCity, setCheckedValueCity] = useState(
+        userProFile.province_id,
+    );
     // thông tin quận huyện
     const [valueDistrict, setValueDistrict] = useState([]);
-    const [checkedValueDistrict, setCheckedValueDistrict] = useState();
+    const [checkedValueDistrict, setCheckedValueDistrict] = useState(
+        userProFile.district_id,
+    );
     // thông tin phường xã
     const [valueWard, setValueWard] = useState([]);
-    const [checkedValueWard, setCheckedValueWard] = useState();
+    const [checkedValueWard, setCheckedValueWard] = useState(
+        userProFile.ward_id,
+    );
+    // Form hook từ Mantine
+    const form = useForm({
+        initialValues: {
+            full_name: "",
+            phone: "",
+            address: "",
+            // birthday: null as any,
+            city: null,
+            district: null,
+            ward: null,
+        },
+        validate: {
+            full_name: (value) =>
+                value ? null : "Vui lòng nhập tên người dùng",
+            phone: (value) => (value ? null : "Vui lòng nhập số điện thoại"),
+            address: (value) => (value ? null : "Vui lòng nhập địa chỉ"),
+            // birthday: (value) => (value ? null : "Vui lòng chọn ngày sinh"),
+            city: (value) => (!value ? "Thành phố là bắt buộc" : null),
+            district: (value) => (!value ? "Quận/Huyện là bắt buộc" : null),
+            ward: (value) => (!value ? "Phường/Xã là bắt buộc" : null),
+        },
+    });
 
-    // CHọn tỉnh
+    // Chọn tỉnh
     const onhandleSelectCity = async () => {
         try {
             const response = await instance.get("/getAllProvinces");
@@ -38,7 +69,11 @@ const FormUpdate = ({ onSuccess, modals }: FormUpdateProps) => {
                 setValueCity(transformedData);
             }
         } catch (error) {
-            message.error("Lỗi không thể lấy dữ liệu");
+            notifications.show({
+                title: "Lỗi",
+                message: "Lỗi không thể lấy dữ liệu",
+                color: "red",
+            });
         }
     };
 
@@ -46,7 +81,7 @@ const FormUpdate = ({ onSuccess, modals }: FormUpdateProps) => {
     const onhandleSelectDistrict = async () => {
         try {
             const response = await instance.get(
-                `/getLocaion?target=district&data[province_id]=${checkedValueCity}`,
+                `/getLocaion?target=district&data[province_id]=${checkedValueCity === null ? form.getValues().city : checkedValueCity}`,
             );
             if (response && response.status === 200) {
                 const parser = new DOMParser();
@@ -62,15 +97,19 @@ const FormUpdate = ({ onSuccess, modals }: FormUpdateProps) => {
                 setValueDistrict(transformedData as []);
             }
         } catch (error) {
-            message.error("Lỗi không thể lấy dữ liệu");
+            notifications.show({
+                title: "Lỗi",
+                message: "Lỗi không thể lấy dữ liệu",
+                color: "red",
+            });
         }
     };
 
     // Chọn phường xã
-    const onhandleSelectWard = async () => {
+    const onhandleSelectWart = async () => {
         try {
             const response = await instance.get(
-                `/getLocaion?target=ward&data[district_id]=${checkedValueDistrict}`,
+                `/getLocaion?target=ward&data[district_id]=${checkedValueDistrict === null ? form.getValues().district : checkedValueDistrict}`,
             );
             if (response && response.status === 200) {
                 const parser = new DOMParser();
@@ -78,7 +117,10 @@ const FormUpdate = ({ onSuccess, modals }: FormUpdateProps) => {
                     response.data.content,
                     "text/html",
                 );
+
+                // Lấy tất cả các phần tử <option>
                 const options = Array.from(doc.querySelectorAll("option"));
+                // Chuyển đổi thành mảng các đối tượng với code và name
                 const transformedData = options.map((option) => ({
                     value: option.value,
                     label: option.text.trim(),
@@ -98,12 +140,11 @@ const FormUpdate = ({ onSuccess, modals }: FormUpdateProps) => {
                 const data = response.data;
 
                 // Cập nhật dữ liệu lên form
-                form.setFieldsValue({
+                form.setValues({
                     full_name: data.full_name,
                     phone: data.phone,
                     address: data.address,
-                    birthday: data.birthday ? moment(data.birthday) : null,
-                    avatar: data.avatar,
+                    // birthday: data.birthday,
                     city: data.province_id,
                     district: data.district_id,
                     ward: data.ward_id,
@@ -124,22 +165,32 @@ const FormUpdate = ({ onSuccess, modals }: FormUpdateProps) => {
                 }
 
                 // Cập nhật giá trị tỉnh/thành phố, quận/huyện, phường/xã
-                if (data.province_id) {
-                    setCheckedValueCity(data.province_id);
-                    await onhandleSelectDistrict();
-                }
-                if (data.district_id) {
-                    setCheckedValueDistrict(data.district_id);
-                    await onhandleSelectWard();
-                }
+                // if (data.province) {
+                //     setCheckedValueCity(data.province_id);
+                //     await onhandleSelectDistrict(data.province_id); // Chuyển tỉnh để lấy quận/huyện
+                // }
+                // if (data.district) {
+                //     setCheckedValueDistrict(data.district);
+                //     await onhandleSelectWard(data.district); // Chuyển quận để lấy phường/xã
+                // }
+                // if (data.ward) {
+                //     setCheckedValueWard(data.ward);
+                // }
             } catch (error) {
                 console.error("Error fetching user data", error);
             }
         };
 
-        fetchData();
+        Promise.all([fetchData(), onhandleSelectCity()]);
     }, []);
-
+    useEffect(() => {
+        form.setFieldValue("district", null);
+        form.setFieldValue("ward", null);
+        onhandleSelectDistrict();
+    }, [checkedValueCity]);
+    useEffect(() => {
+        onhandleSelectWart();
+    }, [checkedValueDistrict]);
     const onChange = (info: any) => {
         setFileList(info.fileList);
     };
@@ -159,18 +210,18 @@ const FormUpdate = ({ onSuccess, modals }: FormUpdateProps) => {
         imgWindow?.document.write(image.outerHTML);
     };
 
-    const onFinish = async (values: any) => {
+    const onSubmit = async (values: any) => {
         try {
             const formData = new FormData();
             formData.append("full_name", values.full_name);
             formData.append("phone", values.phone);
             formData.append("address", values.address);
-            formData.append(
-                "birthday",
-                values.birthday
-                    ? moment(values.birthday).format("YYYY-MM-DD")
-                    : "",
-            );
+            // formData.append(
+            //     "birthday",
+            //     values.birthday
+            //         ? moment(values.birthday).format("YYYY-MM-DD")
+            //         : "",
+            // );
             formData.append("province_id", checkedValueCity || "");
             formData.append("district_id", checkedValueDistrict || "");
             formData.append("ward_id", checkedValueWard || "");
@@ -198,6 +249,7 @@ const FormUpdate = ({ onSuccess, modals }: FormUpdateProps) => {
                 last_login,
                 created_at,
                 deleted_at,
+                birthday,
                 ...userProfile
             } = response.data.user;
 
@@ -210,95 +262,51 @@ const FormUpdate = ({ onSuccess, modals }: FormUpdateProps) => {
     };
 
     return (
-        <Form
-            form={form}
-            layout="vertical"
-            onFinish={onFinish}
-            initialValues={{
-                full_name: "",
-                phone: "",
-                address: "",
-                birthday: null,
-                avatar: "",
-                city: "",
-                district: "",
-                ward: "",
-            }}
-        >
-            <Row gutter={16}>
-                <Col span={24}>
-                    <Form.Item
-                        label="Tên người dùng"
-                        name="full_name"
-                        rules={[
-                            {
-                                required: true,
-                                message: "Vui lòng nhập tên người dùng",
-                            },
-                        ]}
-                    >
-                        <Input placeholder="Nhập tên người dùng" />
-                    </Form.Item>
-                </Col>
-
-                <Col span={24}>
-                    <Form.Item
-                        label="Số điện thoại"
-                        name="phone"
-                        rules={[
-                            {
-                                required: true,
-                                message: "Vui lòng nhập số điện thoại",
-                            },
-                        ]}
-                    >
-                        <Input placeholder="Nhập số điện thoại" />
-                    </Form.Item>
-                </Col>
-
-                <Col span={24}>
-                    <Form.Item
-                        label="Địa chỉ"
-                        name="address"
-                        rules={[
-                            {
-                                required: true,
-                                message: "Vui lòng nhập địa chỉ",
-                            },
-                        ]}
-                    >
-                        <Input placeholder="Nhập địa chỉ" />
-                    </Form.Item>
-                </Col>
-
-                <Col span={24}>
-                    <Form.Item label="Ngày sinh" name="birthday">
-                        <DateInput
-                            valueFormat="DD-MM-YYYY"
-                            placeholder="Ngày sinh"
-                            style={{ width: "100%" }}
-                        />
-                    </Form.Item>
-                </Col>
-
-                <Col span={24}>
+        <form onSubmit={form.onSubmit(onSubmit)} className="space-y-4">
+            <TextInput
+                label="Tên người dùng"
+                placeholder="Nhập tên người dùng"
+                {...form.getInputProps("full_name")}
+                required
+            />
+            <TextInput
+                label="Số điện thoại"
+                placeholder="Nhập số điện thoại"
+                {...form.getInputProps("phone")}
+                required
+            />
+            <TextInput
+                label="Địa chỉ"
+                placeholder="Nhập địa chỉ"
+                {...form.getInputProps("address")}
+                required
+            />
+            {/* <DateInput
+                label="Ngày sinh"
+                placeholder="Chọn ngày sinh"
+                // valueFormat="DD-MM-YYYY"
+                {...form.getInputProps("birthday")}
+                style={{ width: "100%" }}
+            /> */}
+            <div className="grid grid-cols-[70%_30%] gap-4 items-center">
+                <div className="space-y-4">
                     <Select
                         withAsterisk
                         label="Tỉnh/Thành phố"
                         data={valueCity}
                         placeholder="Nhập tỉnh/thành phố"
-                        className="w-[50%]"
+                        className="w-[90%]"
                         searchable
-                        onClick={() => {
-                            if (valueCity.length === 0) {
-                                onhandleSelectCity();
-                            }
-                        }}
+                        {...form.getInputProps("city")}
+                        // onClick={() => {
+                        //     if (valueCity.length === 0) {
+                        //         onhandleSelectCity();
+                        //     }
+                        // }}
+                        value={form.getValues().city ?? null}
                         onChange={(value: any) => {
-                            form.setFieldValue("province_id", value);
+                            form.setFieldValue("city", value);
                             setCheckedValueCity(value);
-                            setValueDistrict([]);
-                            setValueWard([]);
                         }}
                     />
                     <Select
@@ -306,61 +314,77 @@ const FormUpdate = ({ onSuccess, modals }: FormUpdateProps) => {
                         label="Quận / Huyện"
                         placeholder="Nhập quận/huyện"
                         data={valueDistrict}
-                        className="w-[50%]"
+                        className="w-[90%]"
                         searchable
-                        onClick={() => {
-                            if (valueDistrict.length === 0) {
-                                onhandleSelectDistrict();
-                            }
-                        }}
+                        {...form.getInputProps("district")}
+                        // onClick={() => {
+                        //     if (valueCity.length === 0 || !checkedValueCity) {
+                        //         return message.error(
+                        //             "Vui lòng chọn tỉnh/thành phố trước",
+                        //         );
+                        //     }
+                        //     if (valueDistrict.length === 0) {
+                        //         onhandleSelectDistrict();
+                        //     }
+                        // }}
+                        value={form.getValues().district ?? null}
                         onChange={(value: any) => {
-                            form.setFieldValue("district_id", value);
+                            form.setFieldValue("district", value);
                             setCheckedValueDistrict(value);
-                            setValueWard([]);
                         }}
                     />
                     <Select
                         withAsterisk
-                        label="Phường / Xã"
-                        data={valueWard}
+                        label="Phường/Xã"
                         placeholder="Nhập phường/xã"
-                        className="w-[50%]"
+                        data={valueWard}
                         searchable
-                        onClick={() => {
-                            if (valueWard.length === 0) {
-                                onhandleSelectWard();
-                            }
-                        }}
+                        {...form.getInputProps("ward")}
+                        className="w-[90%]"
+                        // onClick={() => {
+                        //     if (
+                        //         valueDistrict.length === 0 ||
+                        //         !checkedValueDistrict
+                        //     ) {
+                        //         return message.error(
+                        //             "Vui lòng chọn quận huyện trước",
+                        //         );
+                        //     }
+                        //     if (valueWard.length === 0) {
+                        //         onhandleSelectWart();
+                        //     }
+                        // }}
+                        value={form.getValues().ward ?? null}
                         onChange={(value: any) => {
-                            form.setFieldValue("ward_id", value);
+                            form.setFieldValue("ward", value);
                             setCheckedValueWard(value);
                         }}
                     />
-                </Col>
-
-                <Col span={24}>
+                </div>
+                <div className="mt-5">
                     <ImgCrop rotationSlider>
                         <Upload
                             listType="picture-card"
                             fileList={fileList}
                             onChange={onChange}
                             onPreview={onPreview}
+                            maxCount={1}
                             beforeUpload={() => false}
                         >
-                            {fileList.length === 0 && "+ Upload Avatar"}
+                            {fileList.length === 0 && (
+                                <div>
+                                    <UploadOutlined />
+                                    <div style={{ marginTop: 8 }}>Upload</div>
+                                </div>
+                            )}
                         </Upload>
                     </ImgCrop>
-                </Col>
-            </Row>
-
-            <Row>
-                <Col span={24}>
-                    <Button type="primary" htmlType="submit" block>
-                        Cập nhật thông tin
+                    <Button className="mt-3" type="submit">
+                        Cập nhật
                     </Button>
-                </Col>
-            </Row>
-        </Form>
+                </div>
+            </div>
+        </form>
     );
 };
 

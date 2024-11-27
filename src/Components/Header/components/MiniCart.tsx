@@ -48,6 +48,7 @@ const IconCart = () => {
             message.error("Vui lòng chọn sản phẩm để thanh toán");
             return;
         }
+        onClose();
         navigate("/thanh-toan", {
             state: { listchecked: dataCart, totalPrice: totalPrice },
         });
@@ -71,15 +72,18 @@ const IconCart = () => {
                 (acc: any, item: CartItem) => {
                     acc.totalQuantity += item.quantity;
                     acc.totalPrice +=
-                        (Number(item.product_variant.discount_price) ||
-                            Number(item.product_variant.price)) *
-                        Number(item.quantity);
+                        Number(
+                            item.product_variant
+                                ? item.product_variant.discount_price !== "0.00"
+                                    ? item.product_variant.discount_price
+                                    : item.product_variant.price
+                                : item.price,
+                        ) * Number(item.quantity);
 
                     return acc;
                 },
                 { totalQuantity: 0, totalPrice: 0 },
             );
-            console.log(total);
             setTotalPrice(total.totalPrice);
         } else {
             setTotalPrice(0);
@@ -154,12 +158,14 @@ const IconCart = () => {
                                                     fontWeight: "400",
                                                 }}
                                             >
-                                                {product.product_variant.attribute_values
-                                                    .map(
-                                                        (item: any) =>
-                                                            item.name,
-                                                    )
-                                                    .join(", ")}
+                                                {product.product_variant
+                                                    ? product.product_variant.attribute_values
+                                                          .map(
+                                                              (item: any) =>
+                                                                  item.name,
+                                                          )
+                                                          .join(", ")
+                                                    : ""}
                                             </p>
                                         </div>
                                         <Flex
@@ -174,14 +180,17 @@ const IconCart = () => {
                                             >
                                                 {formatCurrencyVN(
                                                     product.product_variant
-                                                        .discount_price !==
-                                                        "0.00"
                                                         ? product
                                                               .product_variant
-                                                              .discount_price
-                                                        : product
-                                                              .product_variant
-                                                              .price,
+                                                              .discount_price !==
+                                                          "0.00"
+                                                            ? product
+                                                                  .product_variant
+                                                                  .discount_price
+                                                            : product
+                                                                  .product_variant
+                                                                  .price
+                                                        : product.price,
                                                 )}{" "}
                                                 x {product.quantity}
                                             </p>
@@ -209,7 +218,7 @@ const IconCart = () => {
                             <h3>{formatCurrencyVN(String(totalPrice))}</h3>
                         </div>
                         <div className="mt-5">
-                            <Link to="/gio-hang">
+                            <Link to="/gio-hang" onClick={onClose}>
                                 <button className="w-full bg-black text-white p-2 rounded-md mb-3">
                                     Xem Giỏ Hàng
                                 </button>

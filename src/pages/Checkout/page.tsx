@@ -129,7 +129,14 @@ const CheckoutPage = () => {
                       ? null
                       : "Email phải đúng định dạng",
             name: (value) => (!value ? "Tên là bắt buộc" : null),
-            sđt: (value) => (!value ? "Số điện thoại là bắt buộc" : null),
+            sđt: (value) => {
+                if (!value) {
+                    return "Số điện thoại là bắt buộc";
+                } else if (!/^\d{10}$/.test(value)) {
+                    return "Số điện thoại phải có đúng 10 chữ số";
+                }
+                return null;
+            },
             city: (value) => (!value ? "Thành phố là bắt buộc" : null),
             district: (value) => (!value ? "Quận/Huyện là bắt buộc" : null),
             ward: (value) => (!value ? "Phường/Xã là bắt buộc" : null),
@@ -306,7 +313,7 @@ const CheckoutPage = () => {
             if (response.status === 200) {
                 return response.data;
             }
-            console.warn("Unexpected response:", response);
+            // console.warn("Unexpected response:", response);
             return [];
         } catch (error) {
             console.error("Error fetching shipping fee", error);
@@ -350,6 +357,8 @@ const CheckoutPage = () => {
             });
             if (response && response.status === 200) {
                 window.location.href = response.data.payment_url;
+            } else {
+                localStorage.removeItem("dataCart");
             }
         } catch (error) {
             console.error(error);
@@ -391,23 +400,34 @@ const CheckoutPage = () => {
 
         fetchData(); // Gọi hàm bất đồng bộ
     }, [checkedValueCity, checkedValueCity]);
-
     useEffect(() => {
         const orderItems = location?.state.listchecked.map((item: any) => {
+            let price = 0;
+            if (item.product_variant == null) {
+                price = parseFloat(item.price);
+            } else {
+                if (item.product_variant.discount_price == "0.00") {
+                    price = parseFloat(item.product_variant.price);
+                } else {
+                    price = parseFloat(item.product_variant.discount_price);
+                }
+            }
             return {
                 product_id: item.product_id,
                 product_name: item.product.name,
                 quantity: item.quantity,
-                price: parseFloat(item.product_variant.price),
-                total: item.quantity * parseFloat(item.product_variant.price),
+                price: price,
+                total: item.quantity * price,
                 variant: JSON.stringify(
-                    item.product_variant.attribute_values.reduce(
-                        (acc: any, attr: any) => {
-                            acc[attr.attributes.name] = attr.name;
-                            return acc;
-                        },
-                        {},
-                    ),
+                    item.product_variant
+                        ? item.product_variant.attribute_values.reduce(
+                              (acc: any, attr: any) => {
+                                  acc[attr.attributes.name] = attr.name;
+                                  return acc;
+                              },
+                              {},
+                          )
+                        : {},
                 ),
             };
         });
@@ -753,7 +773,7 @@ const CheckoutPage = () => {
                                                                             "-5px",
                                                                     }}
                                                                 >
-                                                                    {item.product_variant.attribute_values
+                                                                    {/* {item?.product_variant?.attribute_values
                                                                         .map(
                                                                             (
                                                                                 item: any,
@@ -762,7 +782,7 @@ const CheckoutPage = () => {
                                                                         )
                                                                         .join(
                                                                             ", ",
-                                                                        )}
+                                                                        )} */}
                                                                 </p>
                                                             </Flex>
                                                             <strong>
@@ -773,7 +793,7 @@ const CheckoutPage = () => {
                                                                     styles.productPrice
                                                                 }
                                                             >
-                                                                {item
+                                                                {/* {item
                                                                     .product_variant
                                                                     .discount_price !==
                                                                 "0.00" ? (
@@ -792,7 +812,7 @@ const CheckoutPage = () => {
                                                                                 .price,
                                                                         )}
                                                                     </>
-                                                                )}
+                                                                )} */}
                                                             </p>
                                                         </div>
                                                     );

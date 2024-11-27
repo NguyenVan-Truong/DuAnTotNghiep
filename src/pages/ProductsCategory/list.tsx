@@ -11,9 +11,7 @@ import {
     Grid,
     Text,
 } from "@mantine/core";
-import {
-    Pagination as AntdPagination,
-} from "antd"; 
+import { Pagination as AntdPagination } from "antd";
 import { useForm } from "@mantine/form";
 import { IconFilter } from "@tabler/icons-react";
 import BannerProduct from "./BannerProduct/BannerProduct";
@@ -24,7 +22,7 @@ import { ArrowLeftOutlined, ArrowRightOutlined } from "@ant-design/icons";
 
 const ProductCategory = () => {
     const location = useLocation();
-    console.log("location", location);
+    // console.log("location", location);
     const [data, setData] = useState<any>([]);
     const [dataCategory, setCategory] = useState<any>([]);
     const [attributes, setAttributes] = useState<any>([]);
@@ -74,7 +72,10 @@ const ProductCategory = () => {
         },
     });
     const fetchdata = async () => {
-        console.log("Values :", form.values);
+        // console.log("Values :", form.values);
+        // const params = Object.fromEntries(searchParams.entries());
+        // let url = `?page=${pagination.pageIndex}`;
+        // console.log("Values :", form.values);
         //const params = Object.fromEntries(searchParams.entries());
         let url = `?page=${pagination.pageIndex + 1}&pageSize=${pagination.pageSize}`;
 
@@ -208,7 +209,7 @@ const ProductCategory = () => {
         valueId: number,
         isChecked: boolean,
     ) => {
-        console.log("valueId", valueId);
+        // console.log("valueId", valueId);
         const fieldName: keyof typeof form.values = "attribute";
         const currentValues = form.values[fieldName] || "";
         //const currentValues = form.values[attributeName as keyof typeof form.values] || "";
@@ -257,13 +258,13 @@ const ProductCategory = () => {
             </div>
         ));
     };
-    console.log("form", form.getValues());
+    // console.log("form", form.getValues());
     useEffect(() => {
         fetchCategory();
         fetchAttributes();
         if (location?.state?.id) {
-            console.log("chayj vaof ddaay");
-            handleCategoryChange(location.state.id,true)
+            // console.log("chayj vaof ddaay");
+            handleCategoryChange(location.state.id, true);
             // handleAttributeChange("fsfse",location?.state?.id,true)
             form.setFieldValue("category", location?.state.id);
             fetchdata();
@@ -364,7 +365,7 @@ const ProductCategory = () => {
                                 total={pagination.totalItems}
                                 onChange={handlePageChange}
                                 showSizeChanger={false}
-                                prevIcon={<ArrowLeftOutlined />}  // Thêm icon nếu cần
+                                prevIcon={<ArrowLeftOutlined />} // Thêm icon nếu cần
                                 nextIcon={<ArrowRightOutlined />} // Thêm icon nếu cần
                                 //disabled={pagination.pageIndex <= 0 || pagination.pageIndex >= totalPages - 1}  // Disable nếu là trang đầu hoặc trang cuối
                             />

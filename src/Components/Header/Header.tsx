@@ -63,6 +63,7 @@ const Header = () => {
                 localStorage.removeItem("user");
                 localStorage.removeItem("token");
                 localStorage.removeItem("userProFile");
+                localStorage.removeItem("dataCart");
                 navigate("/xac-thuc/dang-nhap");
                 message.success("Đăng xuất thành công");
             },
@@ -86,14 +87,14 @@ const Header = () => {
     const handleSearch = () => {
         if (keysearch.trim()) {
             navigate(`/san-pham?keysearch=${encodeURIComponent(keysearch)}`);
-        }       
+        }
     };
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === "Enter") {
             handleSearch();
         }
     };
-    
+
     return (
         <>
             {/* Header1 */}
