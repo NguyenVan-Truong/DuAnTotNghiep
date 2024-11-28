@@ -114,9 +114,13 @@ const ItemProduct = ({ product }: props) => {
                 </Flex>
                 <Flex direction="row" justify="space-between">
                     <Flex direction="row">
-                        <Rating defaultValue={5} readOnly />
+                        <Rating
+                            value={product?.ratings_avg || 0}
+                            fractions={10}
+                            readOnly
+                        />
                         <span className="text-[12px] text-yellow-700">
-                            ({product?.ratings_avg})
+                            ({product?.ratings_avg.toFixed(1)})
                         </span>
                     </Flex>
                     <div>

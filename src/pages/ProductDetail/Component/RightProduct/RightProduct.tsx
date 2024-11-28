@@ -17,6 +17,7 @@ import { formatCurrencyVN } from "@/model/_base/Number";
 import { message } from "antd";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
+
 type UserInfo = {
     id: number;
     username: string;
@@ -40,19 +41,24 @@ type UserInfo = {
     status: number;
     avatar_url: string;
 };
+
 type Props = {
     data: TypeProductDetail | undefined;
     id: number;
+    dataComment: any;
     // dataAttribute: any;
 };
+
 type AttributeValues = {
     [key: string]: string[] | any;
 };
+
 type Attribute = {
     id: number;
     attribute: string;
     value: string;
 };
+
 type TypeFilteredVariant = {
     id: number;
     price: string;
@@ -66,15 +72,16 @@ type TypeFilteredVariant = {
     attributes: Attribute[];
 };
 
-const RightProduct = ({ data, id }: Props) => {
+const RightProduct = ({ data, id, dataComment }: Props) => {
     if (!data) return null;
     const navigate = useNavigate();
     const [quantity, setQuantity] = useState(1);
     const [isLoading, setisLoading] = useState(false);
     const queryClient = useQueryClient();
     const [isLoadingPaymentButton, setIsLoadingPaymentButton] = useState(false);
-    // Thông tin người dùng
     const [inforUser, setInforfUser] = useState<UserInfo>();
+    const [selectedPrice, setSelectedPrice] = useState(data.discount_price);
+
     const increaseQuantity = () => {
         if (
             quantity < (filteredVariant ? filteredVariant?.stock : data.stock)
@@ -84,6 +91,7 @@ const RightProduct = ({ data, id }: Props) => {
             message.error("Số lượng sản phẩm không đủ");
         }
     };
+
     const decreaseQuantity = () => {
         if (quantity > 1) {
             setQuantity(quantity - 1);
@@ -129,8 +137,30 @@ const RightProduct = ({ data, id }: Props) => {
                 [attribute]: value,
             };
         });
+
+        const variant = data.variants.find((variant: any) => {
+            return Object.entries(selectedAttributes).every(
+                ([attribute, value]) => {
+                    return variant.attributes.some(
+                        (attr: any) =>
+                            attr.attribute === attribute &&
+                            attr.value === value,
+                    );
+                },
+            );
+        }) as TypeFilteredVariant | undefined; // Explicitly type the variant
+
+        if (variant) {
+            setSelectedPrice(
+                variant.discount_price !== "0.00"
+                    ? variant.discount_price
+                    : variant.price,
+            );
+        } else {
+            setSelectedPrice(data.price);
+        }
     };
-    // lọc giá trị variant dựa trên thuộc tính đã chọn
+
     const filteredVariant = data.variants.find((variant: any) => {
         return Object.entries(selectedAttributes).every(
             ([attribute, value]) => {
@@ -141,12 +171,17 @@ const RightProduct = ({ data, id }: Props) => {
             },
         );
     }) as TypeFilteredVariant | undefined;
-    // console.log("filteredVariant", filteredVariant);
-    // console.log("selectedAttributes", selectedAttributes);
+    console.log("filteredVariant", filteredVariant);
+    console.log("selectedAttributes", selectedAttributes);
     // console.log("dataAttribute", dataAttribute);
 
     //add Cart
     const onhandleAddToCart = async (type: string) => {
+        if (Object.keys(selectedAttributes).length === 0) {
+            message.error("Vui lòng chọn biến thể sản phẩm");
+            return;
+        }
+
         // if (!inforUser || inforUser === undefined) {
         //     message.error("Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng");
         //     setTimeout(() => {
@@ -289,8 +324,15 @@ const RightProduct = ({ data, id }: Props) => {
             </div>
             <Flex direction="row" className="product-interactions">
                 <Flex className="product-rating" direction="row">
-                    <Rating defaultValue={5} size="xs" readOnly />
-                    <span className="rating-count">(77)</span>
+                    <Rating
+                        value={dataComment?.average_rating || 0}
+                        fractions={10}
+                        size="xs"
+                        readOnly
+                    />
+                    <span className="rating-count">
+                        ({dataComment?.average_rating.toFixed(1)})
+                    </span>
                 </Flex>
                 <div className="product-sales">
                     <span>Đã bán 965</span>
@@ -321,12 +363,7 @@ const RightProduct = ({ data, id }: Props) => {
                             </Badge>
 
                             <span className="current-price text-[#ef683a] text-[17px] font-bold">
-                                {/* giá sau khi được giảm */}
-                                {formatCurrencyVN(
-                                    filteredVariant
-                                        ? filteredVariant?.discount_price
-                                        : data?.discount_price,
-                                )}
+                                {formatCurrencyVN(selectedPrice)}
                             </span>
                             <span className="original-price text-[#777a7b] text-[14px] ">
                                 <del>
@@ -343,12 +380,7 @@ const RightProduct = ({ data, id }: Props) => {
                         // NẾU KHÔNG CÓ DISCOUNT_PRICE
                         <>
                             <span className="current-price text-[#ef683a] text-[17px] font-bold">
-                                {/* giá gốc */}
-                                {formatCurrencyVN(
-                                    filteredVariant
-                                        ? filteredVariant?.price
-                                        : data?.price,
-                                )}
+                                {formatCurrencyVN(selectedPrice)}
                             </span>
                         </>
                     )}
@@ -462,7 +494,7 @@ const RightProduct = ({ data, id }: Props) => {
                     style={{ marginTop: "10px" }}
                     gap="xl"
                 >
-                    {filteredVariant?.stock == 0 || data.stock == 0 ? (
+                    {/* {filteredVariant?.stock == 0 || data.stock == 0 ? (
                         <div style={{ width: "100%" }}>
                             <Badge
                                 w="100%"
@@ -536,7 +568,59 @@ const RightProduct = ({ data, id }: Props) => {
                                 </Badge>
                             </div>
                         </>
-                    )}
+                    )} */}
+                    <div style={{ width: "50%" }}>
+                        <Badge
+                            w="100%"
+                            size="lg"
+                            variant="gradient"
+                            gradient={{
+                                from: "rgba(5, 3, 2, 1)",
+                                to: "rgba(61, 61, 61, 1)",
+                                deg: 35,
+                            }}
+                            style={{
+                                padding: "20px",
+                                cursor: isLoading ? "not-allowed" : "pointer",
+                                opacity: isLoading ? 0.7 : 1,
+                            }}
+                            radius="xs"
+                            onClick={() => onhandleAddToCart("cart")}
+                        >
+                            {isLoading ? (
+                                <Loader color="blue" size="xs" />
+                            ) : (
+                                "Thêm vào giỏ hàng"
+                            )}
+                        </Badge>
+                    </div>
+                    <div style={{ width: "50%" }}>
+                        <Badge
+                            w="100%"
+                            size="lg"
+                            variant="gradient"
+                            gradient={{
+                                from: "rgba(3, 0, 207, 1)",
+                                to: "cyan",
+                                deg: 35,
+                            }}
+                            radius="xs"
+                            style={{
+                                padding: "20px",
+                                cursor: isLoadingPaymentButton
+                                    ? "not-allowed"
+                                    : "pointer",
+                                opacity: isLoadingPaymentButton ? 0.7 : 1,
+                            }}
+                            onClick={() => onhandleAddToCart("buy")}
+                        >
+                            {isLoadingPaymentButton ? (
+                                <Loader color="#fff" size="xs" />
+                            ) : (
+                                "Mua ngay"
+                            )}{" "}
+                        </Badge>
+                    </div>
                 </Flex>
             </div>
             <div className="my-[10px]">

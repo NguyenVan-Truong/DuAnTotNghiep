@@ -7,7 +7,7 @@ const TitleNew = () => {
             <div className="container mx-auto">
                 <div className=" flex items-center pl-5 md:pl-0 space-x-8 border-b border-b-gray-200">
                     <Title order={3} className="border-b-2 border-b-gray-400">
-                        Sản Phẩm Mới
+                        Sản Phẩm Nổi Bật
                     </Title>
                     <Text
                         size="md"
