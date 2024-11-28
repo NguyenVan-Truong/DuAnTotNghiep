@@ -731,6 +731,7 @@ const CheckoutPage = () => {
                                         <div>
                                             {location?.state.listchecked.map(
                                                 (item: CartItem) => {
+                                                    console.log("item", item);
                                                     return (
                                                         <div
                                                             className={`${styles.productDetails} flex flex-row justify-between gap-3 items-center my-[9px]`}
@@ -793,6 +794,22 @@ const CheckoutPage = () => {
                                                                     styles.productPrice
                                                                 }
                                                             >
+                                                                {item.product_variant !==
+                                                                null ? (
+                                                                    <>
+                                                                        {formatCurrencyVN(
+                                                                            item
+                                                                                .product_variant
+                                                                                .discount_price,
+                                                                        )}
+                                                                    </>
+                                                                ) : (
+                                                                    <>
+                                                                        {formatCurrencyVN(
+                                                                            item.price,
+                                                                        )}
+                                                                    </>
+                                                                )}
                                                                 {/* {item
                                                                     .product_variant
                                                                     .discount_price !==

@@ -70,6 +70,9 @@ const ShoppingCart = () => {
         queryKey: ["cart"],
         queryFn: fetchDataCart,
     });
+    // useEffect(() => {
+    //     setDataCartRequest(dataCart);
+    // }, [dataCart]);
     // #endregion
     // click checkbox
     const onhandleChecked = (item: CartItem) => {
@@ -141,20 +144,40 @@ const ShoppingCart = () => {
         if (dataCart?.length > 0 && listchecked.length > 0) {
             const total = dataCart.reduce(
                 (acc: any, item: CartItem) => {
+                    console.log("item", item);
+                    console.log("listchecked", listchecked);
                     // Kiểm tra xem sản phẩm có được chọn không
-                    if (
-                        listchecked.some(
-                            (checkedItem: CartItem) =>
-                                checkedItem.id === item.id,
-                        )
-                    ) {
-                        acc.totalQuantity += item.quantity;
-                        acc.totalPrice +=
-                            (Number(item.product_variant.discount_price) ||
-                                Number(item.product_variant.price)) *
-                            Number(item.quantity);
+                    // if (
+                    //     listchecked.some(
+                    //         (checkedItem: CartItem) =>
+                    //             checkedItem.id === item.id,
+                    //     )
+                    // ) {
+                    //     acc.totalQuantity += item.quantity;
+                    //     acc.totalPrice +=
+                    //         (Number(item.product_variant.discount_price) ||
+                    //             Number(item.product_variant.price)) *
+                    //         Number(item.quantity);
+                    // }
+                    // return acc;
+                    if (listchecked.length > 0) {
+                        if (
+                            listchecked.some(
+                                (checkedItem: CartItem) =>
+                                    checkedItem.id === item.id,
+                            )
+                        ) {
+                            acc.totalQuantity += item.quantity;
+                            acc.totalPrice +=
+                                item.product_variant !== null
+                                    ? Number(
+                                          item.product_variant.discount_price,
+                                      ) * Number(item.quantity)
+                                    : Number(item.price) *
+                                      Number(item.quantity);
+                        }
+                        return acc;
                     }
-                    return acc;
                 },
                 { totalQuantity: 0, totalPrice: 0 },
             );
@@ -163,7 +186,6 @@ const ShoppingCart = () => {
             setTotalPrice(0);
         }
     }, [dataCart, listchecked]);
-
     return (
         <div
             className="container mx-auto padding"
@@ -191,8 +213,8 @@ const ShoppingCart = () => {
                             Xóa{" "}
                         </Button> */}
                     </Flex>
-                    {dataCartRequest &&
-                        dataCartRequest.map((item: CartItem) => {
+                    {dataCart &&
+                        dataCart.map((item: CartItem) => {
                             return (
                                 <Flex
                                     direction={"row"}
@@ -263,12 +285,21 @@ const ShoppingCart = () => {
                                                         marginTop: "-5px",
                                                     }}
                                                 >
-                                                    {item.product_variant.attribute_values
-                                                        .map(
-                                                            (item: any) =>
-                                                                item.name,
-                                                        )
-                                                        .join(", ")}
+                                                    {item.product_variant !==
+                                                    null ? (
+                                                        <>
+                                                            {item.product_variant.attribute_values
+                                                                .map(
+                                                                    (
+                                                                        item: any,
+                                                                    ) =>
+                                                                        item.name,
+                                                                )
+                                                                .join(", ")}
+                                                        </>
+                                                    ) : (
+                                                        <></>
+                                                    )}
                                                 </p>
                                                 <span
                                                     className={
@@ -278,7 +309,40 @@ const ShoppingCart = () => {
                                                         marginTop: "2px",
                                                     }}
                                                 >
-                                                    {item.product_variant
+                                                    {item.product_variant !==
+                                                    null ? (
+                                                        <>
+                                                            {formatCurrencyVN(
+                                                                item
+                                                                    .product_variant
+                                                                    .discount_price,
+                                                            )}
+
+                                                            <del
+                                                                style={{
+                                                                    margin: "0 7px",
+                                                                    color: "#999",
+                                                                    fontSize:
+                                                                        "14px",
+                                                                    fontWeight:
+                                                                        "400",
+                                                                }}
+                                                            >
+                                                                {formatCurrencyVN(
+                                                                    item
+                                                                        .product_variant
+                                                                        .price,
+                                                                )}
+                                                            </del>
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            {formatCurrencyVN(
+                                                                item.price,
+                                                            )}
+                                                        </>
+                                                    )}
+                                                    {/* {item.product_variant
                                                         .discount_price !==
                                                     "0.00" ? (
                                                         <>
@@ -313,7 +377,7 @@ const ShoppingCart = () => {
                                                                     .price,
                                                             )}
                                                         </>
-                                                    )}
+                                                    )} */}
                                                 </span>
                                             </Flex>
 
@@ -370,25 +434,47 @@ const ShoppingCart = () => {
                                                             )
                                                         }
                                                         disabled={
-                                                            item.quantity >=
-                                                            item.product_variant
-                                                                .stock
+                                                            item.product_variant !==
+                                                            null
+                                                                ? item.quantity >=
+                                                                  item
+                                                                      .product_variant
+                                                                      .stock
+                                                                : item.quantity >=
+                                                                  item.product
+                                                                      .stock
                                                         }
                                                         style={{
                                                             cursor:
-                                                                item.quantity >=
-                                                                item
-                                                                    .product_variant
-                                                                    .stock
-                                                                    ? "not-allowed"
-                                                                    : "pointer",
+                                                                item.product_variant !==
+                                                                null
+                                                                    ? item.quantity >=
+                                                                      item
+                                                                          .product_variant
+                                                                          .stock
+                                                                        ? "not-allowed"
+                                                                        : "pointer"
+                                                                    : item.quantity >=
+                                                                        item
+                                                                            .product
+                                                                            .stock
+                                                                      ? "not-allowed"
+                                                                      : "pointer",
                                                             opacity:
-                                                                item.quantity >=
-                                                                item
-                                                                    .product_variant
-                                                                    .stock
-                                                                    ? 0.5
-                                                                    : 1,
+                                                                item.product_variant !==
+                                                                null
+                                                                    ? item.quantity >=
+                                                                      item
+                                                                          .product_variant
+                                                                          .stock
+                                                                        ? 0.5
+                                                                        : 1
+                                                                    : item.quantity >=
+                                                                        item
+                                                                            .product
+                                                                            .stock
+                                                                      ? 0.5
+                                                                      : 1,
                                                         }}
                                                     >
                                                         +
@@ -426,8 +512,7 @@ const ShoppingCart = () => {
                                                 marginBottom: "10px",
                                             }}
                                         >
-                                            {item.product_variant
-                                                .discount_price !== "0.00" ? (
+                                            {item.product_variant !== null ? (
                                                 <>
                                                     {formatCurrencyVN(
                                                         String(
@@ -446,11 +531,7 @@ const ShoppingCart = () => {
                                                 <>
                                                     {formatCurrencyVN(
                                                         String(
-                                                            Number(
-                                                                item
-                                                                    .product_variant
-                                                                    .price,
-                                                            ) *
+                                                            Number(item.price) *
                                                                 Number(
                                                                     item.quantity,
                                                                 ),
