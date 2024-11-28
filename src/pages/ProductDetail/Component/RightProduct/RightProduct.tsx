@@ -171,12 +171,17 @@ const RightProduct = ({ data, id, dataComment }: Props) => {
             },
         );
     }) as TypeFilteredVariant | undefined;
-    // console.log("filteredVariant", filteredVariant);
-    // console.log("selectedAttributes", selectedAttributes);
+    console.log("filteredVariant", filteredVariant);
+    console.log("selectedAttributes", selectedAttributes);
     // console.log("dataAttribute", dataAttribute);
 
     //add Cart
     const onhandleAddToCart = async (type: string) => {
+        if (Object.keys(selectedAttributes).length === 0) {
+            message.error("Vui lòng chọn biến thể sản phẩm");
+            return;
+        }
+
         // if (!inforUser || inforUser === undefined) {
         //     message.error("Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng");
         //     setTimeout(() => {
@@ -326,7 +331,7 @@ const RightProduct = ({ data, id, dataComment }: Props) => {
                         readOnly
                     />
                     <span className="rating-count">
-                        ({dataComment?.average_rating})
+                        ({dataComment?.average_rating.toFixed(1)})
                     </span>
                 </Flex>
                 <div className="product-sales">
@@ -489,7 +494,7 @@ const RightProduct = ({ data, id, dataComment }: Props) => {
                     style={{ marginTop: "10px" }}
                     gap="xl"
                 >
-                    {filteredVariant?.stock == 0 || data.stock == 0 ? (
+                    {/* {filteredVariant?.stock == 0 || data.stock == 0 ? (
                         <div style={{ width: "100%" }}>
                             <Badge
                                 w="100%"
@@ -563,7 +568,59 @@ const RightProduct = ({ data, id, dataComment }: Props) => {
                                 </Badge>
                             </div>
                         </>
-                    )}
+                    )} */}
+                    <div style={{ width: "50%" }}>
+                        <Badge
+                            w="100%"
+                            size="lg"
+                            variant="gradient"
+                            gradient={{
+                                from: "rgba(5, 3, 2, 1)",
+                                to: "rgba(61, 61, 61, 1)",
+                                deg: 35,
+                            }}
+                            style={{
+                                padding: "20px",
+                                cursor: isLoading ? "not-allowed" : "pointer",
+                                opacity: isLoading ? 0.7 : 1,
+                            }}
+                            radius="xs"
+                            onClick={() => onhandleAddToCart("cart")}
+                        >
+                            {isLoading ? (
+                                <Loader color="blue" size="xs" />
+                            ) : (
+                                "Thêm vào giỏ hàng"
+                            )}
+                        </Badge>
+                    </div>
+                    <div style={{ width: "50%" }}>
+                        <Badge
+                            w="100%"
+                            size="lg"
+                            variant="gradient"
+                            gradient={{
+                                from: "rgba(3, 0, 207, 1)",
+                                to: "cyan",
+                                deg: 35,
+                            }}
+                            radius="xs"
+                            style={{
+                                padding: "20px",
+                                cursor: isLoadingPaymentButton
+                                    ? "not-allowed"
+                                    : "pointer",
+                                opacity: isLoadingPaymentButton ? 0.7 : 1,
+                            }}
+                            onClick={() => onhandleAddToCart("buy")}
+                        >
+                            {isLoadingPaymentButton ? (
+                                <Loader color="#fff" size="xs" />
+                            ) : (
+                                "Mua ngay"
+                            )}{" "}
+                        </Badge>
+                    </div>
                 </Flex>
             </div>
             <div className="my-[10px]">

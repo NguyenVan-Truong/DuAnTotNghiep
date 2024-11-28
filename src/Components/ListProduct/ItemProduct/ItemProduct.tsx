@@ -120,7 +120,7 @@ const ItemProduct = ({ product }: props) => {
                             readOnly
                         />
                         <span className="text-[12px] text-yellow-700">
-                            ({product?.ratings_avg})
+                            ({product?.ratings_avg.toFixed(1)})
                         </span>
                     </Flex>
                     <div>

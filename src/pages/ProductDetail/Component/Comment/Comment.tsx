@@ -35,7 +35,7 @@ const CommentProductDetail = ({
                             <div className="rating-summary-average">
                                 <p className="rating-average-score">
                                     {/* {averageRating}/5 */}
-                                    {data.average_rating}/5
+                                    {data.average_rating.toFixed(1)}/5
                                 </p>
                                 <Rating
                                     // Use the actual average rating from the API
