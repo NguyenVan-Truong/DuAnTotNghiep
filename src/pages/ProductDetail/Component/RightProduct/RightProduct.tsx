@@ -1,22 +1,14 @@
-import { NotificationExtension } from "@/extension/NotificationExtension";
-import { toTitleCase } from "@/model/_base/Text";
-import {
-    Badge,
-    Button,
-    Flex,
-    Loader,
-    LoadingOverlay,
-    Rating,
-} from "@mantine/core";
-import { IconCheck, IconMinus, IconPlus } from "@tabler/icons-react";
-import { useEffect, useMemo, useState } from "react";
-import "../../ProductDetail.scss";
-import WanrrantyTab from "../WarrantyTab/WanrrantyTab";
 import instance from "@/configs/axios";
 import { formatCurrencyVN } from "@/model/_base/Number";
-import { message } from "antd";
+import { toTitleCase } from "@/model/_base/Text";
+import { Badge, Button, Flex, Loader, Rating } from "@mantine/core";
+import { IconCheck, IconMinus, IconPlus } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
+import { message } from "antd";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import "../../ProductDetail.scss";
+import WanrrantyTab from "../WarrantyTab/WanrrantyTab";
 
 type UserInfo = {
     id: number;
@@ -84,14 +76,18 @@ const RightProduct = ({ data, id, dataComment }: Props) => {
     const [filteredVariant, setFilteredVariant] = useState<any>({});
     const increaseQuantity = () => {
         if (
-            quantity < (filteredVariant ? filteredVariant?.stock : data.stock)
+            // quantity < (filteredVariant ? filteredVariant?.stock : data.stock)
+            Object.keys(filteredVariant).length !== 0
         ) {
-            setQuantity(quantity + 1);
+            if (quantity < filteredVariant.stock) {
+                setQuantity(quantity + 1);
+            } else message.error("Số lượng sản phẩm không đủ");
         } else {
-            message.error("Số lượng sản phẩm không đủ");
+            if (quantity < data.stock) {
+                setQuantity(quantity + 1);
+            } else message.error("Số lượng sản phẩm không đủ");
         }
     };
-
     const decreaseQuantity = () => {
         if (quantity > 1) {
             setQuantity(quantity - 1);
@@ -183,7 +179,7 @@ const RightProduct = ({ data, id, dataComment }: Props) => {
     }, [selectedAttributes]);
     console.log("data", data);
     console.log("filteredVariant", filteredVariant);
-    console.log("selectedAttributes", selectedAttributes);
+    // console.log("selectedAttributes", selectedAttributes);
 
     //add Cart
     const onhandleAddToCart = async (type: string) => {
@@ -603,58 +599,83 @@ const RightProduct = ({ data, id, dataComment }: Props) => {
                             </div>
                         </>
                     )} */}
-                    <div style={{ width: "50%" }}>
-                        <Badge
-                            w="100%"
-                            size="lg"
-                            variant="gradient"
-                            gradient={{
-                                from: "rgba(5, 3, 2, 1)",
-                                to: "rgba(61, 61, 61, 1)",
-                                deg: 35,
-                            }}
-                            style={{
-                                padding: "20px",
-                                cursor: isLoading ? "not-allowed" : "pointer",
-                                opacity: isLoading ? 0.7 : 1,
-                            }}
-                            radius="xs"
-                            onClick={() => onhandleAddToCart("cart")}
-                        >
-                            {isLoading ? (
-                                <Loader color="blue" size="xs" />
-                            ) : (
-                                "Thêm vào giỏ hàng"
-                            )}
-                        </Badge>
-                    </div>
-                    <div style={{ width: "50%" }}>
-                        <Badge
-                            w="100%"
-                            size="lg"
-                            variant="gradient"
-                            gradient={{
-                                from: "rgba(3, 0, 207, 1)",
-                                to: "cyan",
-                                deg: 35,
-                            }}
-                            radius="xs"
-                            style={{
-                                padding: "20px",
-                                cursor: isLoadingPaymentButton
-                                    ? "not-allowed"
-                                    : "pointer",
-                                opacity: isLoadingPaymentButton ? 0.7 : 1,
-                            }}
-                            onClick={() => onhandleAddToCart("buy")}
-                        >
-                            {isLoadingPaymentButton ? (
-                                <Loader color="#fff" size="xs" />
-                            ) : (
-                                "Mua ngay"
-                            )}{" "}
-                        </Badge>
-                    </div>
+                    {filteredVariant?.stock == 0 || data.stock == 0 ? (
+                        <>
+                            <div style={{ width: "100%" }}>
+                                <Badge
+                                    w="100%"
+                                    size="lg"
+                                    variant="filled"
+                                    color="#ccc"
+                                    style={{
+                                        padding: "20px ",
+                                    }}
+                                    radius="xs"
+                                >
+                                    Hết hàng
+                                </Badge>
+                            </div>
+                        </>
+                    ) : (
+                        <>
+                            <div style={{ width: "50%" }}>
+                                <Badge
+                                    w="100%"
+                                    size="lg"
+                                    variant="gradient"
+                                    gradient={{
+                                        from: "rgba(5, 3, 2, 1)",
+                                        to: "rgba(61, 61, 61, 1)",
+                                        deg: 35,
+                                    }}
+                                    style={{
+                                        padding: "20px",
+                                        cursor: isLoading
+                                            ? "not-allowed"
+                                            : "pointer",
+                                        opacity: isLoading ? 0.7 : 1,
+                                    }}
+                                    radius="xs"
+                                    onClick={() => onhandleAddToCart("cart")}
+                                >
+                                    {isLoading ? (
+                                        <Loader color="blue" size="xs" />
+                                    ) : (
+                                        "Thêm vào giỏ hàng"
+                                    )}
+                                </Badge>
+                            </div>
+                            <div style={{ width: "50%" }}>
+                                <Badge
+                                    w="100%"
+                                    size="lg"
+                                    variant="gradient"
+                                    gradient={{
+                                        from: "rgba(3, 0, 207, 1)",
+                                        to: "cyan",
+                                        deg: 35,
+                                    }}
+                                    radius="xs"
+                                    style={{
+                                        padding: "20px",
+                                        cursor: isLoadingPaymentButton
+                                            ? "not-allowed"
+                                            : "pointer",
+                                        opacity: isLoadingPaymentButton
+                                            ? 0.7
+                                            : 1,
+                                    }}
+                                    onClick={() => onhandleAddToCart("buy")}
+                                >
+                                    {isLoadingPaymentButton ? (
+                                        <Loader color="#fff" size="xs" />
+                                    ) : (
+                                        "Mua ngay"
+                                    )}{" "}
+                                </Badge>
+                            </div>
+                        </>
+                    )}
                 </Flex>
             </div>
             <div className="my-[10px]">
