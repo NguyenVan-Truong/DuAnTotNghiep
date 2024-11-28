@@ -40,6 +40,7 @@ const CommentProductDetail = ({
                                 <Rating
                                     // Use the actual average rating from the API
                                     defaultValue={data.average_rating}
+                                    fractions={10}
                                     size="md"
                                     readOnly
                                     className="average-icon"

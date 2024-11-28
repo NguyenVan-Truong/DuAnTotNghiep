@@ -40,9 +40,11 @@ type UserInfo = {
     status: number;
     avatar_url: string;
 };
+
 type Props = {
     data: TypeProductDetail | undefined;
     id: number;
+    dataComment: any;
     // dataAttribute: any;
 };
 type AttributeValues = {
@@ -66,7 +68,7 @@ type TypeFilteredVariant = {
     attributes: Attribute[];
 };
 
-const RightProduct = ({ data, id }: Props) => {
+const RightProduct = ({ data, id, dataComment }: Props) => {
     if (!data) return null;
     const navigate = useNavigate();
     const [quantity, setQuantity] = useState(1);
@@ -289,8 +291,15 @@ const RightProduct = ({ data, id }: Props) => {
             </div>
             <Flex direction="row" className="product-interactions">
                 <Flex className="product-rating" direction="row">
-                    <Rating defaultValue={5} size="xs" readOnly />
-                    <span className="rating-count">(77)</span>
+                    <Rating
+                        value={dataComment?.average_rating || 0}
+                        fractions={10}
+                        size="xs"
+                        readOnly
+                    />
+                    <span className="rating-count">
+                        ({dataComment?.average_rating})
+                    </span>
                 </Flex>
                 <div className="product-sales">
                     <span>Đã bán 965</span>
