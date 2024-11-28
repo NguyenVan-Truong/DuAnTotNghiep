@@ -9,7 +9,7 @@ import {
     Rating,
 } from "@mantine/core";
 import { IconCheck, IconMinus, IconPlus } from "@tabler/icons-react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import "../../ProductDetail.scss";
 import WanrrantyTab from "../WarrantyTab/WanrrantyTab";
 import instance from "@/configs/axios";
@@ -81,7 +81,7 @@ const RightProduct = ({ data, id, dataComment }: Props) => {
     const [isLoadingPaymentButton, setIsLoadingPaymentButton] = useState(false);
     const [inforUser, setInforfUser] = useState<UserInfo>();
     const [selectedPrice, setSelectedPrice] = useState(data.discount_price);
-
+    const [filteredVariant, setFilteredVariant] = useState<any>({});
     const increaseQuantity = () => {
         if (
             quantity < (filteredVariant ? filteredVariant?.stock : data.stock)
@@ -104,6 +104,7 @@ const RightProduct = ({ data, id, dataComment }: Props) => {
 
     // Loại bỏ các giá trị trùng lặp
     const uniqueAttributes2 = [...new Set(dataAttribute2)];
+
     const [selectedAttributes, setSelectedAttributes] = useState<any>({});
     const uniqueAttributes: AttributeValues = uniqueAttributes2.reduce(
         (acc: any, attr: any) => {
@@ -124,6 +125,7 @@ const RightProduct = ({ data, id, dataComment }: Props) => {
         },
         {} as AttributeValues,
     );
+
     // xử lý khi chọn thuộc tính
     const handleAttributeSelect = (attribute: string, value: string) => {
         setSelectedAttributes((prev: any) => {
@@ -161,34 +163,38 @@ const RightProduct = ({ data, id, dataComment }: Props) => {
         }
     };
 
-    const filteredVariant = data.variants.find((variant: any) => {
-        return Object.entries(selectedAttributes).every(
-            ([attribute, value]) => {
-                return variant.attributes.some(
-                    (attr: any) =>
-                        attr.attribute === attribute && attr.value === value,
+    useEffect(() => {
+        if (Object.keys(selectedAttributes).length !== 0) {
+            const filteredVariant = data.variants.find((variant: any) => {
+                return Object.entries(selectedAttributes).every(
+                    ([attribute, value]) => {
+                        return variant.attributes.some(
+                            (attr: any) =>
+                                attr.attribute === attribute &&
+                                attr.value === value,
+                        );
+                    },
                 );
-            },
-        );
-    }) as TypeFilteredVariant | undefined;
+            }) as TypeFilteredVariant | undefined;
+            setFilteredVariant(filteredVariant);
+        } else {
+            setFilteredVariant({});
+        }
+    }, [selectedAttributes]);
+    console.log("data", data);
     console.log("filteredVariant", filteredVariant);
     console.log("selectedAttributes", selectedAttributes);
-    // console.log("dataAttribute", dataAttribute);
 
     //add Cart
     const onhandleAddToCart = async (type: string) => {
-        if (Object.keys(selectedAttributes).length === 0) {
+        if (
+            Object.keys(selectedAttributes).length === 0 &&
+            uniqueAttributes2.length > 0
+        ) {
             message.error("Vui lòng chọn biến thể sản phẩm");
             return;
         }
 
-        // if (!inforUser || inforUser === undefined) {
-        //     message.error("Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng");
-        //     setTimeout(() => {
-        //         navigate("/xac-thuc/dang-nhap");
-        //     }, 2000);
-        //     return;
-        // }
         // Kiểm tra nếu selectedAttributes không đủ các thuộc tính cần thiết từ dataAttribute
         const missingAttributes = uniqueAttributes2.filter(
             (attribute: string) => !(attribute in selectedAttributes),
@@ -197,6 +203,9 @@ const RightProduct = ({ data, id, dataComment }: Props) => {
         const UserProfile = localStorage.getItem("userProFile");
         if (!token || !UserProfile) {
             message.error("Vui lòng đăng nhập thêm sản phẩm vào giỏ hàng");
+            setTimeout(() => {
+                navigate("/xac-thuc/dang-nhap");
+            }, 2000);
             return; // Dừng lại không thực hiện hành động yêu thích
         }
         // Nếu thiếu thuộc tính nào, hiển thị thông báo lỗi và dừng lại
@@ -225,6 +234,8 @@ const RightProduct = ({ data, id, dataComment }: Props) => {
                 if (response.status === 201 || response.status === 200) {
                     message.success("Thêm vào giỏ hàng thành công");
                     queryClient.invalidateQueries({ queryKey: ["cart"] });
+                    setSelectedAttributes({});
+                    setFilteredVariant({});
                 }
             }
             if (type === "buy") {
@@ -294,27 +305,28 @@ const RightProduct = ({ data, id, dataComment }: Props) => {
             !discountPrice ||
             originalPrice <= discountPrice
         ) {
-            return 0; // Không giảm giá hoặc giá gốc không hợp lệ
+            return null; // Không giảm giá hoặc giá gốc không hợp lệ
         }
         return Math.round(
             ((originalPrice - discountPrice) / originalPrice) * 100,
         );
     };
-    // useEffect(() => {
-    //     // lấy thông tin user
-    //     const fetchDataUser = async () => {
-    //         try {
-    //             const response = await instance.get("/auth/profile");
-    //             if (response && response.status === 200) {
-    //                 const data = response.data;
-    //                 setInforfUser(data);
-    //             }
-    //         } catch (error) {
-    //             console.error("Error fetching user data", error);
-    //         }
-    //     };
-    //     fetchDataUser();
-    // }, []);
+    const discountPercentage = useMemo(() => {
+        if (data) {
+            const originalPrice =
+                Object.keys(filteredVariant).length !== 0
+                    ? Number(filteredVariant?.price)
+                    : Number(data?.price);
+
+            const discountPrice =
+                Object.keys(filteredVariant).length !== 0
+                    ? Number(filteredVariant?.discount_price)
+                    : Number(data?.discount_price);
+
+            return calculateDiscountPercentage(originalPrice, discountPrice);
+        }
+    }, [filteredVariant, data]);
+    console.log("discountPercentage", discountPercentage);
     return (
         <div className="product-details">
             <div className="product-header">
@@ -344,41 +356,63 @@ const RightProduct = ({ data, id, dataComment }: Props) => {
                     {filteredVariant?.discount_price !== "0.00" ? (
                         <>
                             {/* phần trăm được giảm */}
-                            <Badge
-                                size="lg"
-                                radius="sm"
-                                style={{ backgroundColor: "red" }}
-                            >
-                                {calculateDiscountPercentage(
-                                    filteredVariant
-                                        ? Number(filteredVariant?.price)
-                                        : Number(data?.price),
-                                    filteredVariant
-                                        ? Number(
-                                              filteredVariant?.discount_price,
-                                          )
-                                        : Number(data?.discount_price),
-                                )}
-                                %
-                            </Badge>
+                            {discountPercentage !== null ? (
+                                <Badge
+                                    size="lg"
+                                    radius="sm"
+                                    style={{ backgroundColor: "red" }}
+                                >
+                                    {discountPercentage}%
+                                </Badge>
+                            ) : (
+                                ""
+                            )}
 
-                            <span className="current-price text-[#ef683a] text-[17px] font-bold">
-                                {formatCurrencyVN(selectedPrice)}
-                            </span>
-                            <span className="original-price text-[#777a7b] text-[14px] ">
-                                <del>
-                                    {/* giá gốc */}
-                                    {formatCurrencyVN(
-                                        filteredVariant
-                                            ? filteredVariant?.price
-                                            : data?.price,
-                                    )}
-                                </del>
-                            </span>
+                            {Object.keys(selectedAttributes).length === 0 ? (
+                                <>
+                                    <span className="current-price text-[#ef683a] text-[17px] font-bold">
+                                        {formatCurrencyVN(data.discount_price)}
+                                    </span>
+                                    <span className="original-price text-[#777a7b] text-[14px] ">
+                                        <del>
+                                            {/* giá gốc */}
+                                            {formatCurrencyVN(data.price)}
+                                        </del>
+                                    </span>
+                                </>
+                            ) : (
+                                <>
+                                    <span className="current-price text-[#ef683a] text-[17px] font-bold">
+                                        {formatCurrencyVN(selectedPrice)}
+                                    </span>
+                                    <span className="original-price text-[#777a7b] text-[14px] ">
+                                        <del>
+                                            {/* giá gốc */}
+                                            {formatCurrencyVN(
+                                                filteredVariant
+                                                    ? filteredVariant?.price
+                                                    : data?.price,
+                                            )}
+                                        </del>
+                                    </span>
+                                </>
+                            )}
                         </>
                     ) : (
                         // NẾU KHÔNG CÓ DISCOUNT_PRICE
                         <>
+                            {/* phần trăm được giảm */}
+                            {discountPercentage !== null ? (
+                                <Badge
+                                    size="lg"
+                                    radius="sm"
+                                    style={{ backgroundColor: "red" }}
+                                >
+                                    {discountPercentage}%
+                                </Badge>
+                            ) : (
+                                ""
+                            )}
                             <span className="current-price text-[#ef683a] text-[17px] font-bold">
                                 {formatCurrencyVN(selectedPrice)}
                             </span>
@@ -452,7 +486,7 @@ const RightProduct = ({ data, id, dataComment }: Props) => {
                                 variant="default"
                                 onClick={decreaseQuantity}
                                 disabled={
-                                    filteredVariant
+                                    filteredVariant !== null
                                         ? filteredVariant.stock < 1
                                         : data.stock < 1
                                 }
@@ -470,7 +504,7 @@ const RightProduct = ({ data, id, dataComment }: Props) => {
                                 variant="default"
                                 onClick={increaseQuantity}
                                 disabled={
-                                    filteredVariant
+                                    filteredVariant !== null
                                         ? filteredVariant.stock < 1
                                         : data.stock < 1
                                 }
