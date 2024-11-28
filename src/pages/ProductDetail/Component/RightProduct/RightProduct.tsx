@@ -17,6 +17,7 @@ import { formatCurrencyVN } from "@/model/_base/Number";
 import { message } from "antd";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
+
 type UserInfo = {
     id: number;
     username: string;
@@ -47,14 +48,17 @@ type Props = {
     dataComment: any;
     // dataAttribute: any;
 };
+
 type AttributeValues = {
     [key: string]: string[] | any;
 };
+
 type Attribute = {
     id: number;
     attribute: string;
     value: string;
 };
+
 type TypeFilteredVariant = {
     id: number;
     price: string;
@@ -75,8 +79,9 @@ const RightProduct = ({ data, id, dataComment }: Props) => {
     const [isLoading, setisLoading] = useState(false);
     const queryClient = useQueryClient();
     const [isLoadingPaymentButton, setIsLoadingPaymentButton] = useState(false);
-    // Thông tin người dùng
     const [inforUser, setInforfUser] = useState<UserInfo>();
+    const [selectedPrice, setSelectedPrice] = useState(data.discount_price);
+
     const increaseQuantity = () => {
         if (
             quantity < (filteredVariant ? filteredVariant?.stock : data.stock)
@@ -86,6 +91,7 @@ const RightProduct = ({ data, id, dataComment }: Props) => {
             message.error("Số lượng sản phẩm không đủ");
         }
     };
+
     const decreaseQuantity = () => {
         if (quantity > 1) {
             setQuantity(quantity - 1);
@@ -131,8 +137,30 @@ const RightProduct = ({ data, id, dataComment }: Props) => {
                 [attribute]: value,
             };
         });
+
+        const variant = data.variants.find((variant: any) => {
+            return Object.entries(selectedAttributes).every(
+                ([attribute, value]) => {
+                    return variant.attributes.some(
+                        (attr: any) =>
+                            attr.attribute === attribute &&
+                            attr.value === value,
+                    );
+                },
+            );
+        }) as TypeFilteredVariant | undefined; // Explicitly type the variant
+
+        if (variant) {
+            setSelectedPrice(
+                variant.discount_price !== "0.00"
+                    ? variant.discount_price
+                    : variant.price,
+            );
+        } else {
+            setSelectedPrice(data.price);
+        }
     };
-    // lọc giá trị variant dựa trên thuộc tính đã chọn
+
     const filteredVariant = data.variants.find((variant: any) => {
         return Object.entries(selectedAttributes).every(
             ([attribute, value]) => {
@@ -330,12 +358,7 @@ const RightProduct = ({ data, id, dataComment }: Props) => {
                             </Badge>
 
                             <span className="current-price text-[#ef683a] text-[17px] font-bold">
-                                {/* giá sau khi được giảm */}
-                                {formatCurrencyVN(
-                                    filteredVariant
-                                        ? filteredVariant?.discount_price
-                                        : data?.discount_price,
-                                )}
+                                {formatCurrencyVN(selectedPrice)}
                             </span>
                             <span className="original-price text-[#777a7b] text-[14px] ">
                                 <del>
@@ -352,12 +375,7 @@ const RightProduct = ({ data, id, dataComment }: Props) => {
                         // NẾU KHÔNG CÓ DISCOUNT_PRICE
                         <>
                             <span className="current-price text-[#ef683a] text-[17px] font-bold">
-                                {/* giá gốc */}
-                                {formatCurrencyVN(
-                                    filteredVariant
-                                        ? filteredVariant?.price
-                                        : data?.price,
-                                )}
+                                {formatCurrencyVN(selectedPrice)}
                             </span>
                         </>
                     )}
