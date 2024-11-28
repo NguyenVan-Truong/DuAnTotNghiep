@@ -141,51 +141,42 @@ const ShoppingCart = () => {
     }, [debouncedQuantity, debouncedId]);
     useEffect(() => {
         if (!dataCart) return;
+
         if (dataCart?.length > 0 && listchecked.length > 0) {
             const total = dataCart.reduce(
-                (acc: any, item: CartItem) => {
-                    console.log("item", item);
-                    console.log("listchecked", listchecked);
-                    // Kiểm tra xem sản phẩm có được chọn không
-                    // if (
-                    //     listchecked.some(
-                    //         (checkedItem: CartItem) =>
-                    //             checkedItem.id === item.id,
-                    //     )
-                    // ) {
-                    //     acc.totalQuantity += item.quantity;
-                    //     acc.totalPrice +=
-                    //         (Number(item.product_variant.discount_price) ||
-                    //             Number(item.product_variant.price)) *
-                    //         Number(item.quantity);
-                    // }
-                    // return acc;
-                    if (listchecked.length > 0) {
-                        if (
-                            listchecked.some(
-                                (checkedItem: CartItem) =>
-                                    checkedItem.id === item.id,
-                            )
-                        ) {
-                            acc.totalQuantity += item.quantity;
-                            acc.totalPrice +=
-                                item.product_variant !== null
-                                    ? Number(
-                                          item.product_variant.discount_price,
-                                      ) * Number(item.quantity)
-                                    : Number(item.price) *
-                                      Number(item.quantity);
-                        }
-                        return acc;
+                (
+                    acc: { totalQuantity: number; totalPrice: number },
+                    item: CartItem,
+                ) => {
+                    if (
+                        listchecked.some(
+                            (checkedItem: CartItem) =>
+                                checkedItem.id === item.id,
+                        )
+                    ) {
+                        acc.totalQuantity += item.quantity;
+
+                        const itemPrice =
+                            item.product_variant &&
+                            item.product_variant.discount_price !== "0.00"
+                                ? Number(item.product_variant.discount_price)
+                                : item.product_variant
+                                  ? Number(item.product_variant.price)
+                                  : Number(item.price);
+
+                        acc.totalPrice += itemPrice * item.quantity;
                     }
+                    return acc;
                 },
                 { totalQuantity: 0, totalPrice: 0 },
             );
+
             setTotalPrice(total.totalPrice);
         } else {
             setTotalPrice(0);
         }
     }, [dataCart, listchecked]);
+
     return (
         <div
             className="container mx-auto padding"
@@ -310,14 +301,19 @@ const ShoppingCart = () => {
                                                     }}
                                                 >
                                                     {item.product_variant !==
-                                                    null ? (
+                                                        null &&
+                                                    item.product_variant
+                                                        .discount_price !==
+                                                        "0.00" ? (
                                                         <>
+                                                            {/* Giá giảm giá */}
                                                             {formatCurrencyVN(
                                                                 item
                                                                     .product_variant
                                                                     .discount_price,
                                                             )}
 
+                                                            {/* Giá gốc */}
                                                             <del
                                                                 style={{
                                                                     margin: "0 7px",
@@ -337,11 +333,17 @@ const ShoppingCart = () => {
                                                         </>
                                                     ) : (
                                                         <>
+                                                            {/* Nếu không có giá giảm giá hoặc discount_price = 0 thì lấy giá gốc */}
                                                             {formatCurrencyVN(
-                                                                item.price,
+                                                                item.product_variant
+                                                                    ? item
+                                                                          .product_variant
+                                                                          .price
+                                                                    : item.price,
                                                             )}
                                                         </>
                                                     )}
+
                                                     {/* {item.product_variant
                                                         .discount_price !==
                                                     "0.00" ? (
@@ -507,12 +509,15 @@ const ShoppingCart = () => {
                                             />
                                         </div>
                                         {/* tổng tiền của 1 sản phẩm */}
+                                        {/* Tổng tiền của 1 sản phẩm */}
                                         <p
                                             style={{
                                                 marginBottom: "10px",
                                             }}
                                         >
-                                            {item.product_variant !== null ? (
+                                            {item.product_variant !== null &&
+                                            item.product_variant
+                                                .discount_price !== "0.00" ? (
                                                 <>
                                                     {formatCurrencyVN(
                                                         String(
@@ -531,7 +536,13 @@ const ShoppingCart = () => {
                                                 <>
                                                     {formatCurrencyVN(
                                                         String(
-                                                            Number(item.price) *
+                                                            Number(
+                                                                item.product_variant
+                                                                    ? item
+                                                                          .product_variant
+                                                                          .price
+                                                                    : item.price,
+                                                            ) *
                                                                 Number(
                                                                     item.quantity,
                                                                 ),
