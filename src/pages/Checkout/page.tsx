@@ -789,7 +789,7 @@ const CheckoutPage = () => {
                                                             <strong>
                                                                 {item.quantity}x
                                                             </strong>
-                                                            <p
+                                                            {/* <p
                                                                 className={
                                                                     styles.productPrice
                                                                 }
@@ -810,26 +810,35 @@ const CheckoutPage = () => {
                                                                         )}
                                                                     </>
                                                                 )}
-                                                                {/* {item
-                                                                    .product_variant
-                                                                    .discount_price !==
-                                                                "0.00" ? (
+                                                            </p> */}
+                                                            <p
+                                                                className={
+                                                                    styles.productPrice
+                                                                }
+                                                            >
+                                                                {item.product_variant !==
+                                                                null ? (
                                                                     <>
-                                                                        {formatCurrencyVN(
-                                                                            item
-                                                                                .product_variant
-                                                                                .discount_price,
-                                                                        )}
+                                                                        {item
+                                                                            .product_variant
+                                                                            .discount_price !==
+                                                                        "0.00"
+                                                                            ? formatCurrencyVN(
+                                                                                  item
+                                                                                      .product_variant
+                                                                                      .discount_price,
+                                                                              )
+                                                                            : formatCurrencyVN(
+                                                                                  item
+                                                                                      .product_variant
+                                                                                      .price,
+                                                                              )}
                                                                     </>
                                                                 ) : (
-                                                                    <>
-                                                                        {formatCurrencyVN(
-                                                                            item
-                                                                                .product_variant
-                                                                                .price,
-                                                                        )}
-                                                                    </>
-                                                                )} */}
+                                                                    formatCurrencyVN(
+                                                                        item.price,
+                                                                    )
+                                                                )}
                                                             </p>
                                                         </div>
                                                     );
