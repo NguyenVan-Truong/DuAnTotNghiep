@@ -1,22 +1,15 @@
-import { NotificationExtension } from "@/extension/NotificationExtension";
-import { toTitleCase } from "@/model/_base/Text";
-import {
-    Badge,
-    Button,
-    Flex,
-    Loader,
-    LoadingOverlay,
-    Rating,
-} from "@mantine/core";
-import { IconCheck, IconMinus, IconPlus } from "@tabler/icons-react";
-import { useEffect, useState } from "react";
-import "../../ProductDetail.scss";
-import WanrrantyTab from "../WarrantyTab/WanrrantyTab";
 import instance from "@/configs/axios";
 import { formatCurrencyVN } from "@/model/_base/Number";
-import { message } from "antd";
+import { toTitleCase } from "@/model/_base/Text";
+import { Badge, Button, Flex, Loader, Rating } from "@mantine/core";
+import { IconCheck, IconMinus, IconPlus } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
+import { message } from "antd";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import "../../ProductDetail.scss";
+import WanrrantyTab from "../WarrantyTab/WanrrantyTab";
+
 type UserInfo = {
     id: number;
     username: string;
@@ -40,19 +33,24 @@ type UserInfo = {
     status: number;
     avatar_url: string;
 };
+
 type Props = {
     data: TypeProductDetail | undefined;
     id: number;
+    dataComment: any;
     // dataAttribute: any;
 };
+
 type AttributeValues = {
     [key: string]: string[] | any;
 };
+
 type Attribute = {
     id: number;
     attribute: string;
     value: string;
 };
+
 type TypeFilteredVariant = {
     id: number;
     price: string;
@@ -66,22 +64,28 @@ type TypeFilteredVariant = {
     attributes: Attribute[];
 };
 
-const RightProduct = ({ data, id }: Props) => {
+const RightProduct = ({ data, id, dataComment }: Props) => {
     if (!data) return null;
     const navigate = useNavigate();
     const [quantity, setQuantity] = useState(1);
     const [isLoading, setisLoading] = useState(false);
     const queryClient = useQueryClient();
     const [isLoadingPaymentButton, setIsLoadingPaymentButton] = useState(false);
-    // Thông tin người dùng
     const [inforUser, setInforfUser] = useState<UserInfo>();
+    const [selectedPrice, setSelectedPrice] = useState(data.discount_price);
+    const [filteredVariant, setFilteredVariant] = useState<any>({});
     const increaseQuantity = () => {
         if (
-            quantity < (filteredVariant ? filteredVariant?.stock : data.stock)
+            // quantity < (filteredVariant ? filteredVariant?.stock : data.stock)
+            Object.keys(filteredVariant).length !== 0
         ) {
-            setQuantity(quantity + 1);
+            if (quantity < filteredVariant.stock) {
+                setQuantity(quantity + 1);
+            } else message.error("Số lượng sản phẩm không đủ");
         } else {
-            message.error("Số lượng sản phẩm không đủ");
+            if (quantity < data.stock) {
+                setQuantity(quantity + 1);
+            } else message.error("Số lượng sản phẩm không đủ");
         }
     };
     const decreaseQuantity = () => {
@@ -96,6 +100,7 @@ const RightProduct = ({ data, id }: Props) => {
 
     // Loại bỏ các giá trị trùng lặp
     const uniqueAttributes2 = [...new Set(dataAttribute2)];
+
     const [selectedAttributes, setSelectedAttributes] = useState<any>({});
     const uniqueAttributes: AttributeValues = uniqueAttributes2.reduce(
         (acc: any, attr: any) => {
@@ -116,6 +121,7 @@ const RightProduct = ({ data, id }: Props) => {
         },
         {} as AttributeValues,
     );
+
     // xử lý khi chọn thuộc tính
     const handleAttributeSelect = (attribute: string, value: string) => {
         setSelectedAttributes((prev: any) => {
@@ -129,31 +135,62 @@ const RightProduct = ({ data, id }: Props) => {
                 [attribute]: value,
             };
         });
+
+        const variant = data.variants.find((variant: any) => {
+            return Object.entries(selectedAttributes).every(
+                ([attribute, value]) => {
+                    return variant.attributes.some(
+                        (attr: any) =>
+                            attr.attribute === attribute &&
+                            attr.value === value,
+                    );
+                },
+            );
+        }) as TypeFilteredVariant | undefined; // Explicitly type the variant
+
+        if (variant) {
+            setSelectedPrice(
+                variant.discount_price !== "0.00"
+                    ? variant.discount_price
+                    : variant.price,
+            );
+        } else {
+            setSelectedPrice(data.price);
+        }
     };
-    // lọc giá trị variant dựa trên thuộc tính đã chọn
-    const filteredVariant = data.variants.find((variant: any) => {
-        return Object.entries(selectedAttributes).every(
-            ([attribute, value]) => {
-                return variant.attributes.some(
-                    (attr: any) =>
-                        attr.attribute === attribute && attr.value === value,
+
+    useEffect(() => {
+        if (Object.keys(selectedAttributes).length !== 0) {
+            const filteredVariant = data.variants.find((variant: any) => {
+                return Object.entries(selectedAttributes).every(
+                    ([attribute, value]) => {
+                        return variant.attributes.some(
+                            (attr: any) =>
+                                attr.attribute === attribute &&
+                                attr.value === value,
+                        );
+                    },
                 );
-            },
-        );
-    }) as TypeFilteredVariant | undefined;
-    // console.log("filteredVariant", filteredVariant);
+            }) as TypeFilteredVariant | undefined;
+            setFilteredVariant(filteredVariant);
+        } else {
+            setFilteredVariant({});
+        }
+    }, [selectedAttributes]);
+    console.log("data", data);
+    console.log("filteredVariant", filteredVariant);
     // console.log("selectedAttributes", selectedAttributes);
-    // console.log("dataAttribute", dataAttribute);
 
     //add Cart
     const onhandleAddToCart = async (type: string) => {
-        // if (!inforUser || inforUser === undefined) {
-        //     message.error("Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng");
-        //     setTimeout(() => {
-        //         navigate("/xac-thuc/dang-nhap");
-        //     }, 2000);
-        //     return;
-        // }
+        if (
+            Object.keys(selectedAttributes).length === 0 &&
+            uniqueAttributes2.length > 0
+        ) {
+            message.error("Vui lòng chọn biến thể sản phẩm");
+            return;
+        }
+
         // Kiểm tra nếu selectedAttributes không đủ các thuộc tính cần thiết từ dataAttribute
         const missingAttributes = uniqueAttributes2.filter(
             (attribute: string) => !(attribute in selectedAttributes),
@@ -162,6 +199,9 @@ const RightProduct = ({ data, id }: Props) => {
         const UserProfile = localStorage.getItem("userProFile");
         if (!token || !UserProfile) {
             message.error("Vui lòng đăng nhập thêm sản phẩm vào giỏ hàng");
+            setTimeout(() => {
+                navigate("/xac-thuc/dang-nhap");
+            }, 2000);
             return; // Dừng lại không thực hiện hành động yêu thích
         }
         // Nếu thiếu thuộc tính nào, hiển thị thông báo lỗi và dừng lại
@@ -171,12 +211,6 @@ const RightProduct = ({ data, id }: Props) => {
             );
             return; // Dừng lại nếu thiếu thuộc tính
         }
-
-        // // Kiểm tra nếu filteredVariant không có giá trị hợp lệ
-        // if (!filteredVariant) {
-        //     message.error("Không tìm thấy biến thể sản phẩm phù hợp.");
-        //     return; // Dừng lại nếu không tìm thấy variant
-        // }
         const dataAddToCart = {
             product_id: id,
             product_variant_id: filteredVariant?.id ?? null,
@@ -190,6 +224,8 @@ const RightProduct = ({ data, id }: Props) => {
                 if (response.status === 201 || response.status === 200) {
                     message.success("Thêm vào giỏ hàng thành công");
                     queryClient.invalidateQueries({ queryKey: ["cart"] });
+                    setSelectedAttributes({});
+                    setFilteredVariant({});
                 }
             }
             if (type === "buy") {
@@ -259,27 +295,27 @@ const RightProduct = ({ data, id }: Props) => {
             !discountPrice ||
             originalPrice <= discountPrice
         ) {
-            return 0; // Không giảm giá hoặc giá gốc không hợp lệ
+            return null; // Không giảm giá hoặc giá gốc không hợp lệ
         }
         return Math.round(
             ((originalPrice - discountPrice) / originalPrice) * 100,
         );
     };
-    // useEffect(() => {
-    //     // lấy thông tin user
-    //     const fetchDataUser = async () => {
-    //         try {
-    //             const response = await instance.get("/auth/profile");
-    //             if (response && response.status === 200) {
-    //                 const data = response.data;
-    //                 setInforfUser(data);
-    //             }
-    //         } catch (error) {
-    //             console.error("Error fetching user data", error);
-    //         }
-    //     };
-    //     fetchDataUser();
-    // }, []);
+    const discountPercentage = useMemo(() => {
+        if (data) {
+            const originalPrice =
+                Object.keys(filteredVariant).length !== 0
+                    ? Number(filteredVariant?.price)
+                    : Number(data?.price);
+
+            const discountPrice =
+                Object.keys(filteredVariant).length !== 0
+                    ? Number(filteredVariant?.discount_price)
+                    : Number(data?.discount_price);
+
+            return calculateDiscountPercentage(originalPrice, discountPrice);
+        }
+    }, [filteredVariant, data]);
     return (
         <div className="product-details">
             <div className="product-header">
@@ -289,11 +325,18 @@ const RightProduct = ({ data, id }: Props) => {
             </div>
             <Flex direction="row" className="product-interactions">
                 <Flex className="product-rating" direction="row">
-                    <Rating defaultValue={5} size="xs" readOnly />
-                    <span className="rating-count">(77)</span>
+                    <Rating
+                        value={dataComment?.average_rating || 0}
+                        fractions={10}
+                        size="xs"
+                        readOnly
+                    />
+                    <span className="rating-count">
+                        ({dataComment?.average_rating.toFixed(1)})
+                    </span>
                 </Flex>
                 <div className="product-sales">
-                    <span>Đã bán 965</span>
+                    {/* <span>Đã bán 965</span> */}
                 </div>
             </Flex>
             <div className="product-pricing my-[5px] py-[5px] ">
@@ -302,53 +345,65 @@ const RightProduct = ({ data, id }: Props) => {
                     {filteredVariant?.discount_price !== "0.00" ? (
                         <>
                             {/* phần trăm được giảm */}
-                            <Badge
-                                size="lg"
-                                radius="sm"
-                                style={{ backgroundColor: "red" }}
-                            >
-                                {calculateDiscountPercentage(
-                                    filteredVariant
-                                        ? Number(filteredVariant?.price)
-                                        : Number(data?.price),
-                                    filteredVariant
-                                        ? Number(
-                                              filteredVariant?.discount_price,
-                                          )
-                                        : Number(data?.discount_price),
-                                )}
-                                %
-                            </Badge>
+                            {discountPercentage !== null ? (
+                                <Badge
+                                    size="lg"
+                                    radius="sm"
+                                    style={{ backgroundColor: "red" }}
+                                >
+                                    {discountPercentage}%
+                                </Badge>
+                            ) : (
+                                ""
+                            )}
 
-                            <span className="current-price text-[#ef683a] text-[17px] font-bold">
-                                {/* giá sau khi được giảm */}
-                                {formatCurrencyVN(
-                                    filteredVariant
-                                        ? filteredVariant?.discount_price
-                                        : data?.discount_price,
-                                )}
-                            </span>
-                            <span className="original-price text-[#777a7b] text-[14px] ">
-                                <del>
-                                    {/* giá gốc */}
-                                    {formatCurrencyVN(
-                                        filteredVariant
-                                            ? filteredVariant?.price
-                                            : data?.price,
-                                    )}
-                                </del>
-                            </span>
+                            {Object.keys(selectedAttributes).length === 0 ? (
+                                <>
+                                    <span className="current-price text-[#ef683a] text-[17px] font-bold">
+                                        {formatCurrencyVN(data.discount_price)}
+                                    </span>
+                                    <span className="original-price text-[#777a7b] text-[14px] ">
+                                        <del>
+                                            {/* giá gốc */}
+                                            {formatCurrencyVN(data.price)}
+                                        </del>
+                                    </span>
+                                </>
+                            ) : (
+                                <>
+                                    <span className="current-price text-[#ef683a] text-[17px] font-bold">
+                                        {formatCurrencyVN(selectedPrice)}
+                                    </span>
+                                    <span className="original-price text-[#777a7b] text-[14px] ">
+                                        <del>
+                                            {/* giá gốc */}
+                                            {formatCurrencyVN(
+                                                filteredVariant
+                                                    ? filteredVariant?.price
+                                                    : data?.price,
+                                            )}
+                                        </del>
+                                    </span>
+                                </>
+                            )}
                         </>
                     ) : (
                         // NẾU KHÔNG CÓ DISCOUNT_PRICE
                         <>
+                            {/* phần trăm được giảm */}
+                            {discountPercentage !== null ? (
+                                <Badge
+                                    size="lg"
+                                    radius="sm"
+                                    style={{ backgroundColor: "red" }}
+                                >
+                                    {discountPercentage}%
+                                </Badge>
+                            ) : (
+                                ""
+                            )}
                             <span className="current-price text-[#ef683a] text-[17px] font-bold">
-                                {/* giá gốc */}
-                                {formatCurrencyVN(
-                                    filteredVariant
-                                        ? filteredVariant?.price
-                                        : data?.price,
-                                )}
+                                {formatCurrencyVN(selectedPrice)}
                             </span>
                         </>
                     )}
@@ -420,7 +475,7 @@ const RightProduct = ({ data, id }: Props) => {
                                 variant="default"
                                 onClick={decreaseQuantity}
                                 disabled={
-                                    filteredVariant
+                                    filteredVariant !== null
                                         ? filteredVariant.stock < 1
                                         : data.stock < 1
                                 }
@@ -438,7 +493,7 @@ const RightProduct = ({ data, id }: Props) => {
                                 variant="default"
                                 onClick={increaseQuantity}
                                 disabled={
-                                    filteredVariant
+                                    filteredVariant !== null
                                         ? filteredVariant.stock < 1
                                         : data.stock < 1
                                 }
@@ -449,10 +504,25 @@ const RightProduct = ({ data, id }: Props) => {
                     </div>
                     <div>
                         <span style={{ color: "rgb(1 1 1)", fontSize: "13px" }}>
-                            {filteredVariant
+                            {/* {Object.keys(filteredVariant).length !== 0
                                 ? filteredVariant?.stock
-                                : data.stock}{" "}
-                            sản phẩm có sẵn
+                                : data.stock}{" "} */}
+                            {data.variants !== null &&
+                            data.variants.length > 0 ? (
+                                <>
+                                    {Object.keys(filteredVariant).length !==
+                                    0 ? (
+                                        <>
+                                            {filteredVariant?.stock} sản phẩm có
+                                            sẵn
+                                        </>
+                                    ) : (
+                                        <></>
+                                    )}
+                                </>
+                            ) : (
+                                <>{data.stock} sản phẩm có sẵn</>
+                            )}
                         </span>
                     </div>
                 </Flex>
@@ -462,7 +532,7 @@ const RightProduct = ({ data, id }: Props) => {
                     style={{ marginTop: "10px" }}
                     gap="xl"
                 >
-                    {filteredVariant?.stock == 0 || data.stock == 0 ? (
+                    {/* {filteredVariant?.stock == 0 || data.stock == 0 ? (
                         <div style={{ width: "100%" }}>
                             <Badge
                                 w="100%"
@@ -477,6 +547,83 @@ const RightProduct = ({ data, id }: Props) => {
                                 Hết hàng
                             </Badge>
                         </div>
+                    ) : (
+                        <>
+                            <div style={{ width: "50%" }}>
+                                <Badge
+                                    w="100%"
+                                    size="lg"
+                                    variant="gradient"
+                                    gradient={{
+                                        from: "rgba(5, 3, 2, 1)",
+                                        to: "rgba(61, 61, 61, 1)",
+                                        deg: 35,
+                                    }}
+                                    style={{
+                                        padding: "20px",
+                                        cursor: isLoading
+                                            ? "not-allowed"
+                                            : "pointer",
+                                        opacity: isLoading ? 0.7 : 1,
+                                    }}
+                                    radius="xs"
+                                    onClick={() => onhandleAddToCart("cart")}
+                                >
+                                    {isLoading ? (
+                                        <Loader color="blue" size="xs" />
+                                    ) : (
+                                        "Thêm vào giỏ hàng"
+                                    )}
+                                </Badge>
+                            </div>
+                            <div style={{ width: "50%" }}>
+                                <Badge
+                                    w="100%"
+                                    size="lg"
+                                    variant="gradient"
+                                    gradient={{
+                                        from: "rgba(3, 0, 207, 1)",
+                                        to: "cyan",
+                                        deg: 35,
+                                    }}
+                                    radius="xs"
+                                    style={{
+                                        padding: "20px",
+                                        cursor: isLoadingPaymentButton
+                                            ? "not-allowed"
+                                            : "pointer",
+                                        opacity: isLoadingPaymentButton
+                                            ? 0.7
+                                            : 1,
+                                    }}
+                                    onClick={() => onhandleAddToCart("buy")}
+                                >
+                                    {isLoadingPaymentButton ? (
+                                        <Loader color="#fff" size="xs" />
+                                    ) : (
+                                        "Mua ngay"
+                                    )}{" "}
+                                </Badge>
+                            </div>
+                        </>
+                    )} */}
+                    {filteredVariant?.stock == 0 || data.stock == 0 ? (
+                        <>
+                            <div style={{ width: "100%" }}>
+                                <Badge
+                                    w="100%"
+                                    size="lg"
+                                    variant="filled"
+                                    color="#ccc"
+                                    style={{
+                                        padding: "20px ",
+                                    }}
+                                    radius="xs"
+                                >
+                                    Hết hàng
+                                </Badge>
+                            </div>
+                        </>
                     ) : (
                         <>
                             <div style={{ width: "50%" }}>

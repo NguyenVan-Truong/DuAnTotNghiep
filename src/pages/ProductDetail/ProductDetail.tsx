@@ -154,6 +154,7 @@ const ProductDetail = () => {
                             <div className="rightProductTop">
                                 <RightProduct
                                     data={data}
+                                    dataComment={dataComment}
                                     id={location.state.id}
                                     // dataAttribute={dataAttribute}
                                 />
@@ -174,6 +175,7 @@ const ProductDetail = () => {
                         <div className="rightProductBottom">
                             <RightProduct
                                 data={data}
+                                dataComment={dataComment}
                                 id={location.state.id}
                                 // dataAttribute={dataAttribute}
                             />

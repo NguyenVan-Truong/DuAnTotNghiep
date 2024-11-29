@@ -36,16 +36,39 @@ const ShoppingCart = () => {
     //   tỔNG TIỀN
     const [totalPrice, setTotalPrice] = useState<number>(0);
     // click select checkbox
-    const [listchecked, setListChecked] = useState<[]>([]);
+    const [listchecked, setListChecked] = useState<any[]>([]);
     //chuyển trang Thanh toán
+    console.log("listchecked", listchecked);
+
     const handlePayment = () => {
         if (listchecked.length === 0) {
             message.error("Vui lòng chọn sản phẩm để thanh toán");
             return;
         }
-        navigate("/thanh-toan", {
-            state: { listchecked: listchecked, totalPrice: totalPrice },
-        });
+        for (let item of listchecked) {
+            if (item.product_variant !== null) {
+                console.log("item", item);
+                // Kiểm tra nếu số lượng lớn hơn stock
+                if (item.quantity > item.product_variant.stock) {
+                    message.error(
+                        `Sản phẩm ${item.product.name} vượt quá số lượng tồn kho > ${item.product_variant.stock}`,
+                    );
+                    return;
+                }
+            } else {
+                // Nếu sản phẩm không có variant, kiểm tra stock trực tiếp từ item
+                if (item.quantity > item.stock) {
+                    message.error(
+                        `Sản phẩm ${item.name} vượt quá số lượng tồn kho`,
+                    );
+                    return;
+                }
+            }
+        }
+
+        // navigate("/thanh-toan", {
+        //     state: { listchecked: listchecked, totalPrice: totalPrice },
+        // });
     };
     // #region Lấy dl giỏ hàng
     const fetchDataCart = async () => {
@@ -70,6 +93,9 @@ const ShoppingCart = () => {
         queryKey: ["cart"],
         queryFn: fetchDataCart,
     });
+    // useEffect(() => {
+    //     setDataCartRequest(dataCart);
+    // }, [dataCart]);
     // #endregion
     // click checkbox
     const onhandleChecked = (item: CartItem) => {
@@ -138,10 +164,13 @@ const ShoppingCart = () => {
     }, [debouncedQuantity, debouncedId]);
     useEffect(() => {
         if (!dataCart) return;
+
         if (dataCart?.length > 0 && listchecked.length > 0) {
             const total = dataCart.reduce(
-                (acc: any, item: CartItem) => {
-                    // Kiểm tra xem sản phẩm có được chọn không
+                (
+                    acc: { totalQuantity: number; totalPrice: number },
+                    item: CartItem,
+                ) => {
                     if (
                         listchecked.some(
                             (checkedItem: CartItem) =>
@@ -149,15 +178,22 @@ const ShoppingCart = () => {
                         )
                     ) {
                         acc.totalQuantity += item.quantity;
-                        acc.totalPrice +=
-                            (Number(item.product_variant.discount_price) ||
-                                Number(item.product_variant.price)) *
-                            Number(item.quantity);
+
+                        const itemPrice =
+                            item.product_variant &&
+                            item.product_variant.discount_price !== "0.00"
+                                ? Number(item.product_variant.discount_price)
+                                : item.product_variant
+                                  ? Number(item.product_variant.price)
+                                  : Number(item.price);
+
+                        acc.totalPrice += itemPrice * item.quantity;
                     }
                     return acc;
                 },
                 { totalQuantity: 0, totalPrice: 0 },
             );
+
             setTotalPrice(total.totalPrice);
         } else {
             setTotalPrice(0);
@@ -191,8 +227,8 @@ const ShoppingCart = () => {
                             Xóa{" "}
                         </Button> */}
                     </Flex>
-                    {dataCartRequest &&
-                        dataCartRequest.map((item: CartItem) => {
+                    {dataCart &&
+                        dataCart.map((item: CartItem) => {
                             return (
                                 <Flex
                                     direction={"row"}
@@ -263,12 +299,21 @@ const ShoppingCart = () => {
                                                         marginTop: "-5px",
                                                     }}
                                                 >
-                                                    {item.product_variant.attribute_values
-                                                        .map(
-                                                            (item: any) =>
-                                                                item.name,
-                                                        )
-                                                        .join(", ")}
+                                                    {item.product_variant !==
+                                                    null ? (
+                                                        <>
+                                                            {item.product_variant.attribute_values
+                                                                .map(
+                                                                    (
+                                                                        item: any,
+                                                                    ) =>
+                                                                        item.name,
+                                                                )
+                                                                .join(", ")}
+                                                        </>
+                                                    ) : (
+                                                        <></>
+                                                    )}
                                                 </p>
                                                 <span
                                                     className={
@@ -278,16 +323,20 @@ const ShoppingCart = () => {
                                                         marginTop: "2px",
                                                     }}
                                                 >
-                                                    {item.product_variant
+                                                    {item.product_variant !==
+                                                        null &&
+                                                    item.product_variant
                                                         .discount_price !==
-                                                    "0.00" ? (
+                                                        "0.00" ? (
                                                         <>
+                                                            {/* Giá giảm giá */}
                                                             {formatCurrencyVN(
                                                                 item
                                                                     .product_variant
                                                                     .discount_price,
                                                             )}
 
+                                                            {/* Giá gốc */}
                                                             <del
                                                                 style={{
                                                                     margin: "0 7px",
@@ -307,10 +356,13 @@ const ShoppingCart = () => {
                                                         </>
                                                     ) : (
                                                         <>
+                                                            {/* Nếu không có giá giảm giá hoặc discount_price = 0 thì lấy giá gốc */}
                                                             {formatCurrencyVN(
-                                                                item
-                                                                    .product_variant
-                                                                    .price,
+                                                                item.product_variant
+                                                                    ? item
+                                                                          .product_variant
+                                                                          .price
+                                                                    : item.price,
                                                             )}
                                                         </>
                                                     )}
@@ -370,25 +422,47 @@ const ShoppingCart = () => {
                                                             )
                                                         }
                                                         disabled={
-                                                            item.quantity >=
-                                                            item.product_variant
-                                                                .stock
+                                                            item.product_variant !==
+                                                            null
+                                                                ? item.quantity >=
+                                                                  item
+                                                                      .product_variant
+                                                                      .stock
+                                                                : item.quantity >=
+                                                                  item.product
+                                                                      .stock
                                                         }
                                                         style={{
                                                             cursor:
-                                                                item.quantity >=
-                                                                item
-                                                                    .product_variant
-                                                                    .stock
-                                                                    ? "not-allowed"
-                                                                    : "pointer",
+                                                                item.product_variant !==
+                                                                null
+                                                                    ? item.quantity >=
+                                                                      item
+                                                                          .product_variant
+                                                                          .stock
+                                                                        ? "not-allowed"
+                                                                        : "pointer"
+                                                                    : item.quantity >=
+                                                                        item
+                                                                            .product
+                                                                            .stock
+                                                                      ? "not-allowed"
+                                                                      : "pointer",
                                                             opacity:
-                                                                item.quantity >=
-                                                                item
-                                                                    .product_variant
-                                                                    .stock
-                                                                    ? 0.5
-                                                                    : 1,
+                                                                item.product_variant !==
+                                                                null
+                                                                    ? item.quantity >=
+                                                                      item
+                                                                          .product_variant
+                                                                          .stock
+                                                                        ? 0.5
+                                                                        : 1
+                                                                    : item.quantity >=
+                                                                        item
+                                                                            .product
+                                                                            .stock
+                                                                      ? 0.5
+                                                                      : 1,
                                                         }}
                                                     >
                                                         +
@@ -420,13 +494,15 @@ const ShoppingCart = () => {
                                                 }}
                                             />
                                         </div>
-                                        {/* tổng tiền của 1 sản phẩm */}
+
+                                        {/* Tổng tiền của 1 sản phẩm */}
                                         <p
                                             style={{
                                                 marginBottom: "10px",
                                             }}
                                         >
-                                            {item.product_variant
+                                            {item.product_variant !== null &&
+                                            item.product_variant
                                                 .discount_price !== "0.00" ? (
                                                 <>
                                                     {formatCurrencyVN(
@@ -447,9 +523,11 @@ const ShoppingCart = () => {
                                                     {formatCurrencyVN(
                                                         String(
                                                             Number(
-                                                                item
-                                                                    .product_variant
-                                                                    .price,
+                                                                item.product_variant
+                                                                    ? item
+                                                                          .product_variant
+                                                                          .price
+                                                                    : item.price,
                                                             ) *
                                                                 Number(
                                                                     item.quantity,
