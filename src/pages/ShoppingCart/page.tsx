@@ -36,16 +36,39 @@ const ShoppingCart = () => {
     //   tỔNG TIỀN
     const [totalPrice, setTotalPrice] = useState<number>(0);
     // click select checkbox
-    const [listchecked, setListChecked] = useState<[]>([]);
+    const [listchecked, setListChecked] = useState<any[]>([]);
     //chuyển trang Thanh toán
+    console.log("listchecked", listchecked);
+
     const handlePayment = () => {
         if (listchecked.length === 0) {
             message.error("Vui lòng chọn sản phẩm để thanh toán");
             return;
         }
-        navigate("/thanh-toan", {
-            state: { listchecked: listchecked, totalPrice: totalPrice },
-        });
+        for (let item of listchecked) {
+            if (item.product_variant !== null) {
+                console.log("item", item);
+                // Kiểm tra nếu số lượng lớn hơn stock
+                if (item.quantity > item.product_variant.stock) {
+                    message.error(
+                        `Sản phẩm ${item.product.name} vượt quá số lượng tồn kho > ${item.product_variant.stock}`,
+                    );
+                    return;
+                }
+            } else {
+                // Nếu sản phẩm không có variant, kiểm tra stock trực tiếp từ item
+                if (item.quantity > item.stock) {
+                    message.error(
+                        `Sản phẩm ${item.name} vượt quá số lượng tồn kho`,
+                    );
+                    return;
+                }
+            }
+        }
+
+        // navigate("/thanh-toan", {
+        //     state: { listchecked: listchecked, totalPrice: totalPrice },
+        // });
     };
     // #region Lấy dl giỏ hàng
     const fetchDataCart = async () => {
@@ -343,43 +366,6 @@ const ShoppingCart = () => {
                                                             )}
                                                         </>
                                                     )}
-
-                                                    {/* {item.product_variant
-                                                        .discount_price !==
-                                                    "0.00" ? (
-                                                        <>
-                                                            {formatCurrencyVN(
-                                                                item
-                                                                    .product_variant
-                                                                    .discount_price,
-                                                            )}
-
-                                                            <del
-                                                                style={{
-                                                                    margin: "0 7px",
-                                                                    color: "#999",
-                                                                    fontSize:
-                                                                        "14px",
-                                                                    fontWeight:
-                                                                        "400",
-                                                                }}
-                                                            >
-                                                                {formatCurrencyVN(
-                                                                    item
-                                                                        .product_variant
-                                                                        .price,
-                                                                )}
-                                                            </del>
-                                                        </>
-                                                    ) : (
-                                                        <>
-                                                            {formatCurrencyVN(
-                                                                item
-                                                                    .product_variant
-                                                                    .price,
-                                                            )}
-                                                        </>
-                                                    )} */}
                                                 </span>
                                             </Flex>
 
@@ -508,7 +494,7 @@ const ShoppingCart = () => {
                                                 }}
                                             />
                                         </div>
-                                        {/* tổng tiền của 1 sản phẩm */}
+
                                         {/* Tổng tiền của 1 sản phẩm */}
                                         <p
                                             style={{

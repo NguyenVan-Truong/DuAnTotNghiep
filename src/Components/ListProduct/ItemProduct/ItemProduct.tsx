@@ -78,7 +78,10 @@ const ItemProduct = ({ product }: props) => {
                     direction="row"
                     className={`${style.listProductsInfo} items-center justify-between`}
                 >
-                    <Tooltip label="Tooltip" color="rgba(166, 166, 166, 1)">
+                    <Tooltip
+                        label={product?.name}
+                        color="rgba(166, 166, 166, 1)"
+                    >
                         <h2
                             className={`${style.listProductsTitle} font-medium`}
                         >

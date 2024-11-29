@@ -211,12 +211,6 @@ const RightProduct = ({ data, id, dataComment }: Props) => {
             );
             return; // Dừng lại nếu thiếu thuộc tính
         }
-
-        // // Kiểm tra nếu filteredVariant không có giá trị hợp lệ
-        // if (!filteredVariant) {
-        //     message.error("Không tìm thấy biến thể sản phẩm phù hợp.");
-        //     return; // Dừng lại nếu không tìm thấy variant
-        // }
         const dataAddToCart = {
             product_id: id,
             product_variant_id: filteredVariant?.id ?? null,
@@ -322,7 +316,6 @@ const RightProduct = ({ data, id, dataComment }: Props) => {
             return calculateDiscountPercentage(originalPrice, discountPrice);
         }
     }, [filteredVariant, data]);
-    console.log("discountPercentage", discountPercentage);
     return (
         <div className="product-details">
             <div className="product-header">
@@ -343,7 +336,7 @@ const RightProduct = ({ data, id, dataComment }: Props) => {
                     </span>
                 </Flex>
                 <div className="product-sales">
-                    <span>Đã bán 965</span>
+                    {/* <span>Đã bán 965</span> */}
                 </div>
             </Flex>
             <div className="product-pricing my-[5px] py-[5px] ">
@@ -511,10 +504,25 @@ const RightProduct = ({ data, id, dataComment }: Props) => {
                     </div>
                     <div>
                         <span style={{ color: "rgb(1 1 1)", fontSize: "13px" }}>
-                            {filteredVariant
+                            {/* {Object.keys(filteredVariant).length !== 0
                                 ? filteredVariant?.stock
-                                : data.stock}{" "}
-                            sản phẩm có sẵn
+                                : data.stock}{" "} */}
+                            {data.variants !== null &&
+                            data.variants.length > 0 ? (
+                                <>
+                                    {Object.keys(filteredVariant).length !==
+                                    0 ? (
+                                        <>
+                                            {filteredVariant?.stock} sản phẩm có
+                                            sẵn
+                                        </>
+                                    ) : (
+                                        <></>
+                                    )}
+                                </>
+                            ) : (
+                                <>{data.stock} sản phẩm có sẵn</>
+                            )}
                         </span>
                     </div>
                 </Flex>
