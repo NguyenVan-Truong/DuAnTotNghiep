@@ -13,13 +13,15 @@ const Home = () => {
             {/* Banner */}
             <Banner />
             {/* TitleNew */}
-            <TitleNew />
-            {/* ProductsHomeNew */}
-            <ProductsHomeNew />
-            {/* TitleProducts */}
-            <TitleProducts />
-            {/* ProductsHome */}
-            <ProductsHome />
+            <div className="padding">
+                <TitleNew />
+                {/* ProductsHomeNew */}
+                <ProductsHomeNew />
+                {/* TitleProducts */}
+                <TitleProducts />
+                {/* ProductsHome */}
+                <ProductsHome />
+            </div>
             {/* TitleInspiration */}
             <TitleInspiration />
             {/* BannerFooter */}
