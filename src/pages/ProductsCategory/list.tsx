@@ -31,7 +31,7 @@ const ProductCategory = () => {
     );
     const [pagination, setPagination] = useState({
         pageIndex: 0,
-        pageSize: 6,
+        pageSize: 12,
         totalItems: 0,
     });
     const [totalPages, setTotalPages] = useState<number>(1);
@@ -107,7 +107,6 @@ const ProductCategory = () => {
         } catch (error) {
             console.log("API Error:", error);
         }
-        console.log(`/products/list${url}`);
     };
     // console.log("Total Items:", pagination.totalItems);
     // console.log("Total Pages:", totalPages);
@@ -179,6 +178,7 @@ const ProductCategory = () => {
                   .map((category) => (
                       <div
                           key={category.id}
+                          className="mb-2"
                           style={{ marginLeft: parentId ? "20px" : "0" }}
                       >
                           <Checkbox
@@ -193,7 +193,7 @@ const ProductCategory = () => {
                           />
                           {category.children &&
                               category.children.length > 0 && (
-                                  <div>
+                                  <div className="mb-2">
                                       {renderCategories(
                                           category.children,
                                           category.id,
@@ -292,9 +292,9 @@ const ProductCategory = () => {
     return (
         <>
             <BannerProduct />
-            <div className="container">
-                <div className="grid grid-cols-[25%_75%]">
-                    <div className="mt-[50px] product-filter padding">
+            <div className="container padding">
+                <div className="grid md:grid-cols-[32%_70%] xl:grid-cols-[20%_80%] padding">
+                    <div className="mt-[50px] product-filter ">
                         <form
                             onSubmit={form.onSubmit(() => {
                                 fetchdata();
