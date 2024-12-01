@@ -288,7 +288,6 @@ const ProductCategory = () => {
     //         fetchdata();
     //     }
     // }, [categoryIdFromParams]);
-
     return (
         <>
             <BannerProduct />
@@ -333,24 +332,61 @@ const ProductCategory = () => {
                                     <hr />
                                 </div>
 
-                                <Button type="submit">Áp dụng</Button>
+                                <Button
+                                    type="submit"
+                                    style={{
+                                        width: "100%",
+                                        marginBottom: "20px",
+                                    }}
+                                    onClick={() => {
+                                        const offset = 500; // Khoảng cách trừ
+                                        window.scrollTo({
+                                            top: offset,
+                                            behavior: "smooth", // Cuộn mượt
+                                        });
+                                    }}
+                                >
+                                    Áp dụng
+                                </Button>
                             </Flex>
                         </form>
                     </div>
                     <Box pos="relative">
-                        <div
-                            className={`${style.listProductss} mt-[50px] padding`}
-                        >
-                            <Grid className={style.listProductsMain}>
-                                {data?.map((product: any) => (
-                                    <ItemProduct
-                                        key={product.id}
-                                        product={product}
-                                    />
-                                ))}
-                            </Grid>
-                        </div>
-                        {/* Component phân trang */}
+                        {data && data.length !== 0 ? (
+                            <>
+                                <div
+                                    className={`${style.listProductss} mt-[50px] padding`}
+                                >
+                                    <Grid className={style.listProductsMain}>
+                                        {data?.map((product: any) => (
+                                            <ItemProduct
+                                                key={product.id}
+                                                product={product}
+                                            />
+                                        ))}
+                                    </Grid>
+                                </div>
+                            </>
+                        ) : (
+                            <>
+                                <div
+                                    style={{
+                                        width: "100%",
+                                        marginTop: "50px",
+                                    }}
+                                >
+                                    <span
+                                        className="text-center"
+                                        style={{
+                                            display: "block",
+                                            justifyContent: "center",
+                                        }}
+                                    >
+                                        Không có sản phẩm nào
+                                    </span>
+                                </div>
+                            </>
+                        )}
                         <Box
                             style={{
                                 display: "flex",

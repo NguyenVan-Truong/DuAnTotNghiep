@@ -369,3 +369,8 @@
     background-color: #ef683a;
     border-radius: 100% 0 0 0;
 }
+.input-quantity {
+    .mantine-Input-input {
+        padding-left: 25px;
+    }
+}

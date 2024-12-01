@@ -1,7 +1,7 @@
 import instance from "@/configs/axios";
 import { formatCurrencyVN } from "@/model/_base/Number";
 import { toTitleCase } from "@/model/_base/Text";
-import { Badge, Button, Flex, Loader, Rating } from "@mantine/core";
+import { Badge, Button, Flex, Input, Loader, Rating } from "@mantine/core";
 import { IconCheck, IconMinus, IconPlus } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { message } from "antd";
@@ -88,6 +88,7 @@ const RightProduct = ({ data, id, dataComment }: Props) => {
             } else message.error("Số lượng sản phẩm không đủ");
         }
     };
+
     const decreaseQuantity = () => {
         if (quantity > 1) {
             setQuantity(quantity - 1);
@@ -177,8 +178,8 @@ const RightProduct = ({ data, id, dataComment }: Props) => {
             setFilteredVariant({});
         }
     }, [selectedAttributes]);
-    console.log("data", data);
-    console.log("filteredVariant", filteredVariant);
+    // console.log("data", data);
+    // console.log("filteredVariant", filteredVariant);
     // console.log("selectedAttributes", selectedAttributes);
 
     //add Cart
@@ -221,6 +222,7 @@ const RightProduct = ({ data, id, dataComment }: Props) => {
             if (type === "cart") {
                 setisLoading(true);
                 const response = await instance.post("/cart", dataAddToCart);
+                console.log("response", response.data);
                 if (response.status === 201 || response.status === 200) {
                     message.success("Thêm vào giỏ hàng thành công");
                     queryClient.invalidateQueries({ queryKey: ["cart"] });
@@ -277,8 +279,8 @@ const RightProduct = ({ data, id, dataComment }: Props) => {
                     message.error("Đã xảy ra lỗi khi mua hàng");
                 }
             }
-        } catch (error) {
-            message.error("Thêm vào giỏ hàng thất bại");
+        } catch (error: any) {
+            message.error(error.response.data.error);
         } finally {
             setisLoading(false);
             setIsLoadingPaymentButton(false);
@@ -482,13 +484,48 @@ const RightProduct = ({ data, id, dataComment }: Props) => {
                             >
                                 <IconMinus size={14} />
                             </Button>
-                            <Button
-                                variant="default"
-                                className="!w-[60px] text-center"
-                                style={{ color: "red" }}
-                            >
-                                {quantity}
-                            </Button>
+                            <Input
+                                type="number"
+                                value={quantity}
+                                onChange={(e) => {
+                                    if (Number(e.target.value) == 0) {
+                                        setQuantity(1);
+                                        return;
+                                    }
+                                    if (
+                                        // quantity < (filteredVariant ? filteredVariant?.stock : data.stock)
+                                        Object.keys(filteredVariant).length !==
+                                        0
+                                    ) {
+                                        if (
+                                            Number(e.target.value) <=
+                                            Number(filteredVariant.stock)
+                                        ) {
+                                            setQuantity(Number(e.target.value));
+                                        } else
+                                            message.error(
+                                                "Số lượng sản phẩm không đủ",
+                                            );
+                                    } else {
+                                        if (
+                                            Number(e.target.value) <=
+                                            Number(data.stock)
+                                        ) {
+                                            setQuantity(Number(e.target.value));
+                                        } else
+                                            message.error(
+                                                "Số lượng sản phẩm không đủ",
+                                            );
+                                    }
+                                }}
+                                className="!w-[60px] text-center  input-quantity"
+                                style={{
+                                    color: "red",
+                                    border: "none",
+                                    textAlign: "center",
+                                }}
+                                min={1}
+                            />
                             <Button
                                 variant="default"
                                 onClick={increaseQuantity}

@@ -29,7 +29,7 @@ const ShoppingCart = () => {
     const navigate = useNavigate();
     const [debouncedQuantity, setDebouncedQuantity] = useDebouncedState<
         number | null
-    >(null, 400); // Sử dụng hook debounced state để giảm số lần gọi API
+    >(null, 200); // Sử dụng hook debounced state để giảm số lần gọi API
     const [debouncedId, setDebouncedId] = useState<number | null>();
     const [debouncedName, setDebouncedName] = useState<string | null>();
     const [dataCartRequest, setDataCartRequest] = useState<CartItem[]>([]);
@@ -47,7 +47,6 @@ const ShoppingCart = () => {
         }
         for (let item of listchecked) {
             if (item.product_variant !== null) {
-                console.log("item", item);
                 // Kiểm tra nếu số lượng lớn hơn stock
                 if (item.quantity > item.product_variant.stock) {
                     message.error(
@@ -66,9 +65,9 @@ const ShoppingCart = () => {
             }
         }
 
-        // navigate("/thanh-toan", {
-        //     state: { listchecked: listchecked, totalPrice: totalPrice },
-        // });
+        navigate("/thanh-toan", {
+            state: { listchecked: listchecked, totalPrice: totalPrice },
+        });
     };
     // #region Lấy dl giỏ hàng
     const fetchDataCart = async () => {
@@ -161,7 +160,7 @@ const ShoppingCart = () => {
             };
             updateQuantity();
         }
-    }, [debouncedQuantity, debouncedId]);
+    }, [debouncedQuantity]);
     useEffect(() => {
         if (!dataCart) return;
 
