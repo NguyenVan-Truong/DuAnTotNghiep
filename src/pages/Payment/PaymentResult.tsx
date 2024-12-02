@@ -24,15 +24,20 @@ const PaymentResult = () => {
     // };
     useEffect(() => {
         const dataCart = JSON.parse(localStorage.getItem("dataCart") || "{}");
+        console.log("dataCart", dataCart);
 
         if (statuss === "success" && orderStatus === false) {
             const fetchData = async () => {
-                const response = await instance.post("/orders", dataCart);
-                // await handleShippingFee(dataCart?.discount_code);
-                setOrderStatus(true);
-                if (response.status === 201) {
+                try {
+                    const response = await instance.post("/orders", dataCart);
+                    // await handleShippingFee(dataCart?.discount_code);
+                    setOrderStatus(true);
+                    if (response.status === 201) {
+                        queryClient.invalidateQueries({ queryKey: ["cart"] });
+                    }
+                } catch (error) {
                     localStorage.removeItem("dataCart");
-                    queryClient.invalidateQueries({ queryKey: ["cart"] });
+                    localStorage.removeItem("userInforSubmit");
                 }
             };
             fetchData();
