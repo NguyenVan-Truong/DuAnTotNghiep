@@ -70,7 +70,6 @@ const CheckoutPage = () => {
     const navigate = useNavigate();
     const queryClient = useQueryClient();
     const userProFile = JSON.parse(localStorage.getItem("userProFile") || "{}");
-
     if (!location.state) {
         return <Navigate to="/san-pham" replace />;
     }
@@ -245,7 +244,7 @@ const CheckoutPage = () => {
         const fullAddress = `${values.address}, ${nameWard.label}, ${nameDistrict.label}, ${nameCity.label}`;
 
         const dataSubmit = {
-            customer_id: inforUser?.id,
+            customer_id: userProFile?.id,
             customer_name: values?.name,
             promotion_id: checkedPromotions?.id, //hỏi hoàn
             total_amount: location?.state.totalPrice,
@@ -294,6 +293,7 @@ const CheckoutPage = () => {
                     ...dataSubmit,
                     payment_status: 2,
                 };
+                // console.log("dataResponse", dataResponse);
                 localStorage.setItem("dataCart", JSON.stringify(dataResponse));
                 await handlePayment();
             }
@@ -346,7 +346,6 @@ const CheckoutPage = () => {
     // Thanh toán online
     const handlePayment = async () => {
         try {
-            console.log("orderItems", orderItems);
             const response = await instance.post("/vnpay/payment", {
                 total_price: finalAmount,
                 bank_code: "NCB",
