@@ -89,6 +89,10 @@ const IconCart = () => {
             setTotalPrice(0);
         }
     }, [dataCart]);
+    const onhandleTurnPage = (id: number, slug: string) => {
+        navigate(`/chi-tiet-san-pham/${slug}`, { state: { id: id } });
+        onClose();
+    };
     return (
         <>
             <div className="items-center space-x-4">
@@ -125,6 +129,20 @@ const IconCart = () => {
                                 style={{
                                     borderBottom: "1px solid #f0f0f0",
                                     padding: "10px 0",
+                                    cursor: "pointer",
+                                }}
+                                onClick={() => {
+                                    if (
+                                        !product?.product?.id ||
+                                        !product?.product?.slug
+                                    ) {
+                                        message.error("Sản phẩm đã ngừng bán");
+                                    } else {
+                                        onhandleTurnPage(
+                                            product.product.id,
+                                            product.product.slug,
+                                        );
+                                    }
                                 }}
                             >
                                 <Flex

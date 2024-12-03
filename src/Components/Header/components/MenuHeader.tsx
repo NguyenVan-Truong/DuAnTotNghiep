@@ -9,11 +9,11 @@ const MenuHeader = () => {
     const navigate = useNavigate();
 
     const handleCategoryClick = (categoryId: number) => {
-        navigate("/san-pham",{
-            state:{
-                id:categoryId
-            }
-        })
+        navigate("/san-pham", {
+            state: {
+                id: categoryId,
+            },
+        });
         // setSearchParams({ ...Object.fromEntries(searchParams.entries()), category_id: String(categoryId) });
     };
 

@@ -63,6 +63,9 @@ export interface SelectOption {
 }
 
 const CheckoutPage = () => {
+    const userInforSubmit = JSON.parse(
+        localStorage.getItem("userInforSubmit") || "{}",
+    );
     const location = useLocation();
     const navigate = useNavigate();
     const queryClient = useQueryClient();
@@ -75,17 +78,23 @@ const CheckoutPage = () => {
     // thông tin tỉnh thành phố
     const [valueCity, setValueCity] = useState([]);
     const [checkedValueCity, setCheckedValueCity] = useState(
-        userProFile.province_id,
+        Object.keys(userInforSubmit).length !== 0
+            ? userInforSubmit.city
+            : userProFile.province_id,
     );
     // thông tin quận huyện
     const [valueDistrict, setValueDistrict] = useState([]);
     const [checkedValueDistrict, setCheckedValueDistrict] = useState(
-        userProFile.district_id,
+        Object.keys(userInforSubmit).length !== 0
+            ? userInforSubmit.district
+            : userProFile.district_id,
     );
     // thông tin phường xã
     const [valueWard, setValueWard] = useState([]);
     const [checkedValueWard, setCheckedValueWard] = useState(
-        userProFile.ward_id,
+        Object.keys(userInforSubmit).length !== 0
+            ? userInforSubmit.ward
+            : userProFile.ward_id,
     );
     // Phương thức thanh toán
     const [selectedPaymentMethod, setSelectedPaymentMethod] =
@@ -107,18 +116,20 @@ const CheckoutPage = () => {
     const [checked, setChecked] = useState(false);
     // ID cart
     const [idCart, setIdCart] = useState<string>("");
-
+    const enty = {
+        email: "",
+        name: "",
+        sđt: "",
+        city: null,
+        district: null,
+        ward: null,
+        address: "",
+        description: "",
+    };
     const form = useForm({
         mode: "uncontrolled",
         initialValues: {
-            email: "",
-            name: "",
-            sđt: "",
-            city: null,
-            district: null,
-            ward: null,
-            address: "",
-            description: "",
+            ...enty,
         },
 
         validate: {
@@ -218,6 +229,7 @@ const CheckoutPage = () => {
     //#region callorder
     // Xử lý submit form
     const onhandleSubmit = async (values: any) => {
+        localStorage.setItem("userInforSubmit", JSON.stringify(values));
         const nameCity = (valueCity.find(
             (item: any) => item.value === checkedValueCity,
         ) || { value: "", label: "" }) as SelectOption;
@@ -232,7 +244,7 @@ const CheckoutPage = () => {
         const fullAddress = `${values.address}, ${nameWard.label}, ${nameDistrict.label}, ${nameCity.label}`;
 
         const dataSubmit = {
-            customer_id: inforUser?.id,
+            customer_id: userProFile?.id,
             customer_name: values?.name,
             promotion_id: checkedPromotions?.id, //hỏi hoàn
             total_amount: location?.state.totalPrice,
@@ -250,6 +262,7 @@ const CheckoutPage = () => {
             order_items: orderItems,
             cart_id: idCart, //Thêm trường này
         };
+        // console.log("dataSubmit", dataSubmit);
         if (dataSubmit) {
             if (!checked) {
                 return message.error(
@@ -260,6 +273,7 @@ const CheckoutPage = () => {
                 setLoading(true);
                 try {
                     const response = await instance.post("/orders", dataSubmit);
+                    // console.log("response", response);
                     if (response && response.status === 201) {
                         // await handleShippingFee();
                         navigate("/order-success", {
@@ -267,9 +281,10 @@ const CheckoutPage = () => {
                         });
                         queryClient.invalidateQueries({ queryKey: ["cart"] });
                     }
-                } catch (error) {
-                    message.error("Lỗi không thể đặt hàng");
-                    console.log("error", error);
+                } catch (error: any) {
+                    // message.error("Lỗi không thể đặt hàng");
+                    // console.log("error", error.response.data.error);
+                    message.error(error.response.data.error);
                 } finally {
                     setLoading(false);
                 }
@@ -278,34 +293,13 @@ const CheckoutPage = () => {
                     ...dataSubmit,
                     payment_status: 2,
                 };
+                // console.log("dataResponse", dataResponse);
                 localStorage.setItem("dataCart", JSON.stringify(dataResponse));
                 await handlePayment();
             }
         }
     };
 
-    // lấy thông tin user
-    const fetchDataUser = async () => {
-        try {
-            const response = await instance.get("/auth/profile");
-            if (response && response.status === 200) {
-                const data = response.data;
-                setInforfUser(data);
-                form.setValues({
-                    email: data.email,
-                    name: data.full_name,
-                    sđt: data.phone,
-                    city: data.province_id,
-                    district: data.district_id,
-                    ward: data.ward_id,
-                    address: data.address,
-                    description: "",
-                });
-            }
-        } catch (error) {
-            console.error("Error fetching user data", error);
-        }
-    };
     // Hàm lấy phí vận chuyển
     const getShippingFee = async () => {
         try {
@@ -322,6 +316,7 @@ const CheckoutPage = () => {
     };
     //lấy mã giảm giá
     const onhandlePromotions = async () => {
+        if (dataPromotions.length !== 0) return;
         try {
             const response = await instance.get("/promotions");
             const now = new Date();
@@ -354,27 +349,17 @@ const CheckoutPage = () => {
             const response = await instance.post("/vnpay/payment", {
                 total_price: finalAmount,
                 bank_code: "NCB",
+                orderItems: orderItems,
             });
             if (response && response.status === 200) {
                 window.location.href = response.data.payment_url;
             } else {
                 localStorage.removeItem("dataCart");
             }
-        } catch (error) {
-            console.error(error);
-            alert("Có lỗi xảy ra khi thanh toán!");
+        } catch (error: any) {
+            message.error(error.response.data.error);
         }
     };
-    // // Call trừ số lượng mã giảm giá
-    // const handleShippingFee = async () => {
-    //     const response = await instance.post("/promotions/use", {
-    //         code: checkedPromotions?.code,
-    //     });
-    //     try {
-    //     } catch (error) {
-    //         console.log("lỗi trừ mã giảm giá", error);
-    //     }
-    // };
 
     useEffect(() => {
         const fetchData = async () => {
@@ -405,31 +390,41 @@ const CheckoutPage = () => {
             let price = 0;
             if (item.product_variant == null) {
                 price = parseFloat(item.price);
+                return {
+                    product_variants_id: null,
+                    product_id: item.product_id,
+                    product_name: item.product.name,
+                    quantity: item.quantity,
+                    price: price,
+                    total: item.quantity * price,
+                    variant: null,
+                };
             } else {
                 if (item.product_variant.discount_price == "0.00") {
                     price = parseFloat(item.product_variant.price);
                 } else {
                     price = parseFloat(item.product_variant.discount_price);
                 }
+                return {
+                    product_variants_id: item.product_variant.id,
+                    product_id: item.product_id,
+                    product_name: item.product.name,
+                    quantity: item.quantity,
+                    price: price,
+                    total: item.quantity * price,
+                    variant: JSON.stringify(
+                        item.product_variant
+                            ? item.product_variant.attribute_values.reduce(
+                                  (acc: any, attr: any) => {
+                                      acc[attr.attributes.name] = attr.name;
+                                      return acc;
+                                  },
+                                  {},
+                              )
+                            : {},
+                    ),
+                };
             }
-            return {
-                product_id: item.product_id,
-                product_name: item.product.name,
-                quantity: item.quantity,
-                price: price,
-                total: item.quantity * price,
-                variant: JSON.stringify(
-                    item.product_variant
-                        ? item.product_variant.attribute_values.reduce(
-                              (acc: any, attr: any) => {
-                                  acc[attr.attributes.name] = attr.name;
-                                  return acc;
-                              },
-                              {},
-                          )
-                        : {},
-                ),
-            };
         });
         setOrderItems(orderItems);
         // lấy id cart sản phẩm
@@ -437,11 +432,46 @@ const CheckoutPage = () => {
             .map((item: any) => item.id)
             .join(",");
         setIdCart(IdCart);
-        Promise.all([fetchDataUser(), onhandleSelectCity()]);
+
+        Promise.all([onhandleSelectCity()]);
     }, []);
     useEffect(() => {
-        form.setFieldValue("district", null);
-        form.setFieldValue("ward", null);
+        try {
+            if (userInforSubmit && Object.keys(userInforSubmit).length > 0) {
+                form.setValues({
+                    email: userInforSubmit.email || "",
+                    name: userInforSubmit.name || "",
+                    sđt: userInforSubmit.sđt || "",
+                    city: userInforSubmit.city || "",
+                    district: userInforSubmit.district || "",
+                    ward: userInforSubmit.ward || "",
+                    address: userInforSubmit.address || "",
+                    description: userInforSubmit.description || "",
+                });
+                return;
+                // Dừng useEffect nếu đã set xong giá trị
+            }
+            if (userProFile) {
+                form.setValues({
+                    email: userProFile.email || "",
+                    name: userProFile.full_name || "",
+                    sđt: userProFile.phone || "",
+                    city: userProFile.province_id,
+                    district: userProFile.district_id,
+                    ward: userProFile.ward_id,
+                    address: userProFile.address || "",
+                    description: "",
+                });
+                return;
+            }
+        } catch (error) {
+            console.error("Error parsing userInforSubmit:", error);
+        }
+    }, []);
+
+    useEffect(() => {
+        // form.setFieldValue("district", null);
+        // form.setFieldValue("ward", null);
         onhandleSelectDistrict();
     }, [checkedValueCity]);
     useEffect(() => {
@@ -471,6 +501,7 @@ const CheckoutPage = () => {
             setFinalAmount(calculatedFinalAmount);
         }
     }, [location?.state.totalPrice, shippingFee, checkedPromotions]);
+
     return (
         <div className="padding my-[40px]">
             <div className="container">
@@ -533,11 +564,6 @@ const CheckoutPage = () => {
                                                 form.getValues().city ?? null
                                             }
                                             {...form.getInputProps("city")}
-                                            // onClick={() => {
-                                            //     if (valueCity.length === 0) {
-                                            //         onhandleSelectCity();
-                                            //     }
-                                            // }}
                                             onChange={(value: any) => {
                                                 form.setFieldValue(
                                                     "city",
@@ -562,21 +588,6 @@ const CheckoutPage = () => {
                                                 null
                                             }
                                             {...form.getInputProps("district")}
-                                            // onClick={() => {
-                                            //     if (
-                                            //         valueCity.length === 0 ||
-                                            //         !checkedValueCity
-                                            //     ) {
-                                            //         return message.error(
-                                            //             "Vui lòng chọn tỉnh/thành phố trước",
-                                            //         );
-                                            //     }
-                                            //     if (
-                                            //         valueDistrict.length === 0
-                                            //     ) {
-                                            //         onhandleSelectDistrict();
-                                            //     }
-                                            // }}
                                             onChange={(value: any) => {
                                                 form.setFieldValue(
                                                     "district",
@@ -596,20 +607,6 @@ const CheckoutPage = () => {
                                             }
                                             {...form.getInputProps("ward")}
                                             className="w-[50%]"
-                                            // onClick={() => {
-                                            //     if (
-                                            //         valueDistrict.length ===
-                                            //             0 ||
-                                            //         !checkedValueDistrict
-                                            //     ) {
-                                            //         return message.error(
-                                            //             "Vui lòng chọn quận huyện trước",
-                                            //         );
-                                            //     }
-                                            //     if (valueWard.length === 0) {
-                                            //         onhandleSelectWart();
-                                            //     }
-                                            // }}
                                             onChange={(value: any) => {
                                                 form.setFieldValue(
                                                     "ward",
@@ -731,7 +728,6 @@ const CheckoutPage = () => {
                                         <div>
                                             {location?.state.listchecked.map(
                                                 (item: CartItem) => {
-                                                    console.log("item", item);
                                                     return (
                                                         <div
                                                             className={`${styles.productDetails} flex flex-row justify-between gap-3 items-center my-[9px]`}
@@ -789,28 +785,7 @@ const CheckoutPage = () => {
                                                             <strong>
                                                                 {item.quantity}x
                                                             </strong>
-                                                            {/* <p
-                                                                className={
-                                                                    styles.productPrice
-                                                                }
-                                                            >
-                                                                {item.product_variant !==
-                                                                null ? (
-                                                                    <>
-                                                                        {formatCurrencyVN(
-                                                                            item
-                                                                                .product_variant
-                                                                                .discount_price,
-                                                                        )}
-                                                                    </>
-                                                                ) : (
-                                                                    <>
-                                                                        {formatCurrencyVN(
-                                                                            item.price,
-                                                                        )}
-                                                                    </>
-                                                                )}
-                                                            </p> */}
+
                                                             <p
                                                                 className={
                                                                     styles.productPrice
@@ -873,7 +848,9 @@ const CheckoutPage = () => {
                                             w={150}
                                             placeholder="Chọn mã giảm giá"
                                             data={dataPromotions}
-                                            onClick={() => onhandlePromotions()}
+                                            onClick={() => {
+                                                onhandlePromotions();
+                                            }}
                                             onChange={(value) => {
                                                 if (value) {
                                                     setValuePromotions(value);
