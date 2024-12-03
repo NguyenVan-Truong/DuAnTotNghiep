@@ -13,6 +13,7 @@ import { Favorites } from "@/model/Favorite";
 import { min } from "lodash";
 import Index from "../../../routes/index";
 import { formatCurrencyVN } from "@/model/_base/Number";
+import { Link, useNavigate } from "react-router-dom";
 
 // const fetchFavoritesData = async () => {
 //     const response = await instance.get("/favorites");
@@ -74,6 +75,7 @@ const MiniFavorite = () => {
 };
 
 const Favorite = ({ data }: any) => {
+    const navigate = useNavigate();
     const [drawerVisible, setDrawerVisible] = useState(false);
 
     // const { data: products, refetch } = useQuery<Favorites[]>({
@@ -116,7 +118,10 @@ const Favorite = ({ data }: any) => {
     const onClose = () => {
         setDrawerVisible(false);
     };
-    //
+    const onhandleTurnPage = (id: number, slug: string) => {
+        navigate(`/chi-tiet-san-pham/${slug}`, { state: { id: id } });
+        onClose();
+    };
     return (
         <>
             <div className="items-center space-x-4">
@@ -146,7 +151,22 @@ const Favorite = ({ data }: any) => {
                             data.map((favorite: any, index: any) => (
                                 <div
                                     key={index}
-                                    className="flex space-x-4 mb-2 items-center"
+                                    className="flex space-x-4 mb-2 items-center cursor-pointer"
+                                    onClick={() => {
+                                        if (
+                                            !favorite?.product?.id ||
+                                            !favorite?.product?.slug
+                                        ) {
+                                            message.error(
+                                                "Sản phẩm đã ngừng bán",
+                                            );
+                                        } else {
+                                            onhandleTurnPage(
+                                                favorite.product.id,
+                                                favorite.product.slug,
+                                            );
+                                        }
+                                    }}
                                 >
                                     <div>
                                         <img

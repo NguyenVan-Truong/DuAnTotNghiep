@@ -267,19 +267,16 @@ const FormUpdate = ({ onSuccess, modals }: FormUpdateProps) => {
                 label="Tên người dùng"
                 placeholder="Nhập tên người dùng"
                 {...form.getInputProps("full_name")}
-                required
             />
             <TextInput
                 label="Số điện thoại"
                 placeholder="Nhập số điện thoại"
                 {...form.getInputProps("phone")}
-                required
             />
             <TextInput
                 label="Địa chỉ"
                 placeholder="Nhập địa chỉ"
                 {...form.getInputProps("address")}
-                required
             />
             {/* <DateInput
                 label="Ngày sinh"
