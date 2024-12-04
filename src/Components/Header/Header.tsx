@@ -282,11 +282,7 @@ const Header = () => {
                                         }
                                         style={{ fontSize: "13px" }}
                                     >
-                                        <Link
-                                            to={
-                                                "/nguoi-dung/san-pham-yeu-thich"
-                                            }
-                                        >
+                                        <Link to={"/nguoi-dung/yeu-thich"}>
                                             Sản Phẩm Yêu thích
                                         </Link>
                                     </Menu.Item>

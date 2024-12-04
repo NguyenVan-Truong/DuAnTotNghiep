@@ -243,7 +243,7 @@ const OrderAll = () => {
             if (response?.data?.data) {
                 modals.openConfirmModal({
                     title: "Chi tiết đơn hàng",
-                    size: "1000px",
+                    size: "850px",
                     children: <DetailOrder data={response.data.data} />,
                     confirmProps: { display: "none" },
                     cancelProps: { display: "none" },
