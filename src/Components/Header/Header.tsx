@@ -21,6 +21,7 @@ import "./Header.scss";
 //import { Category } from "@/model/Category";
 import MenuHeader from "./components/MenuHeader";
 import SearchBox from "./components/Search";
+import Posts from "./components/Posts";
 
 const Header = () => {
     const [visible, setVisible] = useState(false);
@@ -363,6 +364,9 @@ const Header = () => {
                                     Liên Hệ
                                 </NavLink>
                             </li>
+                            {/* <li className="flex items-center space-x-5 !lg:space-x-2 whitespace-nowrap">
+                                <Posts />
+                            </li> */}
                         </ul>
                     </div>
 
