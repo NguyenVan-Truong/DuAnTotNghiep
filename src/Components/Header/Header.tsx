@@ -364,9 +364,9 @@ const Header = () => {
                                     Liên Hệ
                                 </NavLink>
                             </li>
-                            <li className="flex items-center space-x-5 !lg:space-x-2 whitespace-nowrap">
+                            {/* <li className="flex items-center space-x-5 !lg:space-x-2 whitespace-nowrap">
                                 <Posts />
-                            </li>
+                            </li> */}
                         </ul>
                     </div>
 

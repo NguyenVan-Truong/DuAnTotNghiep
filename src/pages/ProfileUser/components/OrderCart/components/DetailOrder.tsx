@@ -35,7 +35,20 @@ const OrderDetail = ({ data }: OrderDetailProps) => {
         //     message.success("In hóa đơn thành công!");
         // },
     });
-
+    function getColorStatus(text: any) {
+        switch (text) {
+            case "Chờ xử lý":
+                return "#FFE082";
+            case "Đang xử lý":
+                return "#FFB74D";
+            case "Đang giao hàng":
+                return "#64B5F6";
+            case "Đã hủy":
+                return "red";
+            default:
+                return "#81C784";
+        }
+    }
     return (
         <>
             <div style={{ display: "none" }}>
@@ -103,7 +116,13 @@ const OrderDetail = ({ data }: OrderDetailProps) => {
                                         Trạng thái đơn hàng
                                     </td>
                                     <td className="border border-gray-300 p-2">
-                                        <span className="text-green-600">
+                                        <span
+                                            style={{
+                                                color: getColorStatus(
+                                                    data.status,
+                                                ),
+                                            }}
+                                        >
                                             {data.status}
                                         </span>
                                     </td>
@@ -192,6 +211,9 @@ const OrderDetail = ({ data }: OrderDetailProps) => {
                                     <th className="border border-gray-300 w-[150px] font-semibold">
                                         Mô tả sản phẩm
                                     </th>
+                                    <th className="border border-gray-300 w-[50px] font-semibold">
+                                        Thao tác
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -202,7 +224,25 @@ const OrderDetail = ({ data }: OrderDetailProps) => {
                                             className={`${index % 2 === 0 ? "bg-gray-50" : "bg-white"} transition duration-200 hover:bg-gray-100`}
                                         >
                                             <td className="border border-gray-300 p-4">
-                                                <div>{item.product_name}</div>
+                                                <div
+                                                    onClick={() => {
+                                                        if (
+                                                            !item?.product_id ||
+                                                            !item?.slug
+                                                        ) {
+                                                            message.error(
+                                                                "Sản phẩm đã ngừng bán",
+                                                            );
+                                                        } else {
+                                                            onhandleTurnPage(
+                                                                item.product_id,
+                                                                item.slug,
+                                                            );
+                                                        }
+                                                    }}
+                                                >
+                                                    {item.product_name}
+                                                </div>
                                             </td>
                                             <td className="border border-gray-300 p-4 text-center">
                                                 <img
@@ -248,6 +288,28 @@ const OrderDetail = ({ data }: OrderDetailProps) => {
                                                       })()
                                                     : ""}
                                             </td>
+                                            <td className="px-4 py-2 text-left">
+                                                <Tooltip label="Đánh giá">
+                                                    <ActionIcon
+                                                        variant="light"
+                                                        aria-label="Settings"
+                                                        color="green"
+                                                        disabled={
+                                                            item.is_reviewed ===
+                                                                "Đã có đánh giá" ||
+                                                            data.status !==
+                                                                "Hoàn thành"
+                                                        }
+                                                        onClick={() =>
+                                                            Reviews(item)
+                                                        }
+                                                    >
+                                                        <IconMessageCircleStar
+                                                            size={20}
+                                                        />
+                                                    </ActionIcon>
+                                                </Tooltip>
+                                            </td>
                                         </tr>
                                     ),
                                 )}
@@ -259,7 +321,7 @@ const OrderDetail = ({ data }: OrderDetailProps) => {
                             onClick={() => generatePDF()}
                             className="px-5 py-2  text-white rounde transition"
                         >
-                            In hóa đơn
+                            In đơn hàng
                         </Button>
                     </div>
                 </div>
