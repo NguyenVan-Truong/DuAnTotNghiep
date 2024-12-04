@@ -60,6 +60,8 @@ const Header = () => {
         Modal.confirm({
             title: "Xác nhận đăng xuất",
             content: "Bạn có chắc chắn muốn đăng xuất?",
+            okText: "Đăng Xuất",
+            cancelText: "Ở lại",
             onOk: () => {
                 localStorage.removeItem("user");
                 localStorage.removeItem("token");
@@ -181,7 +183,7 @@ const Header = () => {
                                     }
                                     style={{ fontSize: "13px" }}
                                 >
-                                    <Link to={"/nguoi-dung/san-pham-yeu-thich"}>
+                                    <Link to={"/nguoi-dung/yeu-thich"}>
                                         Sản Phẩm Yêu thích
                                     </Link>
                                 </Menu.Item>
@@ -281,11 +283,7 @@ const Header = () => {
                                         }
                                         style={{ fontSize: "13px" }}
                                     >
-                                        <Link
-                                            to={
-                                                "/nguoi-dung/san-pham-yeu-thich"
-                                            }
-                                        >
+                                        <Link to={"/nguoi-dung/yeu-thich"}>
                                             Sản Phẩm Yêu thích
                                         </Link>
                                     </Menu.Item>

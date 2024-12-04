@@ -1,53 +1,23 @@
-import React, { useRef } from "react";
-import { useReactToPrint } from "react-to-print";
-import { ActionIcon, Box, Button, Text, Tooltip } from "@mantine/core";
-import { IconMessageCircleStar } from "@tabler/icons-react";
-import { modals } from "@mantine/modals";
-import ProductReviews from "./ProductReviews";
-import { Image, message } from "antd";
-import { useNavigate } from "react-router-dom";
-import PrintDetail from "./PrintDetail";
+import { logo, logoPrint } from "@/assets/img";
+import { Box, Text } from "@mantine/core";
+import { Image } from "antd";
 
 type OrderDetailProps = {
     data: any;
 };
 
-const OrderDetail = ({ data }: OrderDetailProps) => {
-    const navigate = useNavigate();
-    const Reviews = async (item: number) => {
-        modals.openConfirmModal({
-            title: "Dánh giá đơn hàng",
-            size: "500px",
-            children: <ProductReviews data={item} />,
-            confirmProps: { display: "none" },
-            cancelProps: { display: "none" },
-        });
-    };
-    const componentPDF = useRef<HTMLDivElement>(null);
-    const onhandleTurnPage = (id: number, slug: string) => {
-        navigate(`/chi-tiet-san-pham/${slug}`, { state: { id: id } });
-        modals.closeAll();
-    };
-    const generatePDF = useReactToPrint({
-        contentRef: componentPDF,
-        documentTitle: `Thông Tin Đơn Hàng`,
-        // onAfterPrint: () => {
-        //     message.success("In hóa đơn thành công!");
-        // },
-    });
-
+const PrintDetail = ({ data }: OrderDetailProps) => {
     return (
         <>
-            <div style={{ display: "none" }}>
-                <div ref={componentPDF}>
-                    <PrintDetail data={data} />
-                </div>
-            </div>
-            <div className="max-w-4xl mx-auto">
+            <div className="max-w-4xl mx-auto p-5">
+                <h1 className="text-2xl font-bold text-center mb-5">
+                    THÔNG TIN ĐƠN HÀNG
+                </h1>
+
                 <div className="max-w-4xl border border-gray-300 rounded-lg shadow-md p-4">
                     <div>
                         <div className="flex justify-between">
-                            <h2 className="text-lg font-bold mb-2">
+                            <h2 className="text-lg font-bold mb-4">
                                 Thông tin người mua
                             </h2>
                             <p className="mr-2">
@@ -167,7 +137,7 @@ const OrderDetail = ({ data }: OrderDetailProps) => {
                         </table>
                     </div>
                     <div>
-                        <h2 className="text-lg font-bold mt-2 mb-2">
+                        <h2 className="text-lg font-bold mt-4 mb-4">
                             Thông tin sản phẩm
                         </h2>
 
@@ -254,18 +224,10 @@ const OrderDetail = ({ data }: OrderDetailProps) => {
                             </tbody>
                         </table>
                     </div>
-                    <div className="text-right mt-2">
-                        <Button
-                            onClick={() => generatePDF()}
-                            className="px-5 py-2  text-white rounde transition"
-                        >
-                            In hóa đơn
-                        </Button>
-                    </div>
                 </div>
             </div>
         </>
     );
 };
 
-export default OrderDetail;
+export default PrintDetail;

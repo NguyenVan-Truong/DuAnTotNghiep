@@ -195,22 +195,19 @@ const OrderAll = () => {
                 </Tooltip>
                 <Popconfirm
                     placement="topRight"
-                    title={"Bạn có chắc muốn xóa ko ?"}
+                    title={"Bạn có chắc muốn hủy đơn hàng ko ?"}
                     okText="Có"
                     cancelText="Ko"
                     className="mx-auto"
                     onConfirm={() => handleCancel(row?.original.id)}
                 >
-                    <Tooltip label="Xóa">
+                    <Tooltip label="Hủy đơn hàng">
                         <ActionIcon
                             color="red"
                             variant="light"
                             size="md"
                             aria-label="Settings"
-                            disabled={
-                                row.original.status !== "Chờ xử lý" ||
-                                row.original.payment_status === "Đã thanh toán"
-                            }
+                            disabled={row.original.status !== "Chờ xử lý"}
                         >
                             <IconX size={20} />
                         </ActionIcon>
@@ -246,7 +243,7 @@ const OrderAll = () => {
             if (response?.data?.data) {
                 modals.openConfirmModal({
                     title: "Chi tiết đơn hàng",
-                    size: "1000px",
+                    size: "850px",
                     children: <DetailOrder data={response.data.data} />,
                     confirmProps: { display: "none" },
                     cancelProps: { display: "none" },

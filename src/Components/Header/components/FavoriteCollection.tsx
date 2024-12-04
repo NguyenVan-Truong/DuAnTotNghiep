@@ -13,6 +13,7 @@ import { Favorites } from "@/model/Favorite";
 import { min } from "lodash";
 import Index from "../../../routes/index";
 import { formatCurrencyVN } from "@/model/_base/Number";
+import { Link, useNavigate } from "react-router-dom";
 
 // const fetchFavoritesData = async () => {
 //     const response = await instance.get("/favorites");
@@ -26,54 +27,8 @@ const removeFavorite = async (productId: number) => {
     return response.data;
 };
 
-const MiniFavorite = () => {
-    // const queryClient = useQueryClient();
-    // Sử dụng useQuery để lấy dữ liệu từ API
-    // const {
-    //     data: products,
-    //     isLoading,
-    //     error,
-    // } = useQuery<Favorites[]>({
-    //     queryKey: ["favoritesData"],
-    //     queryFn: fetchFavoritesData,
-    // });
-
-    // const handleRemoveFavorite = async (productId: number) => {
-    //     queryClient.setQueryData(
-    //         ["favoritesData"],
-    //         (oldData: Favorites[] | undefined) => {
-    //             const newData = oldData?.filter(
-    //                 (favorite) => favorite.product.id !== productId,
-    //             );
-    //             return newData;
-    //         },
-    //     );
-    //     try {
-    //         const response = await removeFavorite(productId);
-
-    //         console.log("Xóa thành công sản phẩm yêu thích", response);
-    //     } catch (error) {
-    //         console.error("Có lỗi khi xóa sản phẩm yêu thích", error);
-
-    //         // Hoàn tác lại thay đổi trong cache nếu có lỗi từ API
-    //         queryClient.setQueryData(
-    //             ["favoritesData"],
-    //             (oldData: Favorites[] | undefined) => {
-    //                 const currentData = oldData ?? [];
-    //                 return [...currentData, { product: { id: productId } }];
-    //             },
-    //         );
-    //     }
-    // };
-
-    // Kiểm tra trạng thái tải dữ liệu
-    // if (isLoading) return <Loader />;
-    // if (error) return <div>Lỗi khi tải dữ liệu yêu thích</div>;
-
-    return <></>;
-};
-
 const Favorite = ({ data }: any) => {
+    const navigate = useNavigate();
     const [drawerVisible, setDrawerVisible] = useState(false);
 
     // const { data: products, refetch } = useQuery<Favorites[]>({
@@ -92,8 +47,9 @@ const Favorite = ({ data }: any) => {
             },
         );
         try {
-            const response = await removeFavorite(productId);
-            message.success("Xóa thành công sản phẩm yêu thích", response);
+            await removeFavorite(productId);
+            message.success("Xóa thành công sản phẩm yêu thích");
+            onClose();
         } catch (error) {
             message.error("Có lỗi khi xóa sản phẩm yêu thích");
 
@@ -116,7 +72,10 @@ const Favorite = ({ data }: any) => {
     const onClose = () => {
         setDrawerVisible(false);
     };
-    //
+    const onhandleTurnPage = (id: number, slug: string) => {
+        navigate(`/chi-tiet-san-pham/${slug}`, { state: { id: id } });
+        onClose();
+    };
     return (
         <>
             <div className="items-center space-x-4">
@@ -143,33 +102,55 @@ const Favorite = ({ data }: any) => {
                     </div>
                     <div className="max-h-[80%] overflow-auto custom-scrollbar">
                         {data && data.length > 0 ? (
-                            data.map((favorite: any, index: any) => (
+                            data?.map((favorite: any, index: any) => (
                                 <div
                                     key={index}
-                                    className="flex space-x-4 mb-2 items-center"
+                                    className="flex space-x-4 mb-2 items-center cursor-pointer"
                                 >
-                                    <div>
-                                        <img
-                                            src={favorite.product.image_url}
-                                            alt={favorite.product.name}
-                                            width={100}
-                                            height={10}
-                                            style={{ minWidth: 100 }}
-                                        />
-                                    </div>
-                                    <div className="flex-1">
-                                        <h1 className="font-medium text-lg">
-                                            <Box w={290}>
-                                                <Text truncate="end" size="lg">
-                                                    {favorite.product.name}
-                                                </Text>
-                                            </Box>
-                                        </h1>
-                                        <p className="text-base">
-                                            {formatCurrencyVN(
-                                                favorite.product.price,
-                                            )}
-                                        </p>
+                                    <div
+                                        className="flex space-x-4 mb-2 items-center cursor-pointer"
+                                        onClick={() => {
+                                            if (
+                                                !favorite?.product?.id ||
+                                                !favorite?.product?.slug
+                                            ) {
+                                                message.error(
+                                                    "Sản phẩm đã ngừng bán",
+                                                );
+                                            } else {
+                                                onhandleTurnPage(
+                                                    favorite.product.id,
+                                                    favorite.product.slug,
+                                                );
+                                            }
+                                        }}
+                                    >
+                                        <div>
+                                            <img
+                                                src={favorite.product.image_url}
+                                                alt={favorite.product.name}
+                                                width={100}
+                                                height={10}
+                                                style={{ minWidth: 100 }}
+                                            />
+                                        </div>
+                                        <div className="flex-1">
+                                            <h1 className="font-medium text-lg">
+                                                <Box w={290}>
+                                                    <Text
+                                                        truncate="end"
+                                                        size="lg"
+                                                    >
+                                                        {favorite.product.name}
+                                                    </Text>
+                                                </Box>
+                                            </h1>
+                                            <p className="text-base">
+                                                {formatCurrencyVN(
+                                                    favorite.product.price,
+                                                )}
+                                            </p>
+                                        </div>
                                     </div>
                                     <div className="flex items-center">
                                         <CloseCircleOutlined

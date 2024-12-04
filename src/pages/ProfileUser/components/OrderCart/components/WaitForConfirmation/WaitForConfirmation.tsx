@@ -209,7 +209,7 @@ const WaitForConfirmation = () => {
         try {
             await instance.put(`/orders/${id}/cancel-status`);
             message.success("Hủy đặt hàng thành công");
-            fetchData();
+            refetch();
         } catch (error) {
             console.error("Error fetching data:", error);
         }
@@ -222,7 +222,7 @@ const WaitForConfirmation = () => {
             if (response?.data?.data) {
                 modals.openConfirmModal({
                     title: "Chi tiết đơn hàng",
-                    size: "1000px",
+                    size: "850px",
                     children: <DetailOrder data={response.data.data} />,
                     confirmProps: { display: "none" },
                     cancelProps: { display: "none" },
