@@ -12,6 +12,7 @@ import {
     IconShoppingCart,
     IconTruckDelivery,
     IconUser,
+    IconX,
 } from "@tabler/icons-react";
 import OrderAll from "./components/OrderAll/OrderAll";
 import OrderLoader from "./components/OrderLoader/OrderLoader";
@@ -19,6 +20,7 @@ import OrderShipping from "./components/OrderShipping/OrderShipping";
 import OrderSucces from "./components/OrderSuccess/OrderSucces";
 import WaitForConfirmation from "./components/WaitForConfirmation/WaitForConfirmation";
 import { useState } from "react";
+import OrderCancle from "./components/OrderCancle/OrderCancle";
 
 const OrderCart = () => {
     const iconStyle = { width: 15, height: 15 };
@@ -124,6 +126,13 @@ const OrderCart = () => {
                             >
                                 Đã hoàn thành
                             </Tabs.Tab>
+                            <Tabs.Tab
+                                value="orderCancle"
+                                leftSection={<IconX style={iconStyle} />}
+                                style={{ fontSize: "16px" }} // Tăng cỡ chữ tại đây
+                            >
+                                Đã hủy
+                            </Tabs.Tab>
                         </Tabs.List>
                         {/* noi dung */}
                         <Tabs.Panel value="orderAll">
@@ -136,7 +145,6 @@ const OrderCart = () => {
                                 <></>
                             )}
                         </Tabs.Panel>
-
                         <Tabs.Panel value="orderLoader">
                             {activeTab === "orderLoader" ? (
                                 <OrderLoader />
@@ -144,7 +152,6 @@ const OrderCart = () => {
                                 <></>
                             )}
                         </Tabs.Panel>
-
                         <Tabs.Panel value="orderShipping">
                             {activeTab === "orderShipping" ? (
                                 <OrderShipping />
@@ -155,6 +162,13 @@ const OrderCart = () => {
                         <Tabs.Panel value="orderDone">
                             {activeTab === "orderDone" ? (
                                 <OrderSucces />
+                            ) : (
+                                <></>
+                            )}
+                        </Tabs.Panel>
+                        <Tabs.Panel value="orderCancle">
+                            {activeTab === "orderCancle" ? (
+                                <OrderCancle />
                             ) : (
                                 <></>
                             )}
