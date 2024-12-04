@@ -12,4 +12,24 @@ export interface Posts {
     image: string;       
     status: number;
     avatar: string | null; 
+    catelogues: PostCatelogues[];
+}
+export interface PostCatelogues {
+    id: number; 
+    name: string; 
+    description?: string; 
+    slug: string; 
+    avatar?: string; 
+    metaTitle?: string; 
+    metaDescription?: string; 
+    metaKeywords?: string; 
+    userId?: number; 
+    _lft?: number; 
+    _rgt?: number; 
+    parentId?: number | null; 
+    level?: number; 
+    status?: string; 
+    deletedAt?: string | null; 
+    createdAt?: string; 
+    updatedAt?: string; 
 }
