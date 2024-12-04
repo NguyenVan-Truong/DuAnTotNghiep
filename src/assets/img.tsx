@@ -44,6 +44,7 @@ import banner_gioi_thieu from "@/assets/Images/banner_gioi_thieu.jpg";
 import gioi_thieu from "@/assets/Images/gioi_thieu.jpg";
 import dia_chi from "@/assets/Images/dia_chi.jpg";
 import AvatarDefault from "@/assets/Images/AvatarDefault.png";
+import logoPrint from "@/assets/Images/logo.jpg";
 export {
     ban_nuoc_dura,
     ban_nuoc_dura_1,
@@ -91,4 +92,5 @@ export {
     gioi_thieu,
     dia_chi,
     AvatarDefault,
+    logoPrint,
 };
