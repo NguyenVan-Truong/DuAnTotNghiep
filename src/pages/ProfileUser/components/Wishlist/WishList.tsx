@@ -30,7 +30,6 @@ const WishList = () => {
     const onhandleTurnPage = (id: number, slug: string) => {
         navigate(`/chi-tiet-san-pham/${slug}`, { state: { id: id } });
     };
-    console.log("data", data);
     return (
         <div className="p-6 bg-white rounded-lg shadow-md h-[612px]">
             <Text size="xl" mb="xl" className="font-semibold text-gray-800">
@@ -41,7 +40,7 @@ const WishList = () => {
                 data.map((favorite: any, index: any) => (
                     <div
                         key={index}
-                        className="flex space-x-4 mb-4 items-center border-b pb-4"
+                        className="ml-20 flex items-center w-[550px] justify-between space-x-4 mb-4 border-b pb-4"
                     >
                         <div
                             className="flex items-center cursor-pointer"
@@ -59,6 +58,7 @@ const WishList = () => {
                                 }
                             }}
                         >
+                            {/* Hình ảnh sản phẩm */}
                             <div className="flex-shrink-0">
                                 <img
                                     src={favorite.product.image_url}
@@ -66,22 +66,47 @@ const WishList = () => {
                                     className="w-24 h-24 object-cover rounded-md"
                                 />
                             </div>
+
+                            {/* Thông tin sản phẩm */}
                             <div className="flex-1 ml-4">
                                 <h1 className="font-medium text-lg text-gray-900">
-                                    <Box w={290}>
-                                        <Text truncate="end" size="lg">
-                                            {favorite.product.name}
-                                        </Text>
-                                    </Box>
+                                    <div className="truncate w-[520px]">
+                                        {favorite.product.name}
+                                    </div>
                                 </h1>
-                                <p className="text-base text-gray-600">
-                                    {formatCurrencyVN(favorite.product.price)}
+
+                                {/* Giá sản phẩm */}
+                                <div className="mt-2">
+                                    <p className="text-sm text-red-500 font-semibold">
+                                        {favorite.product.discount_price
+                                            ? formatCurrencyVN(
+                                                  favorite.product
+                                                      .discount_price,
+                                              )
+                                            : formatCurrencyVN(
+                                                  favorite.product.price,
+                                              )}
+                                    </p>
+                                    {favorite.product.discount_price && (
+                                        <p className="text-xs line-through text-gray-500">
+                                            {formatCurrencyVN(
+                                                favorite.product.price,
+                                            )}
+                                        </p>
+                                    )}
+                                </div>
+
+                                {/* Đánh giá sản phẩm */}
+                                <p className="mt-2 text-yellow-500">
+                                    {favorite.product.ratings_avg} ★
                                 </p>
                             </div>
                         </div>
+
+                        {/* Nút xóa */}
                         <div className="flex items-center">
                             <Popconfirm
-                                title="Bạn có chắc xóa sản phẩm này ?"
+                                title="Bạn có chắc xóa sản phẩm này?"
                                 placement="leftTop"
                                 onConfirm={() =>
                                     handleRemoveFavorite(favorite.product.id)
@@ -91,9 +116,7 @@ const WishList = () => {
                             >
                                 <CloseCircleOutlined
                                     className="text-red-500 hover:text-red-700 transition duration-150"
-                                    style={{
-                                        fontSize: "24px",
-                                    }}
+                                    style={{ fontSize: "24px" }}
                                 />
                             </Popconfirm>
                         </div>
