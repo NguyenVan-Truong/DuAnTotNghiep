@@ -99,6 +99,8 @@ const WaitForConfirmation = () => {
                 return "#FFB74D";
             case "Đang giao hàng":
                 return "#64B5F6";
+            case "Đã hủy":
+                return "red";
             default:
                 return "#81C784";
         }
@@ -174,6 +176,9 @@ const WaitForConfirmation = () => {
         ],
         [],
     );
+    useEffect(() => {
+        refetch();
+    }, [search, pagination, refetch]);
     function processTaskActionMenu(row: MRT_Row<any>): any {
         return (
             <>
@@ -283,7 +288,7 @@ const WaitForConfirmation = () => {
                             );
                         }}
                     />
-                    <Select
+                    {/* <Select
                         size="sm"
                         placeholder="Trạng thái"
                         searchable
@@ -300,15 +305,23 @@ const WaitForConfirmation = () => {
                             },
                             {
                                 value: "pending",
-                                label: "Chờ Xử lý",
+                                label: "Chờ xử lý",
                             },
+                            // {
+                            //     value: "pending",
+                            //     label: "Đã giao hàng",
+                            // },
+                            // {
+                            //     value: "pending",
+                            //     label: "Đã hủy",
+                            // },
                         ]}
                         style={{ flex: 1, maxWidth: "180px" }}
                         leftSection={<IconSwitch size={20} color="#15aabf" />}
                         onChange={(value: any) =>
                             handleChangeSearchValue(value ?? "", "status")
                         }
-                    />
+                    /> */}
                     <DateInput
                         size="sm"
                         placeholder="Ngày đặt"

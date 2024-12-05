@@ -166,7 +166,9 @@ const OrderCancle = () => {
         ],
         [],
     );
-
+    useEffect(() => {
+        refetch();
+    }, [search, pagination, refetch]);
     function processTaskActionMenu(row: MRT_Row<any>): any {
         return (
             <>
@@ -273,7 +275,7 @@ const OrderCancle = () => {
                             );
                         }}
                     />
-                    <Select
+                    {/* <Select
                         size="sm"
                         placeholder="Trạng thái"
                         searchable
@@ -290,15 +292,23 @@ const OrderCancle = () => {
                             },
                             {
                                 value: "pending",
-                                label: "Chờ Xử lý",
+                                label: "Chờ xử lý",
                             },
+                            // {
+                            //     value: "pending",
+                            //     label: "Đã giao hàng",
+                            // },
+                            // {
+                            //     value: "pending",
+                            //     label: "Đã hủy",
+                            // },
                         ]}
                         style={{ flex: 1, maxWidth: "180px" }}
                         leftSection={<IconSwitch size={20} color="#15aabf" />}
                         onChange={(value: any) =>
                             handleChangeSearchValue(value ?? "", "status")
                         }
-                    />
+                    /> */}
                     <DateInput
                         size="sm"
                         placeholder="Ngày đặt"
