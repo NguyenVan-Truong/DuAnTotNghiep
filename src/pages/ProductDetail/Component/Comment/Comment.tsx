@@ -3,6 +3,7 @@ import "./Comment.scss";
 import { IconCornerDownRightDouble } from "@tabler/icons-react";
 import { Image } from "antd";
 import { formatDate } from "@/model/_base/Date";
+import { AvatarDefault } from "@/assets/img";
 type Props = {
     data: any;
     setValueRating: any;
@@ -133,9 +134,10 @@ const CommentProductDetail = ({
                             </Box>
                             <div>
                                 <ScrollArea
-                                    style={{
-                                        maxHeight: "520px",
-                                    }}
+                                    // style={{
+                                    //     maxHeight: "520px",
+                                    // }}
+                                    h={520}
                                 >
                                     <LoadingOverlay
                                         visible={loadingComment}
@@ -193,7 +195,9 @@ const CommentProductDetail = ({
                                                             ) : (
                                                                 <>
                                                                     <img
-                                                                        src="https://cellphones.com.vn/sforum/wp-content/uploads/2023/10/avatar-trang-4.jpg"
+                                                                        src={
+                                                                            AvatarDefault
+                                                                        }
                                                                         alt=""
                                                                         style={{
                                                                             height: "60px",
