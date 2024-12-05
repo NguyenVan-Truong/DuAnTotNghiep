@@ -47,8 +47,8 @@ const Introduce = () => {
             )}
 
             {/* Các thành phần khác */}
-            <StoryNew />
-            <ViewAll />
+            {/* <StoryNew />
+            <ViewAll /> */}
         </>
     );
 };
