@@ -97,6 +97,8 @@ const OrderSucces = () => {
                 return "#FFB74D";
             case "Đang giao hàng":
                 return "#64B5F6";
+            case "Đã hủy":
+                return "red";
             default:
                 return "#81C784";
         }
@@ -190,7 +192,9 @@ const OrderSucces = () => {
         ],
         [],
     );
-
+    useEffect(() => {
+        refetch();
+    }, [search, pagination, refetch]);
     // Xử lý khi chỉ lấy 1 ID từ rowSelection
 
     const callApiGetData = async (id: string | undefined) => {
@@ -260,7 +264,7 @@ const OrderSucces = () => {
                             );
                         }}
                     />
-                    <Select
+                    {/* <Select
                         size="sm"
                         placeholder="Trạng thái"
                         searchable
@@ -277,15 +281,23 @@ const OrderSucces = () => {
                             },
                             {
                                 value: "pending",
-                                label: "Chờ Xử lý",
+                                label: "Chờ xử lý",
                             },
+                            // {
+                            //     value: "pending",
+                            //     label: "Đã giao hàng",
+                            // },
+                            // {
+                            //     value: "pending",
+                            //     label: "Đã hủy",
+                            // },
                         ]}
                         style={{ flex: 1, maxWidth: "180px" }}
                         leftSection={<IconSwitch size={20} color="#15aabf" />}
                         onChange={(value: any) =>
                             handleChangeSearchValue(value ?? "", "status")
                         }
-                    />
+                    /> */}
                     <DateInput
                         size="sm"
                         placeholder="Ngày đặt"

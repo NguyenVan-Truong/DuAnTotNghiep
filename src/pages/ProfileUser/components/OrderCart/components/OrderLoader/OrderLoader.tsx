@@ -59,7 +59,7 @@ const OrderLoader = () => {
         });
     };
     // Hàm xuất file Excel
-    const { data } = useQuery<Order[]>({
+    const { data, refetch } = useQuery<Order[]>({
         queryKey: ["ordersprocessing", pagination],
         queryFn: async () => fetchData(),
     });
@@ -95,6 +95,8 @@ const OrderLoader = () => {
                 return "#FFB74D";
             case "Đang giao hàng":
                 return "#64B5F6";
+            case "Đã hủy":
+                return "red";
             default:
                 return "#81C784";
         }
@@ -163,6 +165,9 @@ const OrderLoader = () => {
         ],
         [],
     );
+    useEffect(() => {
+        refetch();
+    }, [search, pagination, refetch]);
     function processTaskActionMenu(row: MRT_Row<any>): any {
         return (
             <>
@@ -248,7 +253,7 @@ const OrderLoader = () => {
                             );
                         }}
                     />
-                    <Select
+                    {/* <Select
                         size="sm"
                         placeholder="Trạng thái"
                         searchable
@@ -265,15 +270,23 @@ const OrderLoader = () => {
                             },
                             {
                                 value: "pending",
-                                label: "Chờ Xử lý",
+                                label: "Chờ xử lý",
                             },
+                           // {
+                            //     value: "pending",
+                            //     label: "Đã giao hàng",
+                            // },
+                            // {
+                            //     value: "pending",
+                            //     label: "Đã hủy",
+                            // },
                         ]}
                         style={{ flex: 1, maxWidth: "180px" }}
                         leftSection={<IconSwitch size={20} color="#15aabf" />}
                         onChange={(value: any) =>
                             handleChangeSearchValue(value ?? "", "status")
                         }
-                    />
+                    /> */}
                     <DateInput
                         size="sm"
                         placeholder="Ngày đặt"
