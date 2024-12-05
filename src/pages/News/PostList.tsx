@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocation, useNavigate } from "react-router-dom";
 import instance from "@/configs/axios"; // Cấu hình axios
@@ -12,9 +12,10 @@ const PostCard: React.FC<{ post: Posts }> = ({ post }) => {
         navigate(`/chi-tiet-bai-viet/${post.slug}`, {
         state: {
             postId: post.id, // Truyền postId qua state
-        },
-        });
+        },        
+        });        
     };
+    
   return (
     <div className={styles.postCard} onClick={handlePostClick}>
       <img src={post.image} alt={post.title} className={styles.postImage} />
@@ -29,13 +30,23 @@ const PostCard: React.FC<{ post: Posts }> = ({ post }) => {
 const PostList = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(
-    location.state?.id || null
-  );
+  const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
+  useEffect(() => {
+    const categoryId = location.state?.id;
+    if (categoryId) {
+      setSelectedCategoryId(categoryId);
+    }
+  }, [location.state]);
+  console.log("Category ID từ location.state:", location.state.id);
 
-  const fetchPosts = async (): Promise<Posts[]> => {
-    const response = await instance.get("/posts");
-    return response.data.data;
+  const fetchPostsByCategory = async (categoryId: number | null): Promise<Posts[]> => {
+    if (categoryId) {
+      const response = await instance.get(`/get-post-by-catelogue/${categoryId}`);
+      return response.data;
+    }
+    // Fetch tất cả bài viết nếu không có danh mục
+    const response = await instance.get("/get-post-by-catelogue/25");
+    return response.data;
   };
 
   const fetchData = async (): Promise<PostCatelogues[]> => {
@@ -45,8 +56,8 @@ const PostList = () => {
 
   // Query posts
   const { data: posts, isLoading: postsLoading, isError: postsError } = useQuery<Posts[]>({
-    queryKey: ["posts"], // Dữ liệu bài viết
-    queryFn: fetchPosts,
+    queryKey: ["posts", selectedCategoryId], // Dữ liệu bài viết
+    queryFn:() => fetchPostsByCategory(selectedCategoryId),
   });
 
   // Query categories
@@ -58,7 +69,7 @@ const PostList = () => {
       
   });
   console.log("Dữ liệu danh mục: ", categories);
-  console.log(posts);
+  console.log("Posts", posts);
 
   // Kiểm tra trạng thái loading và error
   if (postsLoading || categoriesLoading) {
@@ -74,11 +85,12 @@ const PostList = () => {
   }
 
   // Lọc bài viết dựa trên danh mục được chọn
-  const filteredPosts = selectedCategoryId
-  ? posts.filter((post) =>
-      post.catelogues && post.catelogues.some((category) => category.id === selectedCategoryId) // Kiểm tra xem categories có tồn tại không
-    )
-  : posts;
+  const handleCategoryClick = (categoryId: number) => {
+    setSelectedCategoryId(categoryId);
+    navigate("/tin-tuc", {
+        state: { id: categoryId }, // Cập nhật state để giữ categoryId trong URL
+      });
+  };
   
     const handlePostClick = (slug: string, postId: number) => {
         // Truyền thêm `postId` vào state
@@ -110,10 +122,8 @@ const PostList = () => {
             {categories.map((category) => (
               <li
                 key={category.id}
-                className={`${styles.categoryItem} ${
-                  selectedCategoryId === category.id ? styles.activeCategory : ""
-                }`} // Thêm class khi danh mục được chọn
-                onClick={() => setSelectedCategoryId(category.id)} // Cập nhật danh mục được chọn
+                className={styles.categoryItem}
+                onClick={() => handleCategoryClick(category.id)} // Cập nhật danh mục được chọn
               >
                 {category.name}
               </li>
@@ -124,9 +134,11 @@ const PostList = () => {
 
       {/* Khu vực chính hiển thị các bài viết tóm tắt */}
       <div className={styles.postMain}>
-        {filteredPosts.map((post) => (
-          <PostCard key={post.id} post={post} />
-        ))}
+        {posts?.length > 0 ? (
+            posts.map((post) => <PostCard key={post.id} post={post} />)
+            ) : (
+            <p>Không có bài viết nào trong danh mục này.</p>
+            )}
       </div>
     </div>
   );

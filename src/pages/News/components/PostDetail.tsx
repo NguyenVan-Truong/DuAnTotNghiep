@@ -7,9 +7,15 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 // Component PostDetail (hiển thị chi tiết bài viết)
 const PostDetail: React.FC<{ post: Posts | null }> = ({ post }) => {
+    const [postContent, setPostContent] = useState<string>("");
   if (!post) {
     return <p>Chọn một bài viết để xem chi tiết.</p>;
   }
+  const parseContentToParagraphs = (content: string) => {
+    const paragraphs = content.split('.').map((item) => item.trim()).filter((item) => item.length > 0);
+    return paragraphs;
+  };
+  const paragraphs = parseContentToParagraphs(postContent);
   return (
     <div className={styles.postDetail}>
       <img src={post.image} alt={post.title} className={styles.detailImage} />
@@ -29,8 +35,8 @@ const PostDetail: React.FC<{ post: Posts | null }> = ({ post }) => {
 const PostDetails = () => {
   const location = useLocation(); // Lấy state từ location
   const { postId } = location.state || {}; // Lấy postId từ location.state
-  const [selectedPost, setSelectedPost] = useState<Posts | null>(null); // State để lưu bài viết được chọn
   const navigate = useNavigate();
+  console.log("ID bài viết từ location.state:", postId);
 
   // Hàm fetch chi tiết bài viết từ API
   const fetchPostDetail = async (postId: number): Promise<Posts> => {
