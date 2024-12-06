@@ -23,7 +23,6 @@ const ProductReviews = ({ data, onSuccess }: any) => {
             },
         },
     });
-
     const [loading, setLoading] = useState(false);
     const handleSubmit = async (values: any) => {
         try {
@@ -34,9 +33,8 @@ const ProductReviews = ({ data, onSuccess }: any) => {
             });
             modals.closeAll();
             message.success("Đánh giá thành công!");
-        } catch (error) {
-            message.error("Không thành công, vui lòng thử lại.");
-            console.error("Error:", error);
+        } catch (error: any) {
+            message.error(error.response.data.message);
         } finally {
             setLoading(false);
         }

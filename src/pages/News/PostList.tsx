@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocation, useNavigate } from "react-router-dom";
 import instance from "@/configs/axios"; // Cấu hình axios
-import styles from "./News.module.scss"; 
+import styles from "./News.module.scss";
 import { PostCatelogues, Posts } from "@/model/Posts";
 
 // Component PostCard (hiển thị chi tiết một bài viết tóm tắt)
@@ -98,11 +98,11 @@ if (postsLoading || categoriesLoading || postsNewLoading) {
     const handlePostClick = (slug: string, postId: number) => {
         // Truyền thêm `postId` vào state
         navigate(`/chi-tiet-bai-viet/${slug}`, {
-          state: {
-            postId: postId, // Dữ liệu cần truyền
-          },
+            state: {
+                postId: postId, // Dữ liệu cần truyền
+            },
         });
-      };
+    };
 
   return (
     <div className={styles.postContainer}>

@@ -131,24 +131,26 @@ const IconCart = () => {
                                     padding: "10px 0",
                                     cursor: "pointer",
                                 }}
-                                onClick={() => {
-                                    if (
-                                        !product?.product?.id ||
-                                        !product?.product?.slug
-                                    ) {
-                                        message.error("Sản phẩm đã ngừng bán");
-                                    } else {
-                                        onhandleTurnPage(
-                                            product.product.id,
-                                            product.product.slug,
-                                        );
-                                    }
-                                }}
                             >
                                 <Flex
                                     direction="row"
                                     gap={"sm"}
                                     align={"center"}
+                                    onClick={() => {
+                                        if (
+                                            !product?.product?.id ||
+                                            !product?.product?.slug
+                                        ) {
+                                            message.error(
+                                                "Sản phẩm đã ngừng bán",
+                                            );
+                                        } else {
+                                            onhandleTurnPage(
+                                                product.product.id,
+                                                product.product.slug,
+                                            );
+                                        }
+                                    }}
                                 >
                                     <div>
                                         <img

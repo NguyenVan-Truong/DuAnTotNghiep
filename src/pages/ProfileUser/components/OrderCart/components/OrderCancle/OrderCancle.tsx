@@ -33,7 +33,7 @@ import DetailOrder from "../DetailOrder";
 import { formatDateNotTimeZone } from "@/model/_base/Date";
 import { DateInput } from "@mantine/dates";
 
-const OrderAll = () => {
+const OrderCancle = () => {
     const [height, setHeight] = useState(0);
     const [rowCount, setRowCount] = useState(1);
     const headerRef = useRef<HTMLDivElement>(null);
@@ -78,7 +78,7 @@ const OrderAll = () => {
         }
 
         try {
-            const response = await instance.get(`orders${url}`);
+            const response = await instance.get(`orders-canceled${url}`);
             if (response.status === 200) {
                 const result = response.data.data.data;
                 setRowCount(response.data.data.total);
@@ -169,7 +169,6 @@ const OrderAll = () => {
     useEffect(() => {
         refetch();
     }, [search, pagination, refetch]);
-
     function processTaskActionMenu(row: MRT_Row<any>): any {
         return (
             <>
@@ -185,39 +184,6 @@ const OrderAll = () => {
                         />
                     </ActionIcon>
                 </Tooltip>
-                <Tooltip label="Xác nhận đã nhận hàng">
-                    <ActionIcon
-                        variant="light"
-                        aria-label="Settings"
-                        color="green"
-                        disabled={row.original.status !== "Đã giao hàng"}
-                    >
-                        <IconCheck
-                            size={20}
-                            onClick={() => handleCheck(row?.original.id)}
-                        />
-                    </ActionIcon>
-                </Tooltip>
-                <Popconfirm
-                    placement="topRight"
-                    title={"Bạn có chắc muốn hủy đơn hàng ko ?"}
-                    okText="Có"
-                    cancelText="Ko"
-                    className="mx-auto"
-                    onConfirm={() => handleCancel(row?.original.id)}
-                >
-                    <Tooltip label="Hủy đơn hàng">
-                        <ActionIcon
-                            color="red"
-                            variant="light"
-                            size="md"
-                            aria-label="Settings"
-                            disabled={row.original.status !== "Chờ xử lý"}
-                        >
-                            <IconX size={20} />
-                        </ActionIcon>
-                    </Tooltip>
-                </Popconfirm>
             </>
         );
     }
@@ -308,13 +274,8 @@ const OrderAll = () => {
                                 "search",
                             );
                         }}
-                        onKeyDown={(e) => {
-                            if (e.key == "Enter") {
-                                fetchData();
-                            }
-                        }}
                     />
-                    <Select
+                    {/* <Select
                         size="sm"
                         placeholder="Trạng thái"
                         searchable
@@ -347,7 +308,7 @@ const OrderAll = () => {
                         onChange={(value: any) =>
                             handleChangeSearchValue(value ?? "", "status")
                         }
-                    />
+                    /> */}
                     <DateInput
                         size="sm"
                         placeholder="Ngày đặt"
@@ -418,4 +379,4 @@ const OrderAll = () => {
     );
 };
 
-export default OrderAll;
+export default OrderCancle;
