@@ -30,8 +30,8 @@ const ForgotPassword = () => {
             await instance.post("auth/forgot-password", values);
             message.success("Thành công, Mời bạn kiểm tra email");
             navigate("/xac-thuc/dang-nhap");
-        } catch (error) {
-            message.error("Có lỗi xảy ra, vui lòng thử lại");
+        } catch (error: any) {
+            message.error(error.response.data.message);
         } finally {
             setLoading(false); // tắt loading khi xong
         }

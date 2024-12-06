@@ -121,9 +121,8 @@ const ChangePassword = () => {
             localStorage.removeItem("token");
             localStorage.removeItem("userProFile");
             navigate("/xac-thuc/dang-nhap");
-        } catch (error) {
-            message.error("Không thành công ,vui lòng thử lại");
-            console.error("Error:", error);
+        } catch (error: any) {
+            message.error(error.response.data.message);
         } finally {
             setLoading(false); // tắt loading khi xong
         }
