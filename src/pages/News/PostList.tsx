@@ -53,6 +53,10 @@ const PostList = () => {
     const response = await instance.get("/post-catelogues");
     return response.data;
   };
+const fetchPosts = async (): Promise<Posts[]> => {
+    const response = await instance.get("/posts");
+    return response.data;
+  };
 
   // Query posts
   const { data: posts, isLoading: postsLoading, isError: postsError } = useQuery<Posts[]>({
@@ -63,25 +67,24 @@ const PostList = () => {
   // Query categories
   const { data: categories, isLoading: categoriesLoading, isError: categoriesError } = useQuery<PostCatelogues[]>({
     queryKey: ["post-catelogues"], // Dữ liệu danh mục bài viết
-    queryFn: fetchData,
-   
-         // Log dữ liệu khi thành công
-      
+    queryFn: fetchData,      
   });
+
+  const { data: postsNew, isLoading: postsNewLoading, isError: postsNewError } = useQuery<Posts[]>({
+    queryKey: ["postsnew"],
+    queryFn: fetchPosts,
+  });
+
   console.log("Dữ liệu danh mục: ", categories);
   console.log("Posts", posts);
 
-  // Kiểm tra trạng thái loading và error
-  if (postsLoading || categoriesLoading) {
+  // Xử lý trạng thái loading và lỗi
+if (postsLoading || categoriesLoading || postsNewLoading) {
     return <p>Đang tải...</p>;
   }
-
-  if (postsError || !posts) {
-    return <p>Đã xảy ra lỗi khi tải bài viết.</p>;
-  }
-
-  if (categoriesError || !categories) {
-    return <p>Đã xảy ra lỗi khi tải danh mục bài viết.</p>;
+  
+  if (postsError || categoriesError || postsNewError || !posts || !categories) {
+    return <p>Đã xảy ra lỗi khi tải dữ liệu.</p>;
   }
 
   // Lọc bài viết dựa trên danh mục được chọn
@@ -107,7 +110,7 @@ const PostList = () => {
       <div className={styles.postSidebar}>
         <h3 className={styles.sidebarTitle}>BÀI VIẾT MỚI NHẤT</h3>
         <ul className={styles.sidebarList}>
-          {posts.map((post) => (
+          {postsNew?.map((post) => (
             <li key={post.id} className={styles.sidebarItem} onClick={() => handlePostClick(post.slug, post.id)}>
               <img src={post.image} alt={post.title} className={styles.sidebarImage} />
               {post.title}

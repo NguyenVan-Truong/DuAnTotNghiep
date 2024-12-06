@@ -51,10 +51,10 @@ const PostDetails = () => {
     enabled: !!postId,  // Chỉ gọi API khi postId có giá trị
   });
 
-  // Query posts (danh sách bài viết) và categories (danh mục bài viết)
+  // Query posts (danh sách bài viết)
   const fetchPosts = async (): Promise<Posts[]> => {
     const response = await instance.get("/posts");
-    return response.data.data;
+    return response.data;
   };
 
   const fetchData = async (): Promise<PostCatelogues[]> => {
@@ -63,10 +63,11 @@ const PostDetails = () => {
   };
 
   // Query posts
-  const { data: posts, isLoading: postsLoading, isError: postsError } = useQuery<Posts[]>({
-    queryKey: ["posts"],
+  const { data: postsNew, isLoading: postsNewLoading, isError: postsNewError } = useQuery<Posts[]>({
+    queryKey: ["postsnew"],
     queryFn: fetchPosts,
   });
+
 
   const { data, isLoading: categoriesLoading, isError: categoriesError } = useQuery<PostCatelogues[]>({
     queryKey: ["post-catelogues"],
@@ -74,17 +75,14 @@ const PostDetails = () => {
   });
 
   // Kiểm tra trạng thái loading và error
-  if (postLoading || postsLoading || categoriesLoading) {
+  if (postLoading || categoriesLoading || postsNewLoading) {
     return <p>Đang tải...</p>;
   }
 
-  if (postError || !post) {
+  if (postError || !post || postsNewError) {
     return <p>Đã xảy ra lỗi khi tải bài viết.</p>;
   }
 
-  if (postsError || !posts) {
-    return <p>Đã xảy ra lỗi khi tải danh sách bài viết.</p>;
-  }
 
   if (categoriesError || !data) {
     return <p>Đã xảy ra lỗi khi tải danh mục bài viết.</p>;
@@ -105,7 +103,7 @@ const PostDetails = () => {
       <div className={styles.postSidebar}>
         <h3 className={styles.sidebarTitle}>BÀI VIẾT MỚI NHẤT</h3>
         <ul className={styles.sidebarList}>
-          {posts.map((post) => (
+          {postsNew?.map((post) => (
             <li key={post.id} className={styles.sidebarItem} onClick={() => handlePostClick(post.slug, post.id)}>
               <img src={post.image} alt={post.title} className={styles.sidebarImage} />
               {post.title}
