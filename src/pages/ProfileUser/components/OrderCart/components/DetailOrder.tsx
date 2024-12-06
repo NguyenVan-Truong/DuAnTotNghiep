@@ -72,13 +72,13 @@ const OrderDetail = ({ data }: OrderDetailProps) => {
                             <thead></thead>
                             <tbody>
                                 <tr>
-                                    <td className="border border-gray-300 p-2">
+                                    <td className="border border-gray-300 p-2 font-semibold bg-gray-50">
                                         Tên người nhận
                                     </td>
                                     <td className="border border-gray-300 p-2">
                                         {data.customer_name}
                                     </td>
-                                    <td className="border border-gray-300 p-2">
+                                    <td className="border border-gray-300 p-2 font-semibold bg-gray-50">
                                         Tên người mua
                                     </td>
                                     <td className="border border-gray-300 p-2">
@@ -86,13 +86,13 @@ const OrderDetail = ({ data }: OrderDetailProps) => {
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td className="border border-gray-300 p-2">
+                                    <td className="border border-gray-300 p-2 font-semibold bg-gray-50">
                                         Địa chỉ giao hàng
                                     </td>
                                     <td className="border border-gray-300 p-2">
                                         {data.shipping_address}
                                     </td>
-                                    <td className="border border-gray-300 p-2">
+                                    <td className="border border-gray-300 p-2 font-semibold bg-gray-50">
                                         Phương thức thanh toán
                                     </td>
                                     <td className="border border-gray-300 p-2">
@@ -103,7 +103,7 @@ const OrderDetail = ({ data }: OrderDetailProps) => {
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td className="border border-gray-300 p-2">
+                                    <td className="border border-gray-300 p-2 font-semibold bg-gray-50">
                                         Phí vận chuyển
                                     </td>
                                     <td className="border border-gray-300 p-2">
@@ -112,7 +112,7 @@ const OrderDetail = ({ data }: OrderDetailProps) => {
                                         ).toLocaleString("vi-VN")}{" "}
                                         VND
                                     </td>
-                                    <td className="border border-gray-300 p-2">
+                                    <td className="border border-gray-300 p-2 font-semibold bg-gray-50">
                                         Trạng thái đơn hàng
                                     </td>
                                     <td className="border border-gray-300 p-2">
@@ -128,7 +128,7 @@ const OrderDetail = ({ data }: OrderDetailProps) => {
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td className="border border-gray-300 p-2">
+                                    <td className="border border-gray-300 p-2 font-semibold bg-gray-50">
                                         Giảm giá
                                     </td>
                                     <td className="border border-gray-300 p-2">
@@ -137,7 +137,7 @@ const OrderDetail = ({ data }: OrderDetailProps) => {
                                         ).toLocaleString("vi-VN")}{" "}
                                         VND
                                     </td>
-                                    <td className="border border-gray-300 p-2">
+                                    <td className="border border-gray-300 p-2 font-semibold bg-gray-50">
                                         Trạng thái thanh toán
                                     </td>
                                     <td className="border border-gray-300 p-2">
@@ -154,13 +154,13 @@ const OrderDetail = ({ data }: OrderDetailProps) => {
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td className="border border-gray-300 p-2">
+                                    <td className="border border-gray-300 p-2 font-semibold bg-gray-50">
                                         Ngày đặt
                                     </td>
                                     <td className="border border-gray-300 p-2">
                                         {data.created_at}
                                     </td>
-                                    <td className="border border-gray-300 p-2">
+                                    <td className="border border-gray-300 p-2 font-semibold bg-gray-50">
                                         Tổng tiền
                                     </td>
                                     <td className="border border-gray-300 p-2">

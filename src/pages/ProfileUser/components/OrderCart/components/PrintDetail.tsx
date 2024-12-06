@@ -1,4 +1,4 @@
-import { logo, logoPrint } from "@/assets/img";
+import { conDau, logo, logoPrint } from "@/assets/img";
 import { Box, Text } from "@mantine/core";
 import { Image } from "antd";
 
@@ -7,11 +7,25 @@ type OrderDetailProps = {
 };
 
 const PrintDetail = ({ data }: OrderDetailProps) => {
+    function getColorStatus(text: any) {
+        switch (text) {
+            case "Chờ xử lý":
+                return "#FFE082";
+            case "Đang xử lý":
+                return "#FFB74D";
+            case "Đang giao hàng":
+                return "#64B5F6";
+            case "Đã hủy":
+                return "red";
+            default:
+                return "#81C784";
+        }
+    }
     return (
         <>
             <div className="max-w-4xl mx-auto p-5">
                 <h1 className="text-2xl font-bold text-center mb-5">
-                    THÔNG TIN ĐƠN HÀNG
+                    THÔNG TIN HÓA ĐƠN
                 </h1>
 
                 <div className="max-w-4xl border border-gray-300 rounded-lg shadow-md p-4">
@@ -29,30 +43,30 @@ const PrintDetail = ({ data }: OrderDetailProps) => {
                             <thead></thead>
                             <tbody>
                                 <tr>
-                                    <td className="border border-gray-300 p-2">
+                                    <td className="border border-gray-300 p-2 font-semibold bg-gray-50">
                                         Tên người nhận
                                     </td>
-                                    <td className="border border-gray-300 p-2">
+                                    <td className="border border-gray-300 p-2 ">
                                         {data.customer_name}
                                     </td>
-                                    <td className="border border-gray-300 p-2">
+                                    <td className="border border-gray-300 p-2 font-semibold bg-gray-50">
                                         Tên người mua
                                     </td>
-                                    <td className="border border-gray-300 p-2">
+                                    <td className="border border-gray-300 p-2 ">
                                         {data.customer.customer_name}
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td className="border border-gray-300 p-2">
+                                    <td className="border border-gray-300 p-2 font-semibold bg-gray-50">
                                         Địa chỉ giao hàng
                                     </td>
-                                    <td className="border border-gray-300 p-2">
+                                    <td className="border border-gray-300 p-2 ">
                                         {data.shipping_address}
                                     </td>
-                                    <td className="border border-gray-300 p-2">
+                                    <td className="border border-gray-300 p-2 font-semibold bg-gray-50">
                                         Phương thức thanh toán
                                     </td>
-                                    <td className="border border-gray-300 p-2">
+                                    <td className="border border-gray-300 p-2 ">
                                         {
                                             data.payment_method
                                                 .payment_method_name
@@ -60,38 +74,44 @@ const PrintDetail = ({ data }: OrderDetailProps) => {
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td className="border border-gray-300 p-2">
+                                    <td className="border border-gray-300 p-2 font-semibold bg-gray-50">
                                         Phí vận chuyển
                                     </td>
-                                    <td className="border border-gray-300 p-2">
+                                    <td className="border border-gray-300 p-2 ">
                                         {Number(
                                             data.shipping_fee,
                                         ).toLocaleString("vi-VN")}{" "}
                                         VND
                                     </td>
-                                    <td className="border border-gray-300 p-2">
+                                    <td className="border border-gray-300 p-2 font-semibold bg-gray-50">
                                         Trạng thái đơn hàng
                                     </td>
-                                    <td className="border border-gray-300 p-2">
-                                        <span className="text-green-600">
+                                    <td className="border border-gray-300 p-2 ">
+                                        <span
+                                            style={{
+                                                color: getColorStatus(
+                                                    data.status,
+                                                ),
+                                            }}
+                                        >
                                             {data.status}
                                         </span>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td className="border border-gray-300 p-2">
+                                    <td className="border border-gray-300 p-2 font-semibold bg-gray-50">
                                         Giảm giá
                                     </td>
-                                    <td className="border border-gray-300 p-2">
+                                    <td className="border border-gray-300 p-2 ">
                                         {Number(
                                             data.discount_amount,
                                         ).toLocaleString("vi-VN")}{" "}
                                         VND
                                     </td>
-                                    <td className="border border-gray-300 p-2">
+                                    <td className="border border-gray-300 p-2 font-semibold bg-gray-50">
                                         Trạng thái thanh toán
                                     </td>
-                                    <td className="border border-gray-300 p-2">
+                                    <td className="border border-gray-300 p-2 ">
                                         <span
                                             className={
                                                 data.payment_status ===
@@ -105,13 +125,13 @@ const PrintDetail = ({ data }: OrderDetailProps) => {
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td className="border border-gray-300 p-2">
+                                    <td className="border border-gray-300 p-2 font-semibold bg-gray-50">
                                         Ngày đặt
                                     </td>
-                                    <td className="border border-gray-300 p-2">
+                                    <td className="border border-gray-300 p-2 ">
                                         {data.created_at}
                                     </td>
-                                    <td className="border border-gray-300 p-2">
+                                    <td className="border border-gray-300 p-2 font-semibold bg-gray-50">
                                         Tổng tiền
                                     </td>
                                     <td className="border border-gray-300 p-2">
@@ -147,9 +167,6 @@ const PrintDetail = ({ data }: OrderDetailProps) => {
                                     <th className="border border-gray-300  w-[140px] font-semibold">
                                         Tên sản phẩm
                                     </th>
-                                    <th className="border border-gray-300  w-[100px] font-semibold">
-                                        Hình ảnh
-                                    </th>
                                     <th className="border border-gray-300  w-[60px] font-semibold">
                                         Số lượng
                                     </th>
@@ -173,14 +190,6 @@ const PrintDetail = ({ data }: OrderDetailProps) => {
                                         >
                                             <td className="border border-gray-300 p-4">
                                                 <div>{item.product_name}</div>
-                                            </td>
-                                            <td className="border border-gray-300 p-4 text-center">
-                                                <img
-                                                    src={item.image}
-                                                    alt={item.product_name}
-                                                    className="inline-block max-w-full h-auto rounded"
-                                                    style={{ maxWidth: "80px" }}
-                                                />
                                             </td>
                                             <td className="border border-gray-300 p-4 text-center">
                                                 {item.quantity}
@@ -223,6 +232,22 @@ const PrintDetail = ({ data }: OrderDetailProps) => {
                                 )}
                             </tbody>
                         </table>
+                    </div>
+                    <div className="grid grid-cols-2 justify-between mt-5 ">
+                        <div className="text-center">
+                            <h2 className="font-semibold">Người mua hàng</h2>
+                            <p>(Ký , đóng dấu , ghi rõ họ tên)</p>
+                        </div>
+                        <div className="text-center justify-center">
+                            <h2 className="font-semibold">Người bán hàng</h2>
+                            <p>(Ký , đóng dấu , ghi rõ họ tên)</p>
+                            <img
+                                className="mx-auto"
+                                src={conDau}
+                                alt=""
+                                width={120}
+                            />
+                        </div>
                     </div>
                 </div>
             </div>

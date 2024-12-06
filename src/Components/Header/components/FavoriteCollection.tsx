@@ -49,7 +49,6 @@ const Favorite = ({ data }: any) => {
         try {
             await removeFavorite(productId);
             message.success("Xóa thành công sản phẩm yêu thích");
-            onClose();
         } catch (error) {
             message.error("Có lỗi khi xóa sản phẩm yêu thích");
 
@@ -76,6 +75,12 @@ const Favorite = ({ data }: any) => {
         navigate(`/chi-tiet-san-pham/${slug}`, { state: { id: id } });
         onClose();
     };
+    const handleNavigate = () => {
+        onClose();
+
+        navigate("/nguoi-dung/yeu-thich");
+    };
+
     return (
         <>
             <div className="items-center space-x-4">
@@ -178,7 +183,10 @@ const Favorite = ({ data }: any) => {
                     <h3>37,451,000₫</h3>
                 </div> */}
                         <div className="mt-5">
-                            <button className="w-full bg-black text-white p-2 rounded-md mb-3">
+                            <button
+                                onClick={handleNavigate} // Sử dụng hàm xử lý sự kiện
+                                className="w-full bg-black text-white p-2 rounded-md mb-3"
+                            >
                                 Xem yêu thích
                             </button>
                             {/* <button className="w-full hover:bg-gray-300 border border-collapse p-2 rounded-md">
