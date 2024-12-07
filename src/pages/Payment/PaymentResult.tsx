@@ -38,6 +38,9 @@ const PaymentResult = () => {
                 } catch (error) {
                     localStorage.removeItem("dataCart");
                     localStorage.removeItem("userInforSubmit");
+                } finally {
+                    localStorage.removeItem("dataCart");
+                    localStorage.removeItem("userInforSubmit");
                 }
             };
             fetchData();

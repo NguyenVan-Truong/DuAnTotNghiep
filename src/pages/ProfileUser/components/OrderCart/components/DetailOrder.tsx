@@ -30,7 +30,7 @@ const OrderDetail = ({ data }: OrderDetailProps) => {
     };
     const generatePDF = useReactToPrint({
         contentRef: componentPDF,
-        documentTitle: `Thông Tin Đơn Hàng`,
+        documentTitle: `Hóa Đơn`,
         // onAfterPrint: () => {
         //     message.success("In hóa đơn thành công!");
         // },

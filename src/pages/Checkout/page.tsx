@@ -280,6 +280,8 @@ const CheckoutPage = () => {
                             state: { status: "thanhcong" },
                         });
                         queryClient.invalidateQueries({ queryKey: ["cart"] });
+                        localStorage.removeItem("dataCart");
+                        localStorage.removeItem("userInforSubmit");
                     }
                 } catch (error: any) {
                     // message.error("Lỗi không thể đặt hàng");
@@ -287,6 +289,8 @@ const CheckoutPage = () => {
                     message.error(error.response.data.error);
                 } finally {
                     setLoading(false);
+                    localStorage.removeItem("dataCart");
+                    localStorage.removeItem("userInforSubmit");
                 }
             } else {
                 const dataResponse = {
