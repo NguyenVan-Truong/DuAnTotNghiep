@@ -17,19 +17,22 @@ export interface Posts {
 export interface PostCatelogues {
     id: number;
     name: string;
-    description?: string;
+    description: string | null;
     slug: string;
-    avatar?: string;
-    metaTitle?: string;
-    metaDescription?: string;
-    metaKeywords?: string;
-    userId?: number;
-    _lft?: number;
-    _rgt?: number;
-    parentId?: number | null;
-    level?: number;
-    status?: string;
-    deletedAt?: string | null;
-    createdAt?: string;
-    updatedAt?: string;
+    avatar: string | null;
+    "meta-title": string | null;
+    "meta-description": string | null;
+    meta_keywords: string | null;
+    user_id: number;
+    _lft: number;
+    _rgt: number;
+    parent_id: number | null;
+    level: number;
+    status: number;
+    created_at: string;
+    updated_at: string;
+    pivot: {
+        post_id: number;
+        post_catelogue_id: number;
+    };
 }
