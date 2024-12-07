@@ -700,7 +700,7 @@ const CheckoutPage = () => {
                                                 />
 
                                                 <span className="text-[12px] text-[#656565]">
-                                                    Chuyển khoản ngân hàng
+                                                    Thanh toán online
                                                 </span>
                                             </div>
                                         </Flex>
