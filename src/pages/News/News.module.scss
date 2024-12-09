@@ -1,29 +1,35 @@
 // News.module.scss
-
 .postContainer {
     display: flex;
     justify-content: space-between;
     gap: 20px;
-    padding: 20px;
+    max-width: 1290px !important;
+    margin: 0 auto;
+    padding-top: 30px;
+    padding-bottom: 30px;
   }
   
   .postSidebar {
     width: 25%;
-    border: 1px solid #ddd;
-    padding-right: 20px;
+    border-right: 3px solid #bab8b8;
+    padding-right: 35px;
+    align-self: flex-start;
+    box-sizing: border-box;
   }
   
   .sidebarTitle {
     font-weight: bold;
     font-size: 1.2rem;
     padding: 20px;
-    margin-bottom: 10px;
+    border-bottom: 2px solid #666;
+    background: #cfcfcf;
 
   }
   
   .sidebarList {
     list-style: none;
     padding: 20px;
+    background: #eeeded;
   }
   
   .sidebarItem {
@@ -124,12 +130,14 @@
     font-weight: bold;
     font-size: 1.2rem;
     padding: 20px;
-    margin-bottom: 20px;
+    border-bottom: 2px solid #666;
+    background: #cfcfcf;
   }
   
   .categoryList {
     list-style: none;
-    padding: 0;
+    padding: 20px;
+    background: #eeeded;
   }
   
   .categoryItem {
