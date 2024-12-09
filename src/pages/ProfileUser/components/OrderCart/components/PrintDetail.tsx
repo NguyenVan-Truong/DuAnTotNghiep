@@ -58,6 +58,23 @@ const PrintDetail = ({ data }: OrderDetailProps) => {
                                 </tr>
                                 <tr>
                                     <td className="border border-gray-300 p-2 font-semibold bg-gray-50">
+                                        Số điện thoại
+                                    </td>
+                                    <td className="border border-gray-300 p-2">
+                                        {data.phone_number}
+                                    </td>
+                                    <td className="border border-gray-300 p-2 font-semibold bg-gray-50">
+                                        Email
+                                    </td>
+                                    <td
+                                        className="border border-gray-300 p-2"
+                                        style={{ wordWrap: "break-word" }}
+                                    >
+                                        {data.email}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td className="border border-gray-300 p-2 font-semibold bg-gray-50">
                                         Địa chỉ giao hàng
                                     </td>
                                     <td className="border border-gray-300 p-2 ">
