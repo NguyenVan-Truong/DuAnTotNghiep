@@ -139,7 +139,7 @@ const Register = () => {
             await instance.post(`/auth/register`, user);
             message.success("Đăng Ký Thành Công");
             navigate("/xac-thuc/dang-nhap");
-        } catch (error) {
+        } catch (error: any) {
             // const axiosError = error as AxiosError;
             // interface ValidationErrorResponse {
             //     [key: string]: string[];
@@ -160,8 +160,15 @@ const Register = () => {
             // } else {
             //     message.error("Đã xảy ra lỗi không xác định.");
             // }
-            message.error("Đã có tài khoản này");
-            console.error("Error:", error);
+
+            if (error.response.data.username) {
+                message.error(error.response.data.username);
+            }
+
+            // Kiểm tra xem có lỗi cho email không
+            if (error.response.data.email) {
+                message.error(error.response.data.email);
+            }
         } finally {
             setLoading(false); // tắt loading khi xong
         }

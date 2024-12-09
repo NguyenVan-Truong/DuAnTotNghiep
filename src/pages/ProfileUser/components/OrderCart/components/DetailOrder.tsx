@@ -30,7 +30,7 @@ const OrderDetail = ({ data }: OrderDetailProps) => {
     };
     const generatePDF = useReactToPrint({
         contentRef: componentPDF,
-        documentTitle: `Thông Tin Đơn Hàng`,
+        documentTitle: `Hóa Đơn`,
         // onAfterPrint: () => {
         //     message.success("In hóa đơn thành công!");
         // },
@@ -83,6 +83,23 @@ const OrderDetail = ({ data }: OrderDetailProps) => {
                                     </td>
                                     <td className="border border-gray-300 p-2">
                                         {data.customer.customer_name}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td className="border border-gray-300 p-2 font-semibold bg-gray-50">
+                                        Số điện thoại
+                                    </td>
+                                    <td className="border border-gray-300 p-2">
+                                        {data.phone_number}
+                                    </td>
+                                    <td className="border border-gray-300 p-2 font-semibold bg-gray-50">
+                                        Email
+                                    </td>
+                                    <td
+                                        className="border border-gray-300 p-2"
+                                        style={{ wordWrap: "break-word" }}
+                                    >
+                                        {data.email}
                                     </td>
                                 </tr>
                                 <tr>
