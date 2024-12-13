@@ -94,15 +94,23 @@ const WaitForConfirmation = () => {
     function getColorStatus(text: any) {
         switch (text) {
             case "Chờ xử lý":
-                return "#FFE082";
+                return "#FFC107"; // Vàng nhạt (Chờ xử lý)
             case "Đang xử lý":
-                return "#FFB74D";
+                return "#FF9800"; // Cam nhạt (Đang xử lý)
             case "Đang giao hàng":
-                return "#64B5F6";
+                return "#03A9F4"; // Xanh da trời (Đang giao hàng)
+            case "Đã giao hàng":
+                return "#4CAF50"; // Xanh lá cây đậm (Đã giao hàng)
+            case "Đã xác nhận":
+                return "#8BC34A"; // Xanh lá nhạt (Đã xác nhận)
+            case "Hoàn thành":
+                return "#00BCD4"; // Xanh ngọc (Hoàn thành)
             case "Đã hủy":
-                return "red";
+                return "#F44336"; // Đỏ (Đã hủy)
+            case "Đã hoàn tiền":
+                return "#FF5722"; // Cam đậm (Đã hoàn tiền)
             default:
-                return "#81C784";
+                return "#9E9E9E"; // Xám (Mặc định)
         }
     }
 
@@ -119,17 +127,27 @@ const WaitForConfirmation = () => {
             {
                 accessorKey: "order_code",
                 header: "Mã đơn hàng",
-                Cell: ({ renderedCellValue }) => (
-                    <Badge
-                        radius="sm"
-                        variant="dot"
-                        size="lg"
-                        color={renderedCellValue === null ? "red" : "#21d01b"}
-                    >
-                        {renderedCellValue || null}
-                    </Badge>
+                Cell: ({ renderedCellValue, row }) => (
+                    <Tooltip label="Xem chi tiết">
+                        <Badge
+                            radius="sm"
+                            variant="dot"
+                            size="lg"
+                            style={{ cursor: "pointer" }}
+                            color={
+                                renderedCellValue === null ? "red" : "#21d01b"
+                            }
+                            onDoubleClick={() =>
+                                callApiGetData(row.original.id)
+                            }
+                        >
+                            {renderedCellValue === null
+                                ? null
+                                : renderedCellValue}
+                        </Badge>
+                    </Tooltip>
                 ),
-                size: 20,
+                size: 10,
             },
             {
                 accessorKey: "created_at",

@@ -35,10 +35,11 @@ const Posts = () => {
                 closeDelay={100}
             >
                 <Menu.Target>
-                    <Link to={"/tin-tuc"}>
+                    {/* <Link to={"/tin-tuc"}>
                         {" "}
                         <button>Tin tức</button>
-                    </Link>
+                    </Link> */}
+                    <button>Tin tức</button>
                 </Menu.Target>
                 <Menu.Dropdown>
                     {posts && posts.length > 0 ? (

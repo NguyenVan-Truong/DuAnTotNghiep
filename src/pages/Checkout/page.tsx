@@ -661,7 +661,7 @@ const CheckoutPage = () => {
                                             gap={"md"}
                                         >
                                             <div
-                                                className="px-[20px] py-[20px] flex flex-col border border-spacing-1"
+                                                className="px-[20px] py-[20px] flex flex-col border border-spacing-1 w-[200px]"
                                                 style={{
                                                     alignItems: "center",
                                                     cursor: "pointer",
@@ -684,7 +684,7 @@ const CheckoutPage = () => {
                                                 </span>
                                             </div>
                                             <div
-                                                className="px-[20px] py-[20px] flex flex-col border border-spacing-1 mr-[10px] "
+                                                className="px-[20px] py-[20px] flex flex-col border border-spacing-1 mr-[10px] w-[200px] "
                                                 style={{
                                                     alignItems: "center",
                                                     cursor: "pointer",
@@ -949,7 +949,7 @@ const CheckoutPage = () => {
                                                                 size="sm"
                                                             />
                                                         ) : (
-                                                            "HOÀN TẤT ĐƠN HÀNG"
+                                                            "HOÀN TẤT ĐẶT HÀNG"
                                                         )}
                                                     </Button>
                                                 </>

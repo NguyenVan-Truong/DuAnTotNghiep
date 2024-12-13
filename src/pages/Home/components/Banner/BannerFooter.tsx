@@ -17,17 +17,17 @@ const BannerFooter = () => {
     const [activeIndex, setActiveIndex] = useState(0);
     const navigate = useNavigate();
     const handlePostClick = (post: Posts) => {
-        navigate(`/chi-tiet-bai-viet/${post.slug}`, {
-        state: {
-            postId: post.id, // Truyền postId qua state
-        },        
-        });        
+        navigate(`/tin-tuc/chi-tiet-bai-viet/${post.slug}`, {
+            state: {
+                postId: post.id, // Truyền postId qua state
+            },
+        });
     };
 
     const fetchPosts = async (): Promise<Posts[]> => {
         const response = await instance.get("/posts");
         return response.data;
-      };
+    };
 
     const { data } = useQuery<Posts[]>({
         queryKey: ["data"],
@@ -51,7 +51,11 @@ const BannerFooter = () => {
                 {/* Hiển thị các bài viết theo activeIndex */}
                 <div className="flex flex-col xl:flex-row space-y-5 md:space-y-0 md:space-x-2">
                     {getPostsForActiveIndex(activeIndex).map((post, index) => (
-                        <div key={index} className="flex-1 flex flex-col items-center mb-4" onClick={() => handlePostClick(post)}>
+                        <div
+                            key={index}
+                            className="flex-1 flex flex-col items-center mb-4"
+                            onClick={() => handlePostClick(post)}
+                        >
                             <div className="h-[300px] md:h-[400px] w-full relative overflow-hidden">
                                 <Image
                                     className="w-full h-full object-cover transition-all duration-2000 hover:brightness-100 brightness-95"
