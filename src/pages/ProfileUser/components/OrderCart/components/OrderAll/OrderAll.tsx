@@ -92,15 +92,23 @@ const OrderAll = () => {
     function getColorStatus(text: any) {
         switch (text) {
             case "Chờ xử lý":
-                return "#FFE082";
+                return "#FFC107"; // Vàng nhạt (Chờ xử lý)
             case "Đang xử lý":
-                return "#FFB74D";
+                return "#FF9800"; // Cam nhạt (Đang xử lý)
             case "Đang giao hàng":
-                return "#64B5F6";
+                return "#03A9F4"; // Xanh da trời (Đang giao hàng)
+            case "Đã giao hàng":
+                return "#4CAF50"; // Xanh lá cây đậm (Đã giao hàng)
+            case "Đã xác nhận":
+                return "#8BC34A"; // Xanh lá nhạt (Đã xác nhận)
+            case "Hoàn thành":
+                return "#00BCD4"; // Xanh ngọc (Hoàn thành)
             case "Đã hủy":
-                return "red";
+                return "#F44336"; // Đỏ (Đã hủy)
+            case "Đã hoàn tiền":
+                return "#FF5722"; // Cam đậm (Đã hoàn tiền)
             default:
-                return "#81C784";
+                return "#9E9E9E"; // Xám (Mặc định)
         }
     }
 
@@ -109,17 +117,27 @@ const OrderAll = () => {
             {
                 accessorKey: "order_code",
                 header: "Mã đơn hàng",
-                Cell: ({ renderedCellValue }) => (
-                    <Badge
-                        radius="sm"
-                        variant="dot"
-                        size="lg"
-                        color={renderedCellValue === null ? "red" : "#21d01b"}
-                    >
-                        {renderedCellValue || null}
-                    </Badge>
+                Cell: ({ renderedCellValue, row }) => (
+                    <Tooltip label="Xem chi tiết">
+                        <Badge
+                            radius="sm"
+                            variant="dot"
+                            size="lg"
+                            style={{ cursor: "pointer" }}
+                            color={
+                                renderedCellValue === null ? "red" : "#21d01b"
+                            }
+                            onDoubleClick={() =>
+                                callApiGetData(row.original.id)
+                            }
+                        >
+                            {renderedCellValue === null
+                                ? null
+                                : renderedCellValue}
+                        </Badge>
+                    </Tooltip>
                 ),
-                size: 20,
+                size: 10,
             },
             {
                 accessorKey: "created_at",
@@ -150,7 +168,7 @@ const OrderAll = () => {
             {
                 accessorKey: "action",
                 header: "Thao tác",
-                size: 10,
+                size: 1,
                 Cell: ({ row }) => (
                     <Box
                         style={{
@@ -173,51 +191,41 @@ const OrderAll = () => {
     function processTaskActionMenu(row: MRT_Row<any>): any {
         return (
             <>
-                <Tooltip label="Xem chi tiết">
-                    <ActionIcon
-                        variant="light"
-                        aria-label="Settings"
-                        color="yellow"
-                    >
-                        <IconEye
-                            size={20}
-                            onClick={() => callApiGetData(row?.original.id)}
-                        />
-                    </ActionIcon>
-                </Tooltip>
-                <Tooltip label="Xác nhận đã nhận hàng">
-                    <ActionIcon
-                        variant="light"
-                        aria-label="Settings"
-                        color="green"
-                        disabled={row.original.status !== "Đã giao hàng"}
-                    >
-                        <IconCheck
-                            size={20}
-                            onClick={() => handleCheck(row?.original.id)}
-                        />
-                    </ActionIcon>
-                </Tooltip>
-                <Popconfirm
-                    placement="topRight"
-                    title={"Bạn có chắc muốn hủy đơn hàng ko ?"}
-                    okText="Có"
-                    cancelText="Ko"
-                    className="mx-auto"
-                    onConfirm={() => handleCancel(row?.original.id)}
-                >
-                    <Tooltip label="Hủy đơn hàng">
+                <div className="space-x-2">
+                    <Tooltip label="Xác nhận đã nhận hàng">
                         <ActionIcon
-                            color="red"
                             variant="light"
-                            size="md"
                             aria-label="Settings"
-                            disabled={row.original.status !== "Chờ xử lý"}
+                            color="green"
+                            disabled={row.original.status !== "Đã giao hàng"}
                         >
-                            <IconX size={20} />
+                            <IconCheck
+                                size={20}
+                                onClick={() => handleCheck(row?.original.id)}
+                            />
                         </ActionIcon>
                     </Tooltip>
-                </Popconfirm>
+                    <Popconfirm
+                        placement="topRight"
+                        title={"Bạn có chắc muốn hủy đơn hàng ko ?"}
+                        okText="Có"
+                        cancelText="Ko"
+                        className="mx-auto"
+                        onConfirm={() => handleCancel(row?.original.id)}
+                    >
+                        <Tooltip label="Hủy đơn hàng">
+                            <ActionIcon
+                                color="red"
+                                variant="light"
+                                size="md"
+                                aria-label="Settings"
+                                disabled={row.original.status !== "Chờ xử lý"}
+                            >
+                                <IconX size={20} />
+                            </ActionIcon>
+                        </Tooltip>
+                    </Popconfirm>
+                </div>
             </>
         );
     }

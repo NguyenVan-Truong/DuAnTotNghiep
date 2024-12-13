@@ -69,7 +69,7 @@ const SearchBox: React.FC = () => {
                 id: item.id,
              },
         });
-        console.log("Item slug", item.slug)
+        // console.log("Item slug", item.slug)
         setVisible(false); // Ẩn Popover
     };
     
