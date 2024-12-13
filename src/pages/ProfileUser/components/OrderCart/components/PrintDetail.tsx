@@ -1,6 +1,5 @@
-import { conDau, logo, logoPrint } from "@/assets/img";
-import { Box, Text } from "@mantine/core";
-import { Image } from "antd";
+import { conDau } from "@/assets/img";
+import { IconMail, IconMapPin, IconPhone } from "@tabler/icons-react";
 
 type OrderDetailProps = {
     data: any;
@@ -10,23 +9,79 @@ const PrintDetail = ({ data }: OrderDetailProps) => {
     function getColorStatus(text: any) {
         switch (text) {
             case "Chờ xử lý":
-                return "#FFE082";
+                return "#FFC107"; // Vàng nhạt (Chờ xử lý)
             case "Đang xử lý":
-                return "#FFB74D";
+                return "#FF9800"; // Cam nhạt (Đang xử lý)
             case "Đang giao hàng":
-                return "#64B5F6";
+                return "#03A9F4"; // Xanh da trời (Đang giao hàng)
+            case "Đã giao hàng":
+                return "#4CAF50"; // Xanh lá cây đậm (Đã giao hàng)
+            case "Đã xác nhận":
+                return "#8BC34A"; // Xanh lá nhạt (Đã xác nhận)
+            case "Hoàn thành":
+                return "#00BCD4"; // Xanh ngọc (Hoàn thành)
             case "Đã hủy":
-                return "red";
+                return "#F44336"; // Đỏ (Đã hủy)
+            case "Đã hoàn tiền":
+                return "#FF5722"; // Cam đậm (Đã hoàn tiền)
             default:
-                return "#81C784";
+                return "#9E9E9E"; // Xám (Mặc định)
         }
     }
+    const getCurrentDate = () => {
+        const date = new Date();
+        const day = date.getDate();
+        const month = date.getMonth() + 1;
+        const year = date.getFullYear();
+
+        return (
+            <p>
+                Hà Nội,
+                <span className="ml-1">
+                    ngày {day} tháng {month} năm {year}
+                </span>
+            </p>
+        );
+    };
     return (
         <>
             <div className="max-w-4xl mx-auto p-5">
-                <h1 className="text-2xl font-bold text-center mb-5">
-                    THÔNG TIN HÓA ĐƠN
-                </h1>
+                <div className="grid grid-cols-3 mb-2 items-center">
+                    <div>
+                        <div className="text-center">
+                            <p className="font-semibold">
+                                Cửa Hàng Nội Thất Morden Home
+                            </p>
+                        </div>
+                        <div className="flex items-center">
+                            <IconMapPin
+                                size={15}
+                                stroke={1.5}
+                                className="mr-2"
+                            />
+                            <p>Phụng Châu, Chương Mỹ, Hà Nội</p>
+                        </div>
+                        <div className="flex items-center">
+                            <div className="flex items-center">
+                                <IconPhone
+                                    size={15}
+                                    stroke={1.5}
+                                    className="mr-2"
+                                />
+                                :<p className="mr-2">0987654321</p>
+                            </div>
+                            <div className="flex items-center">
+                                <IconMail size={15} stroke={1.5} />:
+                                <span>info@mordenhome.com</span>
+                            </div>
+                        </div>
+                    </div>
+                    <h1 className="text-2xl font-bold text-center">HÓA ĐƠN</h1>
+                    <div className="mx-auto">
+                        <p>Mã đơn hàng: {data.order_code}</p>
+                        <p>Ngày đặt: {data.created_at}</p>
+                    </div>
+                </div>
 
                 <div className="max-w-4xl border border-gray-300 rounded-lg shadow-md p-4">
                     <div>
@@ -34,9 +89,6 @@ const PrintDetail = ({ data }: OrderDetailProps) => {
                             <h2 className="text-lg font-bold mb-4">
                                 Thông tin người mua
                             </h2>
-                            <p className="mr-2">
-                                Mã đơn hàng : {data.order_code}
-                            </p>
                         </div>
 
                         <table className="w-full table-fixed border-collapse">
@@ -50,29 +102,13 @@ const PrintDetail = ({ data }: OrderDetailProps) => {
                                         {data.customer_name}
                                     </td>
                                     <td className="border border-gray-300 p-2 font-semibold bg-gray-50">
-                                        Tên người mua
-                                    </td>
-                                    <td className="border border-gray-300 p-2 ">
-                                        {data.customer.customer_name}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td className="border border-gray-300 p-2 font-semibold bg-gray-50">
                                         Số điện thoại
                                     </td>
                                     <td className="border border-gray-300 p-2">
                                         {data.phone_number}
                                     </td>
-                                    <td className="border border-gray-300 p-2 font-semibold bg-gray-50">
-                                        Email
-                                    </td>
-                                    <td
-                                        className="border border-gray-300 p-2"
-                                        style={{ wordWrap: "break-word" }}
-                                    >
-                                        {data.email}
-                                    </td>
                                 </tr>
+
                                 <tr>
                                     <td className="border border-gray-300 p-2 font-semibold bg-gray-50">
                                         Địa chỉ giao hàng
@@ -101,31 +137,6 @@ const PrintDetail = ({ data }: OrderDetailProps) => {
                                         VND
                                     </td>
                                     <td className="border border-gray-300 p-2 font-semibold bg-gray-50">
-                                        Trạng thái đơn hàng
-                                    </td>
-                                    <td className="border border-gray-300 p-2 ">
-                                        <span
-                                            style={{
-                                                color: getColorStatus(
-                                                    data.status,
-                                                ),
-                                            }}
-                                        >
-                                            {data.status}
-                                        </span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td className="border border-gray-300 p-2 font-semibold bg-gray-50">
-                                        Giảm giá
-                                    </td>
-                                    <td className="border border-gray-300 p-2 ">
-                                        {Number(
-                                            data.discount_amount,
-                                        ).toLocaleString("vi-VN")}{" "}
-                                        VND
-                                    </td>
-                                    <td className="border border-gray-300 p-2 font-semibold bg-gray-50">
                                         Trạng thái thanh toán
                                     </td>
                                     <td className="border border-gray-300 p-2 ">
@@ -143,10 +154,13 @@ const PrintDetail = ({ data }: OrderDetailProps) => {
                                 </tr>
                                 <tr>
                                     <td className="border border-gray-300 p-2 font-semibold bg-gray-50">
-                                        Ngày đặt
+                                        Giảm giá
                                     </td>
                                     <td className="border border-gray-300 p-2 ">
-                                        {data.created_at}
+                                        {Number(
+                                            data.discount_amount,
+                                        ).toLocaleString("vi-VN")}{" "}
+                                        VND
                                     </td>
                                     <td className="border border-gray-300 p-2 font-semibold bg-gray-50">
                                         Tổng tiền
@@ -250,7 +264,10 @@ const PrintDetail = ({ data }: OrderDetailProps) => {
                             </tbody>
                         </table>
                     </div>
-                    <div className="grid grid-cols-2 justify-between mt-5 ">
+                    <div className="mt-5 mb-2 text-right mr-4">
+                        {getCurrentDate()}
+                    </div>
+                    <div className="grid grid-cols-2 justify-between ">
                         <div className="text-center">
                             <h2 className="font-semibold">Người mua hàng</h2>
                             <p>(Ký , đóng dấu , ghi rõ họ tên)</p>

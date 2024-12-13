@@ -10,7 +10,8 @@ import InspirationCorner from "@/pages/InspirationCorner/InspirationCorner";
 import Introduce from "@/pages/Introduce/Introduce";
 import LayoutWeb from "@/pages/Layout";
 import PostDetails from "@/pages/News/components/PostDetail";
-import PostList from "@/pages/News/PostList";
+import HomePost from "@/pages/News/HomePost";
+import PostList from "@/pages/News/components/PostList";
 import PageNotFound from "@/pages/NotFound/page";
 import PaymentPage from "@/pages/Payment/Payment";
 import PaymentResult from "@/pages/Payment/PaymentResult";
@@ -42,18 +43,21 @@ const Index = () => {
                     <Route path="gioi-thieu" element={<Introduce />} />
                     <Route path="gch" element={<InspirationCorner />} />
                     <Route path="lien-he" element={<Contact />} />
-                    <Route path="tin-tuc" element={<PostList />} />
+                    {/* <Route path="tin-tuc" element={<PostList />} /> */}
                     <Route path="payment" element={<PaymentPage />} />
                     <Route path="order-success" element={<PaymentResult />} />
                     <Route
                         path="chi-tiet-san-pham/:slug"
                         element={<ProductDetail />}
                     />
-                    <Route
-                        path="chi-tiet-bai-viet/:slug"
-                        element={<PostDetails />}
-                    />
 
+                    <Route path="tin-tuc" element={<HomePost />}>
+                        <Route index element={<PostList />} />
+                        <Route
+                            path="chi-tiet-bai-viet/:slug"
+                            element={<PostDetails />}
+                        />
+                    </Route>
                     <Route
                         path="nguoi-dung"
                         element={
