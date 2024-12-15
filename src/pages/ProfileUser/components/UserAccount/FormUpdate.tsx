@@ -22,6 +22,7 @@ const FormUpdate = ({ onSuccess, modals }: FormUpdateProps) => {
     const [checkedValueCity, setCheckedValueCity] = useState(
         userProFile.province_id,
     );
+    const [loading, setLoading] = useState(false);
     // thông tin quận huyện
     const [valueDistrict, setValueDistrict] = useState([]);
     const [checkedValueDistrict, setCheckedValueDistrict] = useState(
@@ -212,6 +213,7 @@ const FormUpdate = ({ onSuccess, modals }: FormUpdateProps) => {
 
     const onSubmit = async (values: any) => {
         try {
+            setLoading(true);
             const formData = new FormData();
             formData.append("full_name", values.full_name);
             formData.append("phone", values.phone);
@@ -255,9 +257,11 @@ const FormUpdate = ({ onSuccess, modals }: FormUpdateProps) => {
 
             localStorage.setItem("userProFile", JSON.stringify(userProfile));
             onSuccess();
+            setLoading(false);
             modals.closeAll();
         } catch (error) {
             message.error("Cập nhật thông tin thất bại!");
+            setLoading(false);
         }
     };
 
@@ -376,7 +380,7 @@ const FormUpdate = ({ onSuccess, modals }: FormUpdateProps) => {
                             )}
                         </Upload>
                     </ImgCrop>
-                    <Button className="mt-3" type="submit">
+                    <Button className="mt-3" type="submit" loading={loading}>
                         Cập nhật
                     </Button>
                 </div>
