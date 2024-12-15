@@ -24,14 +24,19 @@ import UserAccount from "@/pages/ProfileUser/components/UserAccount/UserAccount"
 import WishList from "@/pages/ProfileUser/components/Wishlist/WishList";
 import ProfileUser from "@/pages/ProfileUser/pages";
 import ShoppingCart from "@/pages/ShoppingCart/page";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
+import { message } from "antd";
 
 const Index = () => {
     const { pathname } = useLocation();
+    const [hasShownMessage, setHasShownMessage] = useState(false);
     useEffect(() => {
         window.scrollTo(0, 0);
     }, [pathname]);
+    const isLoggedIn = () => {
+        return !!localStorage.getItem("token");
+    };
     return (
         <>
             <Routes>
@@ -94,13 +99,45 @@ const Index = () => {
                 <Route path="/xac-thuc" element={<Auth />}>
                     <Route
                         index
-                        element={<Navigate to="dang-nhap" replace />}
+                        element={
+                            isLoggedIn() ? (
+                                <Navigate to="/" replace />
+                            ) : (
+                                <Navigate to="dang-nhap" replace />
+                            )
+                        }
                     />
-                    <Route path="dang-nhap" element={<Login />} />
-                    <Route path="dang-ky" element={<Register />} />
-                    <Route path="quen-mat-khau" element={<ForgotPassword />} />
+                    <Route
+                        path="dang-nhap"
+                        element={
+                            isLoggedIn() ? (
+                                <Navigate to="/" replace />
+                            ) : (
+                                <Login />
+                            )
+                        }
+                    />
+                    <Route
+                        path="dang-ky"
+                        element={
+                            isLoggedIn() ? (
+                                <Navigate to="/" replace />
+                            ) : (
+                                <Register />
+                            )
+                        }
+                    />
+                    <Route
+                        path="quen-mat-khau"
+                        element={
+                            isLoggedIn() ? (
+                                <Navigate to="/" replace />
+                            ) : (
+                                <ForgotPassword />
+                            )
+                        }
+                    />
                 </Route>
-
                 <Route path="*" element={<PageNotFound />} />
             </Routes>
         </>
