@@ -346,7 +346,7 @@ const OrderDetail = ({ data }: OrderDetailProps) => {
                             onClick={() => generatePDF()}
                             className="px-5 py-2  text-white rounde transition"
                         >
-                            In đơn hàng
+                            In hóa đơn
                         </Button>
                     </div>
                 </div>
