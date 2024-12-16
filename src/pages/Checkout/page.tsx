@@ -116,6 +116,8 @@ const CheckoutPage = () => {
     const [checked, setChecked] = useState(false);
     // ID cart
     const [idCart, setIdCart] = useState<string>("");
+    //disible order khi mà địa chỉ ship city không có trong list vận chuyển
+    const [disableOrder, setDisableOrder] = useState(false);
     const enty = {
         email: "",
         name: "",
@@ -377,13 +379,17 @@ const CheckoutPage = () => {
 
                 if (shippingFee) {
                     setShippingFee(shippingFee.fee);
+                    setDisableOrder(false);
                 } else {
-                    console.warn(
-                        "No shipping fee found for the selected city.",
+                    setShippingFee(0);
+                    setDisableOrder(true);
+                    message.warning(
+                        "Rất tiếc,hiện tại chúng tôi chưa hỗ trợ giao hàng đến khu vực của bạn",
                     );
                 }
             } else {
                 setShippingFee(0);
+                setDisableOrder(true);
             }
         };
 
@@ -476,6 +482,7 @@ const CheckoutPage = () => {
     useEffect(() => {
         // form.setFieldValue("district", null);
         // form.setFieldValue("ward", null);
+        // onhandleSelectWart();
         onhandleSelectDistrict();
     }, [checkedValueCity]);
     useEffect(() => {
@@ -505,7 +512,7 @@ const CheckoutPage = () => {
             setFinalAmount(calculatedFinalAmount);
         }
     }, [location?.state.totalPrice, shippingFee, checkedPromotions]);
-
+    console.log("form", form.getValues());
     return (
         <div className="padding my-[40px]">
             <div className="container">
@@ -574,6 +581,14 @@ const CheckoutPage = () => {
                                                     value,
                                                 );
                                                 setCheckedValueCity(value);
+                                                form.setFieldValue(
+                                                    "district",
+                                                    null,
+                                                );
+                                                form.setFieldValue(
+                                                    "ward",
+                                                    null,
+                                                );
                                             }}
                                         />
                                     </div>
@@ -941,7 +956,10 @@ const CheckoutPage = () => {
                                                         style={{
                                                             width: "100%",
                                                         }}
-                                                        disabled={loading}
+                                                        disabled={
+                                                            loading ||
+                                                            disableOrder
+                                                        }
                                                     >
                                                         {loading ? (
                                                             <Loader
@@ -962,7 +980,10 @@ const CheckoutPage = () => {
                                                         style={{
                                                             width: "100%",
                                                         }}
-                                                        disabled={loading}
+                                                        disabled={
+                                                            loading ||
+                                                            disableOrder
+                                                        }
                                                     >
                                                         {loading ? (
                                                             <Loader
