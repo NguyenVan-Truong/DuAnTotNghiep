@@ -2,12 +2,16 @@ import instance from "@/configs/axios";
 import { CartItem } from "@/model/Cart";
 import { formatCurrencyVN } from "@/model/_base/Number";
 import {
+    Badge,
     Button,
     Checkbox,
     Flex,
+    Group,
     Loader,
     ScrollArea,
     Select,
+    SelectProps,
+    Text,
     Textarea,
     TextInput,
 } from "@mantine/core";
@@ -19,6 +23,7 @@ import { useEffect, useState } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import DescriptionShipping from "./DescriptionShipping";
 import styles from "./checkoutPage.module.scss"; // Import CSS module
+import { formatDateNotTimeZone } from "@/model/_base/Date";
 
 type UserInfo = {
     id: number;
@@ -56,6 +61,8 @@ export interface Promotion {
     created_at: string; // Thời gian tạo (ISO format)
     updated_at: string; // Thời gian cập nhật (ISO format)
     deleted_at: string | null; // Thời gian xóa, có thể null
+    gia_tri_giam_toi_da?: string; // Giá trị giảm tối đa
+    gt_don_hang_toi_thieu?: string; // Giá trị đơn hàng tối thiểu
 }
 export interface SelectOption {
     value: string | number; // Hoặc có thể là number nếu cần
@@ -244,13 +251,24 @@ const CheckoutPage = () => {
             ({ value: "", label: "" } as SelectOption);
 
         const fullAddress = `${values.address}, ${nameWard.label}, ${nameDistrict.label}, ${nameCity.label}`;
-
+        const PRICEDISCOUNT =
+            checkedPromotions?.discount_type == "fixed"
+                ? Number(checkedPromotions?.discount_value)
+                : (Number(checkedPromotions?.discount_value) *
+                        Number(location?.state.totalPrice)) /
+                        100 >
+                    Number(checkedPromotions?.gia_tri_giam_toi_da)
+                  ? Number(checkedPromotions?.gia_tri_giam_toi_da)
+                  : (Number(checkedPromotions?.discount_value) *
+                        Number(location?.state.totalPrice)) /
+                    100;
         const dataSubmit = {
             customer_id: userProFile?.id,
             customer_name: values?.name,
             promotion_id: checkedPromotions?.id, //hỏi hoàn
             total_amount: location?.state.totalPrice,
-            discount_amount: Number(checkedPromotions?.discount_value), //chưa ai làm
+            // discount_amount: Number(checkedPromotions?.discount_value), //chưa ai làm
+            discount_amount: Number(PRICEDISCOUNT), //chưa ai làm
             shipping_fee: shippingFee || 0,
             final_amount: finalAmount,
             status: 1,
@@ -264,7 +282,6 @@ const CheckoutPage = () => {
             order_items: orderItems,
             cart_id: idCart, //Thêm trường này
         };
-        // console.log("dataSubmit", dataSubmit);
         if (dataSubmit) {
             if (!checked) {
                 return message.error(
@@ -324,7 +341,9 @@ const CheckoutPage = () => {
     const onhandlePromotions = async () => {
         if (dataPromotions.length !== 0) return;
         try {
+            const PriceTotal = location?.state.totalPrice;
             const response = await instance.get("/promotions");
+
             const now = new Date();
             if (response && response.status === 200) {
                 setDataAllPromotions(response.data);
@@ -341,11 +360,17 @@ const CheckoutPage = () => {
                 const transformedData = response.data.map((item: any) => ({
                     value: String(item.id),
                     label: item.code,
-                    disabled: expiredPr.some((exp: any) => exp.id === item.id),
+                    disabled:
+                        expiredPr.some((exp: any) => exp.id === item.id) ||
+                        (item.gt_don_hang_toi_thieu &&
+                            Number(PriceTotal) <
+                                Number(item.gt_don_hang_toi_thieu)),
+                    ...item,
                 }));
                 setDataPromotions(transformedData);
             }
         } catch (error) {
+            console.log("error", error);
             message.error("Lỗi không thể lấy dữ liệu");
         }
     };
@@ -501,18 +526,157 @@ const CheckoutPage = () => {
     }, [valuePromotions]);
     // SÔs tiền cuối cùng
     useEffect(() => {
-        const discountValue = (checkedPromotions as any)?.discount_value || 0;
+        // const discountValue = (checkedPromotions as any)?.discount_value || 0;
+        const discountValue =
+            checkedPromotions?.discount_type === "fixed"
+                ? Number(checkedPromotions?.discount_value)
+                : (Number(checkedPromotions?.discount_value) *
+                        Number(location?.state.totalPrice)) /
+                        100 >
+                    Number(checkedPromotions?.gia_tri_giam_toi_da)
+                  ? Number(checkedPromotions?.gia_tri_giam_toi_da)
+                  : (Number(checkedPromotions?.discount_value) *
+                        Number(location?.state.totalPrice)) /
+                    100;
+        console.log("discountValue", discountValue);
         const calculatedFinalAmount =
             Number(location?.state.totalPrice) +
             Number(shippingFee) -
-            Number(discountValue);
+            (isNaN(discountValue) ? 0 : discountValue);
+        console.log("calculatedFinalAmount", calculatedFinalAmount);
         if (calculatedFinalAmount < 0) {
             setFinalAmount(0);
         } else {
             setFinalAmount(calculatedFinalAmount);
         }
     }, [location?.state.totalPrice, shippingFee, checkedPromotions]);
-    console.log("form", form.getValues());
+    // console.log("form", form.getValues());
+    const renderSelectOption = ({ option }: { option: any }) => {
+        const formattedStartDate = formatDateNotTimeZone(option.start_date);
+        const formattedEndDate = formatDateNotTimeZone(option.end_date);
+        // console.log("option", option);
+        return (
+            <Badge
+                style={{
+                    height: "100px",
+                    width: "100% !important",
+                }}
+                variant="default"
+                color="blue"
+                radius="sm"
+            >
+                <div
+                    style={{
+                        width: "100% !important",
+                        display: "flex",
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                        gap: "40px",
+                    }}
+                >
+                    <div style={{ marginBottom: "5px", width: "30%" }}>
+                        <Badge
+                            color="green"
+                            radius="sm"
+                            style={{ width: "100px", height: "70px" }}
+                        >
+                            {option.label}
+                        </Badge>
+                    </div>
+                    <div style={{ width: "70%" }}>
+                        {option.discount_type === "fixed" ? (
+                            <>
+                                <div
+                                    style={{
+                                        display: "flex",
+                                        flexDirection: "column",
+                                        alignContent: "flex-start",
+                                        width: "100%",
+                                    }}
+                                >
+                                    <Text>
+                                        {formatCurrencyVN(
+                                            String(option.discount_value),
+                                        )}{" "}
+                                    </Text>
+                                    <Text
+                                        style={{
+                                            fontSize: "10px",
+                                        }}
+                                    >
+                                        Đơn tối thiểu{" "}
+                                        {formatCurrencyVN(
+                                            String(
+                                                option.gt_don_hang_toi_thieu ??
+                                                    0,
+                                            ),
+                                        )}
+                                    </Text>
+                                    <Text
+                                        style={{
+                                            fontSize: "10px",
+                                        }}
+                                    >
+                                        HSD: {formattedEndDate}
+                                    </Text>
+                                </div>{" "}
+                            </>
+                        ) : (
+                            <>
+                                <div
+                                    style={{
+                                        display: "flex",
+                                        flexDirection: "column",
+                                        alignContent: "flex-start",
+                                        width: "100%",
+                                    }}
+                                >
+                                    <Text>
+                                        {Math.floor(option.discount_value)}%
+                                    </Text>
+
+                                    <Text
+                                        style={{
+                                            fontSize: "10px",
+                                        }}
+                                    >
+                                        {" "}
+                                        giảm tối đa:{" "}
+                                        {formatCurrencyVN(
+                                            String(
+                                                option.gia_tri_giam_toi_da ?? 0,
+                                            ),
+                                        )}{" "}
+                                    </Text>
+                                    <Text
+                                        style={{
+                                            fontSize: "10px",
+                                        }}
+                                    >
+                                        Đơn tối thiểu{" "}
+                                        {formatCurrencyVN(
+                                            String(
+                                                option.gt_don_hang_toi_thieu ??
+                                                    0,
+                                            ),
+                                        )}
+                                    </Text>
+                                    <Text
+                                        style={{
+                                            fontSize: "10px",
+                                        }}
+                                    >
+                                        HSD: {formattedEndDate}
+                                    </Text>
+                                </div>
+                            </>
+                        )}
+                    </div>
+                </div>
+            </Badge>
+        );
+    };
+    console.log("finalAmount", finalAmount);
     return (
         <div className="padding my-[40px]">
             <div className="container">
@@ -862,15 +1026,28 @@ const CheckoutPage = () => {
                                             alignItems: "center",
                                         }}
                                     >
-                                        <p>Giảm giá</p>
+                                        <p>Chọn Voucher</p>
                                         <Select
-                                            w={150}
+                                            w={330}
+                                            height={700}
+                                            style={{
+                                                zIndex: 9999,
+                                            }}
                                             placeholder="Chọn mã giảm giá"
                                             data={dataPromotions}
+                                            // data={dataAllPromotions?.map(
+                                            //     (item: any) => ({
+                                            //         value: String(item.id),
+                                            //         label: item.code,
+                                            //         ...item,
+                                            //     }),
+                                            // )}
                                             onClick={() => {
                                                 onhandlePromotions();
                                             }}
-                                            onChange={(value) => {
+                                            onChange={(value, option) => {
+                                                console.log("value", value);
+                                                console.log("option", option);
                                                 if (value) {
                                                     setValuePromotions(value);
                                                 } else {
@@ -879,7 +1056,17 @@ const CheckoutPage = () => {
                                                     );
                                                 }
                                             }}
-                                        ></Select>
+                                            renderOption={renderSelectOption}
+                                        />
+                                    </div>
+                                    <div
+                                        className="flex flex-row justify-between  mt-[5px]"
+                                        style={{
+                                            alignItems: "center",
+                                        }}
+                                    >
+                                        <p>Tiết kiệm</p>
+
                                         <div
                                             style={{
                                                 width: "100px",
@@ -891,14 +1078,51 @@ const CheckoutPage = () => {
                                                 {checkedPromotions !==
                                                 undefined ? (
                                                     <>
-                                                        {formatCurrencyVN(
+                                                        {/* {formatCurrencyVN(
                                                             String(
                                                                 (
                                                                     checkedPromotions as any
                                                                 )
                                                                     .discount_value,
                                                             ),
-                                                        )}
+                                                        )} */}
+                                                        {checkedPromotions?.discount_type ==
+                                                        "fixed"
+                                                            ? formatCurrencyVN(
+                                                                  String(
+                                                                      checkedPromotions?.discount_value,
+                                                                  ),
+                                                              )
+                                                            : (Number(
+                                                                    checkedPromotions?.discount_value,
+                                                                ) *
+                                                                    Number(
+                                                                        location
+                                                                            ?.state
+                                                                            .totalPrice,
+                                                                    )) /
+                                                                    100 >
+                                                                Number(
+                                                                    checkedPromotions?.gia_tri_giam_toi_da,
+                                                                )
+                                                              ? formatCurrencyVN(
+                                                                    String(
+                                                                        checkedPromotions?.gia_tri_giam_toi_da,
+                                                                    ),
+                                                                )
+                                                              : formatCurrencyVN(
+                                                                    String(
+                                                                        (Number(
+                                                                            checkedPromotions?.discount_value,
+                                                                        ) *
+                                                                            Number(
+                                                                                location
+                                                                                    ?.state
+                                                                                    .totalPrice,
+                                                                            )) /
+                                                                            100,
+                                                                    ),
+                                                                )}
                                                     </>
                                                 ) : (
                                                     <>
@@ -921,6 +1145,11 @@ const CheckoutPage = () => {
                                                 color: "red",
                                             }}
                                         >
+                                            {/* {formatCurrencyVN(
+                                                isNaN(finalAmount)
+                                                    ? "0"
+                                                    : String(finalAmount),
+                                            )} */}
                                             {formatCurrencyVN(
                                                 String(finalAmount),
                                             )}
